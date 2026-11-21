@@ -5,3 +5,11 @@ __pycache__/
 dist/
 build/
 .venv/
+
+# World Cup 1998 external validation artifacts
+*.gz
+external_validation/worldcup98/raw/
+external_validation/worldcup98/scratch/
+external_validation/worldcup98/**/*.jsonl
+external_validation/worldcup98/**/*.gz
+

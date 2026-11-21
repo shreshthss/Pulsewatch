@@ -1,0 +1,303 @@
+{
+  "dataset_name": "1998 World Cup Web Site Access Logs",
+  "source_citation": "M. Arlitt and T. Jin, '1998 World Cup Web Site Access Logs', August 1998.",
+  "source_archive_url": "https://ita.ee.lbl.gov/html/contrib/WorldCup.html",
+  "raw_files": {
+    "wc_day20_1.gz": {
+      "size_bytes": 12317194,
+      "sha256": "e5a1bdc0f97abb84f73952185e15ccccad5753ebd061d347de26de975679780c"
+    },
+    "wc_day46_1.gz": {
+      "size_bytes": 45148753,
+      "sha256": "f676ac324ad3de49bf134148256928a25022ce3b05cf3b424159b3e4395e74d8"
+    },
+    "wc_day78_1.gz": {
+      "size_bytes": 47525733,
+      "sha256": "15b763fa9f708a24abf0225a5de467b185f909a659e6db61484b34e18bf79215"
+    },
+    "WorldCup_tools.tar.gz": {
+      "size_bytes": 1054926,
+      "sha256": "838e8eed0c10026a520528002c412a11afc723a53a4f86be1a70b2c07dacc551"
+    }
+  },
+  "windows": [
+    {
+      "id": "day20_early",
+      "day": 20,
+      "date_utc": "1998-05-15",
+      "phase": "Early collection (pre-tournament baseline)",
+      "source_file": "wc_day20_1.gz",
+      "source_file_sha256": "e5a1bdc0f97abb84f73952185e15ccccad5753ebd061d347de26de975679780c",
+      "target_jsonl": "day20_sample.jsonl",
+      "target_sha256": "ff8abb71a593b9ff4af1feb06a6b6549dd222f10565b23cf3987968f903900da",
+      "target_size_bytes": 2136011,
+      "window_start_utc_ts": 895183201,
+      "window_end_utc_ts": 895184101,
+      "window_duration_seconds": 900,
+      "extraction_seconds": 0.247,
+      "profile": {
+        "total_records": 17209,
+        "valid_pulsewatch_records": 17209,
+        "invalid_or_unmapped_records": 0,
+        "truncated_tail_bytes": 0,
+        "min_timestamp": 895183201,
+        "max_timestamp": 895184101,
+        "elapsed_seconds": 900,
+        "min_client_id": 55,
+        "max_client_id": 287470,
+        "unique_clients_count": 596,
+        "min_object_id": 0,
+        "max_object_id": 9372,
+        "unique_objects_count": 1622,
+        "total_response_bytes": 90136339,
+        "no_size_records_count": 1091,
+        "min_transfer_size": 0,
+        "max_transfer_size": 2020644,
+        "mean_transfer_size": 5237.744146,
+        "out_of_order_timestamps": 0,
+        "unique_servers_count": 4,
+        "methods_distribution": {
+          "GET": 17183,
+          "POST": 23,
+          "HEAD": 3
+        },
+        "status_codes_distribution": {
+          "200": 15400,
+          "304": 1778,
+          "206": 16,
+          "404": 15
+        },
+        "http_versions_distribution": {
+          "HTTP/1.0": 13680,
+          "HTTP/1.1": 3529
+        },
+        "file_types_distribution": {
+          "IMAGE": 15115,
+          "JAVA": 151,
+          "HTML": 1696,
+          "DYNAMIC": 27,
+          "DIRECTORY": 176,
+          "OTHER": 16,
+          "COMPRESSED": 23,
+          "AUDIO": 2,
+          "TEXT": 3
+        },
+        "regions_distribution": {
+          "PLANO": 15104,
+          "PARIS": 2105
+        },
+        "servers_distribution": {
+          "32": 7071,
+          "33": 8033,
+          "98": 1067,
+          "99": 1038
+        }
+      }
+    },
+    {
+      "id": "day46_opening",
+      "day": 46,
+      "date_utc": "1998-06-10",
+      "phase": "Mid-collection (tournament opening day: Brazil vs Scotland)",
+      "source_file": "wc_day46_1.gz",
+      "source_file_sha256": "f676ac324ad3de49bf134148256928a25022ce3b05cf3b424159b3e4395e74d8",
+      "target_jsonl": "day46_sample.jsonl",
+      "target_sha256": "97c76316758a88c52165d60b64d289f87eef8c73afabfdaa17c35776da7e0ddc",
+      "target_size_bytes": 26254381,
+      "window_start_utc_ts": 897429601,
+      "window_end_utc_ts": 897430501,
+      "window_duration_seconds": 900,
+      "extraction_seconds": 2.634,
+      "profile": {
+        "total_records": 210288,
+        "valid_pulsewatch_records": 210287,
+        "invalid_or_unmapped_records": 1,
+        "truncated_tail_bytes": 0,
+        "min_timestamp": 897429601,
+        "max_timestamp": 897430501,
+        "elapsed_seconds": 900,
+        "min_client_id": 21,
+        "max_client_id": 1360031,
+        "unique_clients_count": 3720,
+        "min_object_id": 0,
+        "max_object_id": 35628,
+        "unique_objects_count": 3800,
+        "total_response_bytes": 970325304,
+        "no_size_records_count": 13167,
+        "min_transfer_size": 0,
+        "max_transfer_size": 2100714,
+        "mean_transfer_size": 4614.268546,
+        "out_of_order_timestamps": 0,
+        "unique_servers_count": 26,
+        "methods_distribution": {
+          "GET": 209776,
+          "HEAD": 448,
+          "POST": 63,
+          "OTHER": 1
+        },
+        "status_codes_distribution": {
+          "200": 192546,
+          "304": 16614,
+          "404": 920,
+          "302": 9,
+          "206": 196,
+          "OTHER/NONE": 1,
+          "500": 2
+        },
+        "http_versions_distribution": {
+          "HTTP/1.1": 44856,
+          "HTTP/1.0": 165381,
+          "HTTP/X.X": 51
+        },
+        "file_types_distribution": {
+          "IMAGE": 183824,
+          "HTML": 20165,
+          "DIRECTORY": 2316,
+          "OTHER": 2396,
+          "JAVA": 1199,
+          "COMPRESSED": 221,
+          "DYNAMIC": 105,
+          "AUDIO": 54,
+          "TEXT": 5,
+          "VIDEO": 3
+        },
+        "regions_distribution": {
+          "PARIS": 32267,
+          "HERNDON": 45576,
+          "SANTA_CLARA": 37230,
+          "PLANO": 95215
+        },
+        "servers_distribution": {
+          "0": 6334,
+          "1": 6010,
+          "2": 6143,
+          "3": 6389,
+          "4": 6224,
+          "5": 6130,
+          "33": 4541,
+          "34": 14667,
+          "35": 14035,
+          "36": 14385,
+          "37": 14319,
+          "38": 9288,
+          "39": 9537,
+          "40": 14443,
+          "64": 5044,
+          "65": 4899,
+          "66": 5048,
+          "67": 5001,
+          "68": 5248,
+          "69": 5162,
+          "70": 6,
+          "71": 4969,
+          "72": 4915,
+          "73": 5284,
+          "98": 16022,
+          "99": 16245
+        }
+      }
+    },
+    {
+      "id": "day78_final",
+      "day": 78,
+      "date_utc": "1998-07-12",
+      "phase": "Late collection (tournament final match day: France vs Brazil)",
+      "source_file": "wc_day78_1.gz",
+      "source_file_sha256": "15b763fa9f708a24abf0225a5de467b185f909a659e6db61484b34e18bf79215",
+      "target_jsonl": "day78_sample.jsonl",
+      "target_sha256": "e81b04cd7e9237609853a1fb2060050e735f9cd2e03ba2b00c84f2f2ab768f4f",
+      "target_size_bytes": 16302954,
+      "window_start_utc_ts": 900194401,
+      "window_end_utc_ts": 900195301,
+      "window_duration_seconds": 900,
+      "extraction_seconds": 1.636,
+      "profile": {
+        "total_records": 130733,
+        "valid_pulsewatch_records": 130733,
+        "invalid_or_unmapped_records": 0,
+        "truncated_tail_bytes": 0,
+        "min_timestamp": 900194401,
+        "max_timestamp": 900195301,
+        "elapsed_seconds": 900,
+        "min_client_id": 28,
+        "max_client_id": 2735468,
+        "unique_clients_count": 2493,
+        "min_object_id": 0,
+        "max_object_id": 86509,
+        "unique_objects_count": 5545,
+        "total_response_bytes": 590286811,
+        "no_size_records_count": 4744,
+        "min_transfer_size": 0,
+        "max_transfer_size": 2100714,
+        "mean_transfer_size": 4515.208945,
+        "out_of_order_timestamps": 0,
+        "unique_servers_count": 30,
+        "methods_distribution": {
+          "GET": 130032,
+          "HEAD": 701
+        },
+        "status_codes_distribution": {
+          "304": 15202,
+          "200": 114818,
+          "404": 598,
+          "206": 106,
+          "302": 9
+        },
+        "http_versions_distribution": {
+          "HTTP/1.1": 38848,
+          "HTTP/1.0": 91877,
+          "HTTP/X.X": 8
+        },
+        "file_types_distribution": {
+          "HTML": 15933,
+          "OTHER": 1342,
+          "IMAGE": 110596,
+          "JAVA": 1370,
+          "DIRECTORY": 1337,
+          "DYNAMIC": 23,
+          "COMPRESSED": 35,
+          "AUDIO": 83,
+          "TEXT": 14
+        },
+        "regions_distribution": {
+          "PARIS": 21255,
+          "HERNDON": 42777,
+          "PLANO": 35665,
+          "SANTA_CLARA": 31036
+        },
+        "servers_distribution": {
+          "0": 5021,
+          "1": 5253,
+          "2": 5164,
+          "3": 5259,
+          "4": 5098,
+          "5": 5241,
+          "33": 1842,
+          "34": 3777,
+          "35": 3813,
+          "36": 3766,
+          "37": 3554,
+          "38": 3972,
+          "39": 3617,
+          "40": 3683,
+          "41": 4033,
+          "42": 3608,
+          "64": 4224,
+          "65": 4132,
+          "66": 4552,
+          "67": 4526,
+          "68": 4192,
+          "69": 4402,
+          "70": 3999,
+          "71": 4348,
+          "72": 4132,
+          "73": 4270,
+          "98": 4597,
+          "99": 4735,
+          "100": 7481,
+          "101": 4442
+        }
+      }
+    }
+  ]
+}
