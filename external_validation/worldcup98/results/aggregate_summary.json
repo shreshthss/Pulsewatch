@@ -8,7 +8,7 @@
   "samples": {
     "day20": {
       "sample_id": "day20",
-      "label": "Day 20 (Early collection: 15 May 1998 opening 15 min, Paris local)",
+      "label": "Day 20 (Early collection: first 15 min after midnight Paris local time, 15 May 1998)",
       "collection_day_paris_local": "Day 20 (15 May 1998)",
       "utc_interval_iso": "1998-05-14 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day20_1.gz",
@@ -46,7 +46,7 @@
     },
     "day46": {
       "sample_id": "day46",
-      "label": "Day 46 (Tournament opening: 10 June 1998 opening 15 min, Paris local)",
+      "label": "Day 46 (Tournament opening: first 15 min after midnight Paris local time, 10 June 1998)",
       "collection_day_paris_local": "Day 46 (10 June 1998)",
       "utc_interval_iso": "1998-06-09 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day46_1.gz",
@@ -94,7 +94,7 @@
     },
     "day78": {
       "sample_id": "day78",
-      "label": "Day 78 (Final match date: 12 July 1998 opening 15 min, Paris local)",
+      "label": "Day 78 (Final match date: first 15 min after midnight Paris local time, 12 July 1998)",
       "collection_day_paris_local": "Day 78 (12 July 1998)",
       "utc_interval_iso": "1998-07-11 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day78_1.gz",

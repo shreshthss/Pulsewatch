@@ -95,15 +95,15 @@ To evaluate pipeline behavior across varied historical collection phases, contig
 
 1. **Adapter Streaming Invariant:** The extraction reader (`WorldCupStreamReader`) operates as a streaming pipeline reading in fixed chunks of 32,768 records ($655,360$ bytes). Because records are chronologically ordered, records prior to $t_{start}$ are inspected and discarded without buffering; the stream halts immediately when $t > t_{end}$. The binary adapter therefore maintains bounded streaming memory regardless of multi-gigabyte uncompressed shard size.
 2. **PulseWatch Memory Scope:** In contrast to the streaming adapter, the downstream PulseWatch analysis pipeline materializes retained event records in memory for sparse temporal indexing and multi-scale windowing. PulseWatch's measured peak memory depends on the selected event count rather than being constant.
-3. **Operational Context of Selected Windows:** The official collection days begin at midnight Paris local time (22:00:00 GMT / UTC of the preceding date). Each selected window captures the **initial approximately 15 minutes of the collection day** (from 22:00:01 to 22:15:01 UTC), representing opening-hour traffic for that operational logging day. They are **not** sampled during match kickoff or match play, and do not represent match-time peak concurrency.
+3. **Operational Context of Selected Windows:** Each sample covers the first 15 minutes after midnight Paris local time on its respective collection date. These samples do not represent match-time traffic or peak match concurrency. The official collection days begin at midnight Paris local time (22:00:00 GMT / UTC of the preceding date), so the inclusive UTC interval for each 15-minute sample runs from 22:00:01 to 22:15:01 UTC.
 
 ### Shard Scanning and Record Selection Statistics
 
 | Sample ID | Collection Day (Paris Local Date) | Operational Day Context | Source Shard File | Total Records in Shard | Records Scanned to Window End | Records Selected in Window | Valid Records Exported | Rejected Records | Selected Retention Denominator |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| `day20` | Day 20 (15 May 1998) | Early collection: Day 20 opening 15 min (pre-tournament baseline) | `wc_day20_1.gz` | 2,084,016 | 17,210 | 17,209 | 17,209 | 0 | 17,209 / 17,209 (100.0%) |
-| `day46` | Day 46 (10 June 1998) | Mid-collection: Day 46 opening 15 min (tournament opening date) | `wc_day46_1.gz` | 6,999,999 | 210,289 | 210,288 | 210,287 | 1 | 210,287 / 210,288 (99.9995%) |
-| `day78` | Day 78 (12 July 1998) | Late collection: Day 78 opening 15 min (final match date) | `wc_day78_1.gz` | 6,999,999 | 130,734 | 130,733 | 130,733 | 0 | 130,733 / 130,733 (100.0%) |
+| `day20` | Day 20 (15 May 1998) | Early collection: first 15 min after midnight Paris local time (pre-tournament baseline) | `wc_day20_1.gz` | 2,084,016 | 17,210 | 17,209 | 17,209 | 0 | 17,209 / 17,209 (100.0%) |
+| `day46` | Day 46 (10 June 1998) | Mid-collection: first 15 min after midnight Paris local time (tournament opening date) | `wc_day46_1.gz` | 6,999,999 | 210,289 | 210,288 | 210,287 | 1 | 210,287 / 210,288 (99.9995%) |
+| `day78` | Day 78 (12 July 1998) | Late collection: first 15 min after midnight Paris local time (final match date) | `wc_day78_1.gz` | 6,999,999 | 130,734 | 130,733 | 130,733 | 0 | 130,733 / 130,733 (100.0%) |
 
 ### Explicit Documentation of Day 46 Rejected Record
 During extraction of the Day 46 window, exactly one record was rejected:
@@ -167,7 +167,7 @@ pulsewatch analyze INPUT.jsonl --json OUTPUT.json
 
 ### Execution Summary Across the Three Workloads
 
-| Pipeline Metric | Day 20 (Early Baseline Opening) | Day 46 (Tournament Opening Date) | Day 78 (Final Match Date) |
+| Pipeline Metric | Day 20 (Early Baseline: Post-Midnight) | Day 46 (Tournament Opening Date: Post-Midnight) | Day 78 (Final Match Date: Post-Midnight) |
 |:---|:---|:---|:---|
 | **Input Lines Read** | 17,209 | 210,287 | 130,733 |
 | **Valid Events Ingested** | 17,209 | 210,287 | 130,733 |
@@ -205,9 +205,9 @@ The window selection bounds are inclusive: $[t_{start}, t_{end}]$ where $t_{end}
 ## 8. Traffic and Contributor Observations
 
 1. **Observed Baseline Stationarity Across Three Distinct Regimes:**
-   - On Day 20, opening-hour traffic was steady at ~19.25 req/s.
-   - On Day 46, opening-hour traffic rose to ~237.58 req/s across 26 servers.
-   - On Day 78, opening-hour traffic settled at ~144.02 req/s across 30 servers.
+   - On Day 20, post-midnight traffic was steady at ~19.25 req/s.
+   - On Day 46, post-midnight traffic rose to ~237.58 req/s across 26 servers.
+   - On Day 78, post-midnight traffic settled at ~144.02 req/s across 30 servers.
    - In all three selected windows, traffic arrival counts adhered closely to the fitted baseline distributions across 10s, 60s, and 300s scales.
    - **Precise Detector Observation:** PulseWatch produced **0 incident candidates** across all three windows. This means that no time window exceeded the multi-scale Poisson/Negative-Binomial elevation thresholds ($Z \ge 3.0$, relative ratio $\ge 1.5$, absolute excess $\ge 5$ req/s).
    - **Crucial Methodological Distinction:** Because the 1998 World Cup logs contain no ground-truth anomaly annotations, the outcome of 0 incident candidates **cannot** be cited as evidence of "zero false alarms" or "detector accuracy". It establishes only that the baseline fitting and dispersion estimators accommodated these real-world web arrival rates without generating spurious alerts on stationary segments.
