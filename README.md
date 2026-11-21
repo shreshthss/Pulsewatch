@@ -8,6 +8,226 @@
 
 ---
 
+To set up **PulseWatch on a new system**, you need Python, Git, and the project repository. The application runs locally and does not require external Python packages, a database, Docker, or an API key.
+
+Below is the installation procedure for Linux (including Arch Linux).
+
+# **PulseWatch — System Setup Guide**
+
+## **1. Install prerequisites**
+
+You need:
+
+| Requirement     | Purpose                          |
+| --------------- | -------------------------------- |
+| Python 3.9+     | Runs the detection engine        |
+| Git             | Downloads the repository         |
+| Make (optional) | Runs predefined project commands |
+| Web browser     | Opens generated HTML reports     |
+
+On Arch Linux:
+
+```
+sudo pacman -Syu
+sudo pacman -S git python make
+```
+
+On Ubuntu/Debian:
+
+```
+sudo apt update
+sudo apt install git python3 make
+```
+
+Verify installations:
+
+```
+python3 --version
+git --version
+make --version
+```
+
+## **2. Download the repository**
+
+Clone the GitHub repository:
+
+```
+git clone https://github.com/shreshthss/Pulsewatch.git
+```
+
+Enter the project directory:
+
+```
+cd Pulsewatch
+```
+
+Your working directory should now contain the project files, including:
+
+- `demo.py`
+- `bin/`
+- `data/`
+- `docs/`
+- `tests/`
+- `traffic_lab/`
+- `Makefile`
+
+## **3. Run the demonstration**
+
+No dependency installation required
+
+Execute:
+
+```
+make demo
+```
+
+Alternatively:
+
+```
+python3 demo.py
+```
+
+This executes five predefined scenarios:
+
+1. Normal traffic
+2. Duplicate request replay
+3. Genuine traffic surge
+4. Coverage gap
+5. Ambiguous traffic regime
+
+The terminal displays a summary of retained requests, duplicates removed, coverage, baseline reliability and detected incidents.
+
+## **4. Open the generated investigation report**
+
+After the demonstration, open one of the generated HTML reports:
+
+```
+xdg-open demo/3_genuine_surge_report.html
+```
+
+This opens the report in your default browser.
+
+You can inspect the incident information and investigation interface without running a server.
+
+## **5. Run PulseWatch on actual log data**
+
+PulseWatch accepts JSONL (JSON Lines) traffic logs.
+
+The standard workflow consists of three commands:
+
+**A. Summarize traffic**
+
+```
+./bin/pulsewatch summarize data/sample.jsonl
+```
+
+**B. Analyse anomalies**
+
+```
+./bin/pulsewatch analyze data/sample.jsonl \
+    --json data/analysis.json
+```
+
+**C. Generate an HTML investigation report**
+
+```
+./bin/pulsewatch report data/analysis.json \
+    --html data/report.html
+```
+
+Open the generated report:
+
+```
+xdg-open data/report.html
+```
+
+## **6. Run the automated tests**
+
+To verify that the installation is working:
+
+```
+make test
+```
+
+Alternatively:
+
+```
+python3 -m unittest discover tests -v
+```
+
+The repository documents 29 automated tests covering ingestion, deduplication, temporal gaps, statistical detection, reporting and CLI functionality.
+
+## **7. Run the benchmark suite (optional)**
+
+To evaluate the detector against the synthetic scenario matrix and comparison baselines:
+
+```
+make matrix
+```
+
+Alternatively:
+
+```
+python3 -m traffic_lab.benchmark_matrix
+```
+
+## **Complete installation sequence**
+
+If you want the shortest possible installation procedure, execute:
+
+```
+
+# 1. Install prerequisites (Arch Linux)
+sudo pacman -S git python make
+
+# 2. Clone repository
+git clone https://github.com/shreshthss/Pulsewatch.git
+
+# 3. Enter directory
+cd Pulsewatch
+
+# 4. Run demonstration
+make demo
+
+# 5. Open generated report
+xdg-open demo/3_genuine_surge_report.html
+
+# 6. Verify installation
+make test
+
+```
+
+## **What runs locally and what runs online?**
+
+**Local installation**
+
+Full engine
+
+- Python-based ingestion and analysis
+- Deduplication and statistical detection
+- PW-Scan anomaly detection
+- JSON output and HTML report generation
+- Offline execution
+
+  **GitHub Pages**
+
+  Web demonstration
+- Interactive scenario explorer
+- Pre-generated reports
+- Benchmark tables
+- No local installation required to explore the demonstration
+
+  The GitHub Pages website does not run the full Python detection engine.
+
+**Official resources**
+
+- [GitHub Repository](https://github.com/shreshthss/Pulsewatch?utm_source=chatgpt.com)
+- [README and Setup Instructions](https://github.com/shreshthss/Pulsewatch?utm_source=chatgpt.com#2-quick-start--curated-judge-demonstration)
+- [Live Demonstration](https://shreshthss.github.io/Pulsewatch/?utm_source=chatgpt.com)
+
+**Important:** For a fresh-system demonstration, `git clone → make demo → open HTML report` is the simplest complete workflow.
+
+
 ## 1. 15-Second Executive Summary
 
 API performance telemetry is messy: proxy retries create phantom traffic spikes, while telemetry collector outages masquerade as service quiescence. Most monitoring tools either use crude static thresholds (causing false-alarm fatigue) or opaque AI agents that hallucinate causes.
