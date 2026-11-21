@@ -1,0 +1,27 @@
+{
+  "scenario_name": "benchmark_suite_v1",
+  "total_records": 3529,
+  "total_span_sec": 645,
+  "expected_duplicates": 100,
+  "expected_unverified": 98,
+  "expected_gaps": [
+    [
+      1795237635,
+      1795237694
+    ]
+  ],
+  "incidents": [
+    {
+      "start_sec": 1795237500,
+      "end_sec": 1795237515,
+      "shape": "isolated_spike",
+      "description": "Injected 15s checkout spike with duplicates"
+    },
+    {
+      "start_sec": 1795237695,
+      "end_sec": 1795237785,
+      "shape": "sustained_surge",
+      "description": "Injected 90s sustained surge with anonymous requests"
+    }
+  ]
+}

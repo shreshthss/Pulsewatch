@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline'; img-src 'self' data:;">
+  <title>PulseWatch — Evidence-Driven Offline API Traffic Anomaly Investigation</title>
+  <meta name="description" content="Offline synthetic API traffic anomaly detection combining hierarchical deduplication, coverage tracking, multi-scale count modeling (PW-Scan), and deterministic investigation leads.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#" class="brand-link">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+        </svg>
+        <span>PulseWatch</span>
+        <span class="brand-badge">Aegython 2026</span>
+      </a>
+      <nav class="nav-links" aria-label="Main Navigation">
+        <a href="#workflow">Workflow</a>
+        <a href="#features">Capabilities</a>
+        <a href="#demo">Interactive Demo</a>
+        <a href="#benchmarks">Benchmarks</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#local">Run Locally</a>
+        <a href="#docs">Documentation</a>
+        <a href="https://github.com/shreshthss/Pulsewatch" target="_blank" rel="noopener noreferrer" class="btn-nav-github">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-pill">
+        <span class="dot"></span>
+        <span>Built for the API Traffic Watch Challenge · Aegython 2026</span>
+      </div>
+      <h1>Evidence-Driven Offline API<br><span>Traffic Anomaly Investigation</span></h1>
+      <p class="lead">
+        API performance telemetry is noisy: proxy retries create phantom spikes, while collector outages masquerade as service quiescence. PulseWatch combines hierarchical request deduplication, coverage tracking, and multi-scale count modeling (PW-Scan) to deliver verifiable incident intelligence.
+      </p>
+      <div class="hero-actions">
+        <a href="#demo" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          <span>Explore Interactive Demo</span>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span>View Source on GitHub</span>
+        </a>
+      </div>
+
+      <!-- Key Pillars -->
+      <div class="hero-pillars">
+        <div class="pillar-card">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>
+          </div>
+          <h3>Standard Library Only</h3>
+          <p>Zero external Python dependencies. Installs cleanly in standard Python 3.9+ environments with zero wheel vulnerabilities.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>100% Offline &amp; Safe</h3>
+          <p>Strictly offline analysis. Never probes live APIs, captures live packets, or leaks telemetry outside the local host.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>Exact 1s Localization</h3>
+          <p>Trims multi-scale window excess down to 1-second active boundaries, achieving mean temporal IoU = 1.00 without moving average lag.</p>
+        </div>
+        <div class="pillar-card">
+          <div class="icon-box">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <h3>Explicit Abstention</h3>
+          <p>Isolates telemetry collector outages (&gt;900s gaps) and explicitly abstains rather than assuming quiescent zero traffic.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Workflow Section -->
+  <section id="workflow">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Engineering Workflow</div>
+        <h2>End-to-End Analysis Pipeline</h2>
+        <p>Every step enforces strict memory bounds, mathematical determinism, and data verification.</p>
+      </div>
+      <div class="pipeline-flow">
+        <div class="pipeline-step">
+          <div class="step-num">01 / LOAD</div>
+          <h4>Stream Ingest</h4>
+          <p>Streams JSONL line-by-line with 8KB line caps and 5M record limit to protect local memory.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">02 / VALIDATE</div>
+          <h4>Time Normalization</h4>
+          <p>Normalizes ISO 8601 &amp; Epoch timestamps to nanosecond precision with out-of-order tracking.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">03 / DEDUP</div>
+          <h4>BLAKE2b Identity</h4>
+          <p>Deduplicates replayed logs using 16-byte hashes across a 4-level gateway identity hierarchy.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">04 / TEMPORAL</div>
+          <h4>Sparse 1s Engine</h4>
+          <p>Partitions time into 1-second sparse bins and isolates unobserved collector gaps (&gt;900s).</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">05 / DETECT</div>
+          <h4>PW-Scan Engine</h4>
+          <p>Evaluates multi-scale windows (10s, 60s, 300s) using Poisson and Negative-Binomial count modeling.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">06 / INVESTIGATE</div>
+          <h4>Evidence &amp; Leads</h4>
+          <p>Trims boundaries to 1s active excess, classifies geometric shape, and assigns concentration tags.</p>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">07 / EXPORT</div>
+          <h4>Canonical Report</h4>
+          <p>Exports deterministic JSON (<code>pulsewatch.report/1</code>) and self-contained offline HTML reports.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features & Capabilities -->
+  <section id="features">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Technical Capabilities</div>
+        <h2>What Makes PulseWatch Distinct</h2>
+        <p>Engineered to solve real telemetry failure modes that cause false alarms in standard monitoring tools.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-box">
+          <div class="feat-icon">⚡</div>
+          <h3>Hierarchical BLAKE2b Deduplication</h3>
+          <p>Enforces a 4-level identity hierarchy <code>(source, seq)</code>, <code>(source, trace, span)</code>, and <code>(source, request_id)</code>. Deduplication only occurs when identities and normalized event attributes match exactly, preserving distinct requests with transparent degradation tracking.</p>
+          <span class="feature-tag">pulsewatch.dedup</span>
+        </div>
+        <div class="feature-box">
+          <div class="feat-icon">⏱️</div>
+          <h3>Sparse 1-Second Temporal Engine</h3>
+          <p>Memory allocation is strictly O(active events) rather than dense arrays proportional to elapsed wall-clock time. Gaps &gt;900s are partitioned into continuous observation segments, ensuring long collector outages never masquerade as zero-traffic.</p>
+          <span class="feature-tag">pulsewatch.temporal</span>
+        </div>
+        <div class="feature-box">
+          <div class="feat-icon">📊</div>
+          <h3>PW-Scan: Multi-Scale Discrete Counts</h3>
+          <p>Models integer arrival counts across 10s, 60s, and 300s timescales. Uses scale-dependent dispersion &phi;(w) to model overdispersed bursty arrivals via Negative-Binomial parameters, combined with stable log-space tail estimation.</p>
+          <span class="feature-tag">pulsewatch.detector</span>
+        </div>
+        <div class="feature-box">
+          <div class="feat-icon">🛡️</div>
+          <h3>Sticky Contamination Masking</h3>
+          <p>Screens initial candidate windows across fine scales (Z &ge; 4.0), sticky-masks elevated intervals, and refits clean baselines across up to 5 iterations. High baseline contamination triggers explicit reliability downgrades.</p>
+          <span class="feature-tag">Z &ge; 4.0 Residuals</span>
+        </div>
+        <div class="feature-box">
+          <div class="feat-icon">🔍</div>
+          <h3>Actionable SRE Investigation Leads</h3>
+          <p>Collects second-pass route and caller concentration evidence verified against source SHA-256 hashes. Rules generate deterministic investigation leads (e.g. check client retry loops or database indexes) without hallucination risks.</p>
+          <span class="feature-tag">Deterministic Guidance</span>
+        </div>
+        <div class="feature-box">
+          <div class="feat-icon">📄</div>
+          <h3>Canonical JSON &amp; Offline HTML</h3>
+          <p>Produces valid <code>pulsewatch.report/1</code> JSON documents with deterministic SHA-256 analysis hashes and generates self-contained offline HTML reports protected by strict Content Security Policies.</p>
+          <span class="feature-tag">pulsewatch.report/1</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demonstration Console -->
+  <section id="demo">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Interactive Demonstration</div>
+        <h2>Inspect Curated Telemetry Scenarios</h2>
+        <p>Explore actual analysis results generated by PulseWatch across 5 diverse synthetic telemetry failure modes.</p>
+      </div>
+
+      <div class="demo-console">
+        <!-- Scenario Tabs -->
+        <div class="console-nav" role="tablist" aria-label="Curated Scenarios">
+          <button class="scenario-tab" data-scenario="normal" role="tab" aria-selected="false">1. Normal Traffic</button>
+          <button class="scenario-tab" data-scenario="dedup" role="tab" aria-selected="false">2. Duplicate Storm</button>
+          <button class="scenario-tab active" data-scenario="surge" role="tab" aria-selected="true">3. Genuine Surge</button>
+          <button class="scenario-tab" data-scenario="gap" role="tab" aria-selected="false">4. Coverage Gap</button>
+          <button class="scenario-tab" data-scenario="regime" role="tab" aria-selected="false">5. Regime Shift</button>
+        </div>
+
+        <!-- Scenario Content Panel -->
+        <div class="console-body">
+          <div class="console-header-row">
+            <div>
+              <h3 id="sc-title">Scenario 3: Genuine 90s API Surge</h3>
+              <p id="sc-subtitle">Multi-client load spike on search route with localized 1-second boundaries</p>
+            </div>
+            <div>
+              <span id="sc-badge" class="badge badge-danger">1 Incident Flagged</span>
+            </div>
+          </div>
+
+          <!-- Key Metrics -->
+          <div class="metrics-grid" id="sc-metrics">
+            <!-- Dynamically populated by app.js -->
+          </div>
+
+          <!-- Insight Card -->
+          <div class="insight-card">
+            <h4 id="sc-highlight">Exact Boundary Localization (IoU = 1.00) &amp; Actionable SRE Leads</h4>
+            <p id="sc-explanation">A genuine 90-second surge on /api/v1/items/search was detected across 10s, 60s, and 300s timescales. Rather than suffering from moving-average boundary lag, PulseWatch trims candidates to 1-second active excess, achieving exact IoU = 1.00.</p>
+          </div>
+
+          <!-- Investigation Leads -->
+          <div class="leads-box">
+            <h4>Generated Deterministic SRE Investigation Leads</h4>
+            <ul id="sc-leads">
+              <!-- Dynamically populated by app.js -->
+            </ul>
+          </div>
+
+          <!-- Console Footer & Links -->
+          <div class="console-footer-row">
+            <div class="hash-info">
+              <span>SHA-256 Analysis Hash:</span>
+              <span class="hash-val" id="sc-hash">d2ca7c8a9cc8269a86086fefb2f5315a46ade2f06898bd7bd52e98e438071875</span>
+            </div>
+            <div class="console-actions">
+              <a id="sc-json-link" href="demo/3_genuine_surge_analysis.json" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Raw JSON</span>
+              </a>
+              <a id="sc-report-link" href="demo/3_genuine_surge_report.html" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                <span>Open Full HTML Report</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benchmark Section -->
+  <section id="benchmarks">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Validation Evidence</div>
+        <h2>13-Scenario Benchmark Comparison</h2>
+        <p>Evaluated on held-out seeds against 4 standard baseline monitoring algorithms with complete ground-truth isolation.</p>
+      </div>
+
+      <div class="benchmark-table-wrapper">
+        <table class="benchmark-table" aria-label="Benchmark Comparison Table">
+          <thead>
+            <tr>
+              <th>Scenario Family</th>
+              <th>Records</th>
+              <th>PW-Scan F1 (IoU)</th>
+              <th>Fixed Threshold F1</th>
+              <th>Trailing Mean F1 (IoU)</th>
+              <th>EWMA F1 (IoU)</th>
+              <th>Simple MAD F1 (IoU)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>N0_poisson</code> (Stationary)</td>
+              <td>1,080</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td class="stat-fail">0.000 (FP=1)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+            <tr>
+              <td><code>N1_sparse</code> (Low arrivals)</td>
+              <td>81</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+            <tr>
+              <td><code>N2_overdispersed</code> (Burst)</td>
+              <td>1,041</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td class="stat-fail">0.000 (FP=1)</td>
+              <td>1.000 (0.00)</td>
+              <td class="stat-fail">0.000 (FP=1)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+            <tr>
+              <td><code>A1_isolated_spike</code> (12s)</td>
+              <td>1,020</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>A2_micro_burst</code> (4s)</td>
+              <td>780</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>A3_sustained_surge</code> (90s)</td>
+              <td>2,790</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td class="stat-lag">1.000 (0.67)</td>
+              <td class="stat-lag">1.000 (0.67)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>A4_ramp</code> (60s)</td>
+              <td>1,490</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>A5_distinct_flood</code> (30s)</td>
+              <td>1,380</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>D1_duplicate_storm</code></td>
+              <td>710</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+            <tr>
+              <td><code>L1_identity_stripped</code></td>
+              <td>480</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+            <tr>
+              <td><code>S1_level_shift</code></td>
+              <td>2,280</td>
+              <td class="stat-highlight">1.000 (1.00)</td>
+              <td>1.000 (1.00)</td>
+              <td class="stat-lag">1.000 (0.50)</td>
+              <td class="stat-lag">1.000 (0.50)</td>
+              <td>1.000 (1.00)</td>
+            </tr>
+            <tr>
+              <td><code>G1_long_gap</code> (&gt;900s)</td>
+              <td>480</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td class="stat-fail">0.000 (FP=1)</td>
+              <td class="stat-fail">0.000 (FP=1)</td>
+              <td class="stat-fail">0.000 (FP=2)</td>
+            </tr>
+            <tr>
+              <td><code>X1_hostile_strings</code></td>
+              <td>480</td>
+              <td class="stat-highlight">1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+              <td>1.000 (0.00)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <span style="font-size: 0.85rem; color: var(--text-dim);">Evaluated across 3 distinct seeds (20261121, 20261122, 20261123). Zero detector retuning.</span>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/BENCHMARK_RESULTS.md" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+          <span>View Complete Benchmark Documentation →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture & Statistical Approach -->
+  <section id="architecture">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Architecture &amp; Math</div>
+        <h2>Statistical Foundations of PW-Scan</h2>
+        <p>Grounding anomaly detection in discrete probability theory and robust estimation.</p>
+      </div>
+
+      <div class="arch-grid">
+        <div class="arch-card">
+          <h3>Adaptive Block Estimation</h3>
+          <p>Selects initial baseline block length L &in; {60, 300, 900, 3600}s where expected arrivals E &ge; 20. Prevents zero-collapse on sparse low-rate APIs.</p>
+          <ul>
+            <li>Median aggregation across clean blocks</li>
+            <li>Guarantees CLT convergence</li>
+            <li>Eliminates integer rounding distortion</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <h3>Scale-Dependent Dispersion</h3>
+          <p>Models variance-to-mean dispersion ratio &phi;(w) = Var(S_w) / E(S_w) at each timescale. Detects overdispersion and fits Negative-Binomial parameters (r, q).</p>
+          <ul>
+            <li>r = E / (&phi; - 1), q = E / (r + E)</li>
+            <li>Poisson lower bound when &phi; &le; 1.05</li>
+            <li>Prevents over-alerting on bursty callers</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <h3>Sticky Contamination Masking</h3>
+          <p>Screens initial candidate windows across fine scales (Z &ge; 4.0). Masks elevated intervals and refits clean baseline across up to 5 iterations.</p>
+          <ul>
+            <li>Prevents baseline inflation during long surges</li>
+            <li>Tracks fraction of time/events masked</li>
+            <li>Downgrades reliability if &gt;40% masked</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <h3>Numerically Stable Tail Estimation</h3>
+          <p>Computes upper tail p-values in log-space using stable recurrence relations. Binds omitted tail mass with geometric series convergence checks.</p>
+          <ul>
+            <li>Exact convergence error bounds</li>
+            <li>Emits tail_exact boolean flag</li>
+            <li>Zero float overflow or underflow</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Run Locally -->
+  <section id="local">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Developer Setup</div>
+        <h2>Run PulseWatch Locally</h2>
+        <p>Zero external packages, zero compilation. Runs anywhere with standard Python 3.9+.</p>
+      </div>
+
+      <div class="code-snippet">
+        <div class="code-header">
+          <span>bash — clone &amp; run demo suite</span>
+          <button class="copy-btn" onclick="copyCode(this, 'code-quickstart')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre id="code-quickstart"><code># 1. Clone repository
+git clone https://github.com/shreshthss/Pulsewatch.git
+cd Pulsewatch
+
+# 2. Run automated test suite (29 tests in ~0.25s)
+make test
+
+# 3. Execute 5-scenario curated demonstration suite
+make demo
+
+# 4. Run comprehensive 13-scenario benchmark matrix
+make matrix</code></pre>
+      </div>
+
+      <div class="code-snippet">
+        <div class="code-header">
+          <span>bash — standard CLI workflow</span>
+          <button class="copy-btn" onclick="copyCode(this, 'code-cli')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <pre id="code-cli"><code># 1. Summarize deduplicated traffic windows
+./bin/pulsewatch summarize data/sample.jsonl
+
+# 2. Detect anomalies and output canonical JSON report
+./bin/pulsewatch analyze data/sample.jsonl --json data/analysis.json
+
+# 3. Render self-contained standalone HTML report
+./bin/pulsewatch report data/analysis.json --html data/report.html</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Documentation Links -->
+  <section id="docs">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-tag">Repository Documents</div>
+        <h2>Technical Documentation &amp; Judge Package</h2>
+        <p>All design decisions, schemas, proofs, and defense responses are documented in the repository.</p>
+      </div>
+
+      <div class="docs-grid">
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/ARCHITECTURE.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">📐</div>
+          <div class="doc-info">
+            <h4>Architecture Specification</h4>
+            <p>Layered pipeline boundaries, data-flow guarantees, and module contracts.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/STATISTICAL_METHOD.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">📊</div>
+          <div class="doc-info">
+            <h4>Statistical Methodology</h4>
+            <p>Full mathematical specification of PW-Scan, dispersion, and tail estimation.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/BENCHMARK_RESULTS.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">📈</div>
+          <div class="doc-info">
+            <h4>Benchmark Results</h4>
+            <p>Complete reproducible metrics across 13 scenarios and 4 comparison baselines.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/COMPETITIVE_POSITIONING.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">🎯</div>
+          <div class="doc-info">
+            <h4>Competitive Positioning</h4>
+            <p>Cross-track differentiation against AI agent, auth, and cybersecurity archetypes.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/JUDGE_QA.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">💡</div>
+          <div class="doc-info">
+            <h4>Judge Q&amp;A Defense</h4>
+            <p>16 technically grounded answers to anticipated competition and evaluation questions.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/DEMO_SCRIPT.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">🎬</div>
+          <div class="doc-info">
+            <h4>Video Demonstration Script</h4>
+            <p>2.5-minute presentation script with exact terminal commands and transitions.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/REPORT_SCHEMA.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">📋</div>
+          <div class="doc-info">
+            <h4>Canonical Report Schema</h4>
+            <p>JSON specification for pulsewatch.report/1 and deterministic hash calculation.</p>
+          </div>
+        </a>
+        <a href="https://github.com/shreshthss/Pulsewatch/blob/main/docs/SECURITY_AND_LIMITATIONS.md" target="_blank" rel="noopener noreferrer" class="doc-link-card">
+          <div class="doc-icon">🛡️</div>
+          <div class="doc-info">
+            <h4>Security &amp; Limitations</h4>
+            <p>Sandbox boundaries, memory caps, resource limits, and honest product boundaries.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-row">
+        <div>
+          <div class="footer-brand">PulseWatch</div>
+          <p style="margin-top: 0.35rem; color: var(--text-dim);">Evidence-Driven Offline API Traffic Anomaly Investigation</p>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/shreshthss/Pulsewatch" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+          <a href="https://github.com/shreshthss/Pulsewatch/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+          <a href="https://github.com/shreshthss/Pulsewatch/blob/main/BUILD_STATUS.md" target="_blank" rel="noopener noreferrer">Build Status</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>Built for the API Traffic Watch Challenge — Aegython 2026. Standard Python 3.9+ runtime with zero external dependencies.</div>
+        <div>Offline Prototype &amp; Synthetic Telemetry Evaluation. Telemetry never leaves the host machine.</div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

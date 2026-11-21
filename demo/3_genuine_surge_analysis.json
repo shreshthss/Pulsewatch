@@ -1,0 +1,329 @@
+{
+  "schema_version": "pulsewatch.report/1",
+  "pulsewatch_version": "0.1.0",
+  "input_metadata": {
+    "source_file": "demo/3_genuine_surge.jsonl",
+    "source_file_sha256": "de94a614c2d1476cb714e5848f179608f89ea06c027d8adb44bcb648d699dd67",
+    "earliest_timestamp": 1795237200,
+    "latest_timestamp": 1795237559,
+    "total_span_seconds": 360
+  },
+  "ingestion_accounting": {
+    "total_lines_read": 2790,
+    "valid_records": 2790,
+    "control_records": 0,
+    "empty_lines": 0,
+    "oversized_lines": 0,
+    "malformed_json_lines": 0,
+    "schema_violations": 0,
+    "timestamp_parse_failures": 0,
+    "out_of_order_records": 0,
+    "record_cap_reached": false,
+    "declared_coverage_count": 0,
+    "warning_count": 0,
+    "warnings_sample": []
+  },
+  "deduplication_accounting": {
+    "total_input_records": 2790,
+    "retained_records": 2790,
+    "verified_unique_records": 2790,
+    "duplicates_removed": 0,
+    "identity_ineligible": 0,
+    "identity_conflicts": 0,
+    "unverifiable_due_to_eviction": 0,
+    "cap_degraded": false,
+    "evicted_keys_count": 0,
+    "exactness_status": "fully_verified_exact",
+    "duplicate_records_removed": 0,
+    "unverified_identity_records": 0,
+    "identity_conflict_records": 0,
+    "dedup_degraded": false,
+    "warnings_sample": []
+  },
+  "coverage_and_gaps": {
+    "earliest_sec": 1795237200,
+    "latest_sec": 1795237559,
+    "total_span_sec": 360,
+    "active_seconds": 360,
+    "known_zero_seconds": 0,
+    "assumed_zero_seconds": 0,
+    "unknown_gap_seconds": 0,
+    "coverage_ratio": 1.0,
+    "gap_threshold_sec": 900,
+    "unknown_gaps_count": 0,
+    "unknown_gaps": [],
+    "declared_coverage_count": 0
+  },
+  "primary_60s_windows": [
+    {
+      "start_sec": 1795237200,
+      "end_sec": 1795237260,
+      "start_iso": "2026-11-21T05:00:00+00:00",
+      "end_iso": "2026-11-21T05:01:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 27,
+        "/api/v1/items": 27,
+        "/api/v1/auth/login": 25,
+        "/api/v1/checkout": 21,
+        "/api/v1/user/profile": 20
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237260,
+      "end_sec": 1795237320,
+      "start_iso": "2026-11-21T05:01:00+00:00",
+      "end_iso": "2026-11-21T05:02:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 29,
+        "/api/v1/checkout": 24,
+        "/api/v1/items": 24,
+        "/api/v1/auth/login": 22,
+        "/api/v1/user/profile": 21
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237320,
+      "end_sec": 1795237380,
+      "start_iso": "2026-11-21T05:02:00+00:00",
+      "end_iso": "2026-11-21T05:03:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/checkout": 30,
+        "/api/v1/user/profile": 25,
+        "/api/v1/items/search": 24,
+        "/api/v1/items": 23,
+        "/api/v1/auth/login": 18
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237380,
+      "end_sec": 1795237440,
+      "start_iso": "2026-11-21T05:03:00+00:00",
+      "end_iso": "2026-11-21T05:04:00+00:00",
+      "total_requests": 1500,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 1500,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 1500
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237440,
+      "end_sec": 1795237500,
+      "start_iso": "2026-11-21T05:04:00+00:00",
+      "end_iso": "2026-11-21T05:05:00+00:00",
+      "total_requests": 810,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 810,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 761,
+        "/api/v1/user/profile": 14,
+        "/api/v1/checkout": 14,
+        "/api/v1/items": 11,
+        "/api/v1/auth/login": 10
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237500,
+      "end_sec": 1795237560,
+      "start_iso": "2026-11-21T05:05:00+00:00",
+      "end_iso": "2026-11-21T05:06:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items": 30,
+        "/api/v1/auth/login": 30,
+        "/api/v1/user/profile": 21,
+        "/api/v1/checkout": 21,
+        "/api/v1/items/search": 18
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    }
+  ],
+  "baseline_status": {
+    "fitted_rate_1s": 2.0,
+    "median_rate_1s": 2.0,
+    "initial_block_length_sec": 60,
+    "refitting_iterations": 3,
+    "fraction_time_masked": 0.5,
+    "fraction_events_masked": 0.871,
+    "reliability": "low",
+    "abstain_reason": null,
+    "warning": "High baseline contamination: 50.0% of time masked during refitting.",
+    "asymmetry_ratio": 1.0,
+    "masked_intervals_count": 119,
+    "dispersion_by_scale": {
+      "10": {
+        "scale_sec": 10,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      },
+      "60": {
+        "scale_sec": 60,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      },
+      "300": {
+        "scale_sec": 300,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      }
+    }
+  },
+  "detector_summary": {
+    "detector": "PW-Scan",
+    "scales_evaluated": [
+      10,
+      60,
+      300
+    ],
+    "candidate_detections_count": 63,
+    "fired_scales": [
+      10,
+      60,
+      300
+    ],
+    "dispersion_modeling": "poisson_negative_binomial",
+    "abstention_state": false,
+    "abstention_reason": null
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-001",
+      "observed_facts": {
+        "start_sec": 1795237380,
+        "end_sec": 1795237470,
+        "start_iso": "2026-11-21T05:03:00+00:00",
+        "end_iso": "2026-11-21T05:04:30+00:00",
+        "duration_sec": 90,
+        "peak_sec": 1795237380,
+        "peak_1s_rate": 25,
+        "total_observed_requests": 2250,
+        "estimated_excess_requests": 2070,
+        "top_routes": {
+          "/api/v1/items/search": 2250
+        },
+        "status_distribution": {
+          "2xx": 2250,
+          "4xx": 0,
+          "5xx": 0,
+          "other": 0
+        },
+        "merged_windows_count": 63
+      },
+      "statistical_findings": {
+        "scales_fired": [
+          10,
+          60,
+          300
+        ],
+        "max_z_score": 125.976,
+        "max_elevation_ratio": 12.5,
+        "min_log_p_value": -2413.1686,
+        "baseline_expected_requests": 180.0,
+        "tail_probability_note": "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. Reported upper-tail probabilities are bounded empirical tail assessments."
+      },
+      "descriptive_pattern": {
+        "shape": "sustained_surge",
+        "rationale": "Sustained elevated volume lasting 90s across multi-scale windows."
+      },
+      "investigation_leads": [
+        {
+          "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+          "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+        },
+        {
+          "trigger": "Route '/api/v1/items/search' received 2250/2250 (100.0%) requests",
+          "suggested_action": "Investigate endpoint '/api/v1/items/search' capacity, database query efficiency, and upstream dependency health."
+        }
+      ],
+      "unknown_causes": "Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.",
+      "contributor_evidence": {
+        "top_clients": {
+          "client-010": 134,
+          "client-015": 133,
+          "client-018": 125,
+          "client-005": 124,
+          "client-003": 122
+        },
+        "top_routes": {
+          "/api/v1/items/search": 2250
+        },
+        "status_distribution": {
+          "2xx": 2250
+        },
+        "concentration_tags": [
+          "broad_based",
+          "route_concentrated"
+        ],
+        "share_basis": "estimated_excess"
+      }
+    }
+  ],
+  "data_notices": [
+    "Baseline notice: High baseline contamination: 50.0% of time masked during refitting."
+  ],
+  "known_limitations": [
+    "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+    "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+    "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+    "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+  ],
+  "analysis_hash": "d2ca7c8a9cc8269a86086fefb2f5315a46ade2f06898bd7bd52e98e438071875"
+}

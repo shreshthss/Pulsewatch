@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+<title>PulseWatch Incident &amp; Traffic Report</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        color: #0f172a;
+        background-color: #f1f5f9;
+        margin: 0;
+        padding: 24px;
+    }
+    .container {
+        max-width: 1160px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+        padding: 32px;
+    }
+    .header {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+    }
+    .header h1 {
+        margin: 0 0 6px 0;
+        font-size: 1.8rem;
+        color: #0f172a;
+    }
+    .header-sub {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    .exec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .exec-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 16px;
+    }
+    .exec-card .lbl {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .exec-card .val {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .panel-integrity {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 18px;
+        margin-bottom: 24px;
+    }
+    .panel-integrity h3 {
+        margin: 0 0 12px 0;
+        font-size: 1.05rem;
+        color: #1e293b;
+    }
+    .integrity-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        font-size: 0.9rem;
+    }
+    .incident-card {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-left: 5px solid #2563eb;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .incident-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .incident-id {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e3a8a;
+        margin-right: 8px;
+    }
+    .incident-time {
+        font-size: 0.85rem;
+        color: #475569;
+        font-family: monospace;
+    }
+    .incident-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        gap: 8px;
+    }
+    .inc-metric .lbl {
+        display: block;
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    .inc-metric .val {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .contributors-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+        font-size: 0.88rem;
+    }
+    .contributor-col ul {
+        margin: 4px 0 0 0;
+        padding-left: 20px;
+    }
+    .leads-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+    .leads-header {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e40af;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+    }
+    .lead-item {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #cbd5e1;
+        font-size: 0.88rem;
+    }
+    .lead-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    .lead-trigger {
+        color: #334155;
+    }
+    .lead-action {
+        color: #1e3a8a;
+        margin-top: 2px;
+    }
+    .lead-none {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+    }
+    .incident-rationale {
+        font-size: 0.85rem;
+        color: #334155;
+    }
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .badge-shape {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .badge-tag {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        font-size: 0.88rem;
+    }
+    th, td {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+    }
+    .status-yes {
+        color: #15803d;
+        font-weight: 600;
+    }
+    .status-no {
+        color: #b91c1c;
+        font-weight: 600;
+    }
+    .s2 { color: #15803d; }
+    .s4 { color: #d97706; }
+    .s5 { color: #dc2626; }
+    .notices {
+        background: #fffbeb;
+        border-left: 4px solid #f59e0b;
+        padding: 14px;
+        margin-bottom: 24px;
+        font-size: 0.88rem;
+    }
+    .limitations {
+        background: #f8fafc;
+        border-left: 4px solid #64748b;
+        padding: 14px;
+        margin-bottom: 24px;
+        font-size: 0.85rem;
+    }
+    .hash-box {
+        font-family: monospace;
+        font-size: 0.8rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        border-radius: 4px;
+        word-break: break-all;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>PulseWatch Incident &amp; Traffic Report</h1>
+        <div class="header-sub">Source: <code>demo/3_genuine_surge.jsonl</code> &bull; SHA-256: <code>de94a614c2d1476c...</code> &bull; Contract: <code>pulsewatch.report/1</code></div>
+    </div>
+
+    <!-- Executive Summary Grid -->
+    <div class="exec-grid">
+        <div class="exec-card">
+            <div class="lbl">Retained Records</div>
+            <div class="val">2,790</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Duplicates Filtered</div>
+            <div class="val">0</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Coverage Ratio</div>
+            <div class="val">100.0%</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Baseline Status</div>
+            <div class="val">LOW <span style="font-size: 0.9rem; font-weight: 400;">(2.00 r/s)</span></div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Incidents Detected</div>
+            <div class="val" style="color: #b91c1c;">1</div>
+        </div>
+    </div>
+
+    <!-- Telemetry Integrity & Deduplication Panel -->
+    <div class="panel-integrity">
+        <h3>Telemetry Integrity &amp; Coverage Ledger</h3>
+        <div class="integrity-cols">
+            <div>
+                <strong>Identity &amp; Deduplication Exactness:</strong> <code>fully_verified_exact</code><br>
+                &bull; Verified Unique Records: 2,790<br>
+                &bull; Ineligible (Identity Missing): 0<br>
+                &bull; Conflicting Attribute Collisions: 0<br>
+                &bull; Capacity Degradation: No (Within Bounds)
+            </div>
+            <div>
+                <strong>Temporal Coverage &amp; Gaps:</strong><br>
+                &bull; Active Observation Seconds: 360s<br>
+                &bull; Known Zero Traffic: 0s<br>
+                &bull; Assumed Zero Traffic (&le;900s): 0s<br>
+                &bull; Unknown Coverage Gaps (&gt;900s): 0 intervals (0s)
+            </div>
+        </div>
+    </div>
+
+    <div class="notices"><strong>Data Integrity Notices:</strong><ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Baseline notice: High baseline contamination: 50.0% of time masked during refitting.</li></ul></div>
+
+    <h2>Incident Investigations (1)</h2>
+    
+        <div class="incident-card">
+            <div class="incident-card-header">
+                <div>
+                    <span class="incident-id">INC-001</span>
+                    <span class="badge badge-shape">sustained_surge</span>
+                    <span class="badge badge-tag">broad_based</span> <span class="badge badge-tag">route_concentrated</span> 
+                </div>
+                <div class="incident-time">2026-11-21T05:03:00+00:00 &rarr; 2026-11-21T05:04:30+00:00 (90s duration)</div>
+            </div>
+
+            <div class="incident-metrics">
+                <div class="inc-metric">
+                    <span class="lbl">Observed Traffic</span>
+                    <span class="val">2,250</span>
+                </div>
+                <div class="inc-metric">
+                    <span class="lbl">Estimated Excess</span>
+                    <span class="val" style="color: #b91c1c;">+2,070</span>
+                </div>
+                <div class="inc-metric">
+                    <span class="lbl">Peak Rate</span>
+                    <span class="val">25 req/s</span>
+                </div>
+                <div class="inc-metric">
+                    <span class="lbl">Max Statistical Z</span>
+                    <span class="val">125.98</span>
+                </div>
+                <div class="inc-metric">
+                    <span class="lbl">Scales Fired</span>
+                    <span class="val">[10, 60, 300]</span>
+                </div>
+            </div>
+
+            <div class="contributors-grid">
+                <div class="contributor-col">
+                    <strong>Leading Routes:</strong>
+                    <ul><li><code>/api/v1/items/search</code>: 2250 reqs (100.0%)</li></ul>
+                </div>
+                <div class="contributor-col">
+                    <strong>Leading Callers:</strong>
+                    <ul><li><code>client-010</code>: 134 reqs (6.0%)</li><li><code>client-015</code>: 133 reqs (5.9%)</li><li><code>client-018</code>: 125 reqs (5.6%)</li></ul>
+                </div>
+            </div>
+
+            <div class="leads-box">
+                <div class="leads-header">OPERATOR INVESTIGATION LEADS</div>
+                
+            <div class="lead-item">
+                <div class="lead-trigger"><strong>Observation:</strong> Dispersed load across 20 distinct clients without a single dominating caller</div>
+                <div class="lead-action"><strong>Suggested Next Check:</strong> Check distributed load-test orchestration, multi-client test harness, or shared environment deployment.</div>
+            </div>
+            
+            <div class="lead-item">
+                <div class="lead-trigger"><strong>Observation:</strong> Route &#x27;/api/v1/items/search&#x27; received 2250/2250 (100.0%) requests</div>
+                <div class="lead-action"><strong>Suggested Next Check:</strong> Investigate endpoint &#x27;/api/v1/items/search&#x27; capacity, database query efficiency, and upstream dependency health.</div>
+            </div>
+            
+            </div>
+
+            <div class="incident-rationale">
+                <strong>Pattern Rationale:</strong> Sustained elevated volume lasting 90s across multi-scale windows.<br>
+                <small style="color: #64748b;"><em>Note: Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.</em></small>
+            </div>
+        </div>
+        
+
+    <h2>Primary 60-Second Windows (Sample)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Window Start (UTC)</th>
+                <th>Observed Requests</th>
+                <th>Active Seconds</th>
+                <th>Status Breakdown (2xx / 4xx / 5xx)</th>
+                <th>Observation Integrity</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr>
+            <td><code>2026-11-21T05:00:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:01:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:02:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:03:00+00:00</code></td>
+            <td><strong>1,500</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>1500 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:04:00+00:00</code></td>
+            <td><strong>810</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>810 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:05:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        </tbody>
+    </table>
+
+    <div class="limitations">
+        <strong>Offline Monitoring Known Limitations:</strong>
+        <ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Offline synthetic monitoring cannot infer external causes, intent, or system failures.</li><li>Deduplication is bounded in memory; high volumes may trigger LRU eviction.</li><li>Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.</li><li>Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models.</li></ul>
+    </div>
+
+    <div>
+        <strong>Deterministic Analysis SHA-256 Digest:</strong>
+        <div class="hash-box">d2ca7c8a9cc8269a86086fefb2f5315a46ade2f06898bd7bd52e98e438071875</div>
+    </div>
+</div>
+</body>
+</html>

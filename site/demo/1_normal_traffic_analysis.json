@@ -1,0 +1,393 @@
+{
+  "schema_version": "pulsewatch.report/1",
+  "pulsewatch_version": "0.1.0",
+  "input_metadata": {
+    "source_file": "demo/1_normal_traffic.jsonl",
+    "source_file_sha256": "606308e3a9e9795478b4742d844b570e525e54396eadd1ddc45e841293863ac7",
+    "earliest_timestamp": 1795237200,
+    "latest_timestamp": 1795237919,
+    "total_span_seconds": 720
+  },
+  "ingestion_accounting": {
+    "total_lines_read": 2183,
+    "valid_records": 2183,
+    "control_records": 0,
+    "empty_lines": 0,
+    "oversized_lines": 0,
+    "malformed_json_lines": 0,
+    "schema_violations": 0,
+    "timestamp_parse_failures": 0,
+    "out_of_order_records": 0,
+    "record_cap_reached": false,
+    "declared_coverage_count": 0,
+    "warning_count": 0,
+    "warnings_sample": []
+  },
+  "deduplication_accounting": {
+    "total_input_records": 2183,
+    "retained_records": 2183,
+    "verified_unique_records": 2183,
+    "duplicates_removed": 0,
+    "identity_ineligible": 0,
+    "identity_conflicts": 0,
+    "unverifiable_due_to_eviction": 0,
+    "cap_degraded": false,
+    "evicted_keys_count": 0,
+    "exactness_status": "fully_verified_exact",
+    "duplicate_records_removed": 0,
+    "unverified_identity_records": 0,
+    "identity_conflict_records": 0,
+    "dedup_degraded": false,
+    "warnings_sample": []
+  },
+  "coverage_and_gaps": {
+    "earliest_sec": 1795237200,
+    "latest_sec": 1795237919,
+    "total_span_sec": 720,
+    "active_seconds": 720,
+    "known_zero_seconds": 0,
+    "assumed_zero_seconds": 0,
+    "unknown_gap_seconds": 0,
+    "coverage_ratio": 1.0,
+    "gap_threshold_sec": 900,
+    "unknown_gaps_count": 0,
+    "unknown_gaps": [],
+    "declared_coverage_count": 0
+  },
+  "primary_60s_windows": [
+    {
+      "start_sec": 1795237200,
+      "end_sec": 1795237260,
+      "start_iso": "2026-11-21T05:00:00+00:00",
+      "end_iso": "2026-11-21T05:01:00+00:00",
+      "total_requests": 173,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 173,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items": 39,
+        "/api/v1/items/search": 36,
+        "/api/v1/user/profile": 36,
+        "/api/v1/auth/login": 32,
+        "/api/v1/checkout": 30
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237260,
+      "end_sec": 1795237320,
+      "start_iso": "2026-11-21T05:01:00+00:00",
+      "end_iso": "2026-11-21T05:02:00+00:00",
+      "total_requests": 178,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 178,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/checkout": 50,
+        "/api/v1/items/search": 40,
+        "/api/v1/auth/login": 33,
+        "/api/v1/items": 28,
+        "/api/v1/user/profile": 27
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237320,
+      "end_sec": 1795237380,
+      "start_iso": "2026-11-21T05:02:00+00:00",
+      "end_iso": "2026-11-21T05:03:00+00:00",
+      "total_requests": 190,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 190,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/checkout": 43,
+        "/api/v1/items/search": 41,
+        "/api/v1/auth/login": 39,
+        "/api/v1/user/profile": 34,
+        "/api/v1/items": 33
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237380,
+      "end_sec": 1795237440,
+      "start_iso": "2026-11-21T05:03:00+00:00",
+      "end_iso": "2026-11-21T05:04:00+00:00",
+      "total_requests": 183,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 183,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items": 40,
+        "/api/v1/auth/login": 39,
+        "/api/v1/items/search": 37,
+        "/api/v1/checkout": 34,
+        "/api/v1/user/profile": 33
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237440,
+      "end_sec": 1795237500,
+      "start_iso": "2026-11-21T05:04:00+00:00",
+      "end_iso": "2026-11-21T05:05:00+00:00",
+      "total_requests": 175,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 175,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/user/profile": 41,
+        "/api/v1/checkout": 39,
+        "/api/v1/items/search": 38,
+        "/api/v1/auth/login": 29,
+        "/api/v1/items": 28
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237500,
+      "end_sec": 1795237560,
+      "start_iso": "2026-11-21T05:05:00+00:00",
+      "end_iso": "2026-11-21T05:06:00+00:00",
+      "total_requests": 184,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 184,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/user/profile": 53,
+        "/api/v1/checkout": 39,
+        "/api/v1/items": 38,
+        "/api/v1/items/search": 30,
+        "/api/v1/auth/login": 24
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237560,
+      "end_sec": 1795237620,
+      "start_iso": "2026-11-21T05:06:00+00:00",
+      "end_iso": "2026-11-21T05:07:00+00:00",
+      "total_requests": 188,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 188,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/auth/login": 38,
+        "/api/v1/user/profile": 38,
+        "/api/v1/items/search": 38,
+        "/api/v1/items": 38,
+        "/api/v1/checkout": 36
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237620,
+      "end_sec": 1795237680,
+      "start_iso": "2026-11-21T05:07:00+00:00",
+      "end_iso": "2026-11-21T05:08:00+00:00",
+      "total_requests": 177,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 177,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items": 39,
+        "/api/v1/auth/login": 36,
+        "/api/v1/checkout": 36,
+        "/api/v1/user/profile": 34,
+        "/api/v1/items/search": 32
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237680,
+      "end_sec": 1795237740,
+      "start_iso": "2026-11-21T05:08:00+00:00",
+      "end_iso": "2026-11-21T05:09:00+00:00",
+      "total_requests": 176,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 176,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 40,
+        "/api/v1/auth/login": 39,
+        "/api/v1/user/profile": 38,
+        "/api/v1/items": 31,
+        "/api/v1/checkout": 28
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237740,
+      "end_sec": 1795237800,
+      "start_iso": "2026-11-21T05:09:00+00:00",
+      "end_iso": "2026-11-21T05:10:00+00:00",
+      "total_requests": 179,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 179,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/checkout": 40,
+        "/api/v1/items/search": 40,
+        "/api/v1/items": 35,
+        "/api/v1/auth/login": 35,
+        "/api/v1/user/profile": 29
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237800,
+      "end_sec": 1795237860,
+      "start_iso": "2026-11-21T05:10:00+00:00",
+      "end_iso": "2026-11-21T05:11:00+00:00",
+      "total_requests": 189,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 189,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/user/profile": 43,
+        "/api/v1/auth/login": 40,
+        "/api/v1/checkout": 37,
+        "/api/v1/items/search": 36,
+        "/api/v1/items": 33
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237860,
+      "end_sec": 1795237920,
+      "start_iso": "2026-11-21T05:11:00+00:00",
+      "end_iso": "2026-11-21T05:12:00+00:00",
+      "total_requests": 191,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 191,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/user/profile": 46,
+        "/api/v1/auth/login": 39,
+        "/api/v1/items": 38,
+        "/api/v1/checkout": 35,
+        "/api/v1/items/search": 33
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    }
+  ],
+  "baseline_status": {
+    "fitted_rate_1s": 3.05,
+    "median_rate_1s": 3.05,
+    "initial_block_length_sec": 60,
+    "refitting_iterations": 1,
+    "fraction_time_masked": 0.0,
+    "fraction_events_masked": 0.0,
+    "reliability": "high",
+    "abstain_reason": null,
+    "warning": null,
+    "asymmetry_ratio": 0.985,
+    "masked_intervals_count": 0,
+    "dispersion_by_scale": {
+      "10": {
+        "scale_sec": 10,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      },
+      "60": {
+        "scale_sec": 60,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      },
+      "300": {
+        "scale_sec": 300,
+        "phi": 1.0,
+        "is_poisson": true,
+        "nb_r": null,
+        "nb_q": null
+      }
+    }
+  },
+  "detector_summary": {
+    "detector": "PW-Scan",
+    "scales_evaluated": [
+      10,
+      60,
+      300
+    ],
+    "candidate_detections_count": 0,
+    "fired_scales": [],
+    "dispersion_modeling": "poisson_negative_binomial",
+    "abstention_state": false,
+    "abstention_reason": null
+  },
+  "incidents": [],
+  "data_notices": [],
+  "known_limitations": [
+    "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+    "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+    "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+    "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+  ],
+  "analysis_hash": "6beb434ce07400dae09279974ea950f17450a0d814c566e76e2361592c858a7d"
+}

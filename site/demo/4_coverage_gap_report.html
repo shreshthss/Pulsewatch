@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
+<title>PulseWatch Incident &amp; Traffic Report</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        line-height: 1.5;
+        color: #0f172a;
+        background-color: #f1f5f9;
+        margin: 0;
+        padding: 24px;
+    }
+    .container {
+        max-width: 1160px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+        padding: 32px;
+    }
+    .header {
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+    }
+    .header h1 {
+        margin: 0 0 6px 0;
+        font-size: 1.8rem;
+        color: #0f172a;
+    }
+    .header-sub {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    .exec-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    .exec-card {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        padding: 16px;
+    }
+    .exec-card .lbl {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: #64748b;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .exec-card .val {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .panel-integrity {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 18px;
+        margin-bottom: 24px;
+    }
+    .panel-integrity h3 {
+        margin: 0 0 12px 0;
+        font-size: 1.05rem;
+        color: #1e293b;
+    }
+    .integrity-cols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        font-size: 0.9rem;
+    }
+    .incident-card {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-left: 5px solid #2563eb;
+        border-radius: 6px;
+        padding: 20px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .incident-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .incident-id {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1e3a8a;
+        margin-right: 8px;
+    }
+    .incident-time {
+        font-size: 0.85rem;
+        color: #475569;
+        font-family: monospace;
+    }
+    .incident-metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        gap: 8px;
+    }
+    .inc-metric .lbl {
+        display: block;
+        font-size: 0.75rem;
+        color: #64748b;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    .inc-metric .val {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+    .contributors-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+        font-size: 0.88rem;
+    }
+    .contributor-col ul {
+        margin: 4px 0 0 0;
+        padding-left: 20px;
+    }
+    .leads-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+    .leads-header {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: #1e40af;
+        letter-spacing: 0.05em;
+        margin-bottom: 10px;
+    }
+    .lead-item {
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px dashed #cbd5e1;
+        font-size: 0.88rem;
+    }
+    .lead-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+    .lead-trigger {
+        color: #334155;
+    }
+    .lead-action {
+        color: #1e3a8a;
+        margin-top: 2px;
+    }
+    .lead-none {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+    }
+    .incident-rationale {
+        font-size: 0.85rem;
+        color: #334155;
+    }
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .badge-shape {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    .badge-tag {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 24px;
+        font-size: 0.88rem;
+    }
+    th, td {
+        text-align: left;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    th {
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+    }
+    .status-yes {
+        color: #15803d;
+        font-weight: 600;
+    }
+    .status-no {
+        color: #b91c1c;
+        font-weight: 600;
+    }
+    .s2 { color: #15803d; }
+    .s4 { color: #d97706; }
+    .s5 { color: #dc2626; }
+    .notices {
+        background: #fffbeb;
+        border-left: 4px solid #f59e0b;
+        padding: 14px;
+        margin-bottom: 24px;
+        font-size: 0.88rem;
+    }
+    .limitations {
+        background: #f8fafc;
+        border-left: 4px solid #64748b;
+        padding: 14px;
+        margin-bottom: 24px;
+        font-size: 0.85rem;
+    }
+    .hash-box {
+        font-family: monospace;
+        font-size: 0.8rem;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        border-radius: 4px;
+        word-break: break-all;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>PulseWatch Incident &amp; Traffic Report</h1>
+        <div class="header-sub">Source: <code>demo/4_coverage_gap.jsonl</code> &bull; SHA-256: <code>02aa0b8e8ab0d7a1...</code> &bull; Contract: <code>pulsewatch.report/1</code></div>
+    </div>
+
+    <!-- Executive Summary Grid -->
+    <div class="exec-grid">
+        <div class="exec-card">
+            <div class="lbl">Retained Records</div>
+            <div class="val">480</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Duplicates Filtered</div>
+            <div class="val">0</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Coverage Ratio</div>
+            <div class="val">19.3%</div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Baseline Status</div>
+            <div class="val">ABSTAIN <span style="font-size: 0.9rem; font-weight: 400;">(2.00 r/s)</span></div>
+        </div>
+        <div class="exec-card">
+            <div class="lbl">Incidents Detected</div>
+            <div class="val" style="color: #15803d;">0</div>
+        </div>
+    </div>
+
+    <!-- Telemetry Integrity & Deduplication Panel -->
+    <div class="panel-integrity">
+        <h3>Telemetry Integrity &amp; Coverage Ledger</h3>
+        <div class="integrity-cols">
+            <div>
+                <strong>Identity &amp; Deduplication Exactness:</strong> <code>fully_verified_exact</code><br>
+                &bull; Verified Unique Records: 480<br>
+                &bull; Ineligible (Identity Missing): 0<br>
+                &bull; Conflicting Attribute Collisions: 0<br>
+                &bull; Capacity Degradation: No (Within Bounds)
+            </div>
+            <div>
+                <strong>Temporal Coverage &amp; Gaps:</strong><br>
+                &bull; Active Observation Seconds: 240s<br>
+                &bull; Known Zero Traffic: 0s<br>
+                &bull; Assumed Zero Traffic (&le;900s): 0s<br>
+                &bull; Unknown Coverage Gaps (&gt;900s): 1 intervals (1,001s)
+            </div>
+        </div>
+    </div>
+
+    <div class="notices"><strong>Data Integrity Notices:</strong><ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Detector abstained from decision: Coverage (19.3%) or observation duration (240s) below minimum defensible threshold.</li></ul></div>
+
+    <h2>Incident Investigations (0)</h2>
+    <p>No traffic anomalies detected in observed intervals.</p>
+
+    <h2>Primary 60-Second Windows (Sample)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Window Start (UTC)</th>
+                <th>Observed Requests</th>
+                <th>Active Seconds</th>
+                <th>Status Breakdown (2xx / 4xx / 5xx)</th>
+                <th>Observation Integrity</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        <tr>
+            <td><code>2026-11-21T05:00:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:01:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:02:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:03:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:04:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:05:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:06:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:07:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:08:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:09:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:10:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:11:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:12:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:13:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:14:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:15:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:16:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:17:00+00:00</code></td>
+            <td><strong>0</strong></td>
+            <td>0/60s</td>
+            <td><span class='s2'>0 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:18:00+00:00</code></td>
+            <td><strong>38</strong></td>
+            <td>19/60s</td>
+            <td><span class='s2'>38 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:19:00+00:00</code></td>
+            <td><strong>120</strong></td>
+            <td>60/60s</td>
+            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-yes">Complete</span></td>
+        </tr>
+        
+        <tr>
+            <td><code>2026-11-21T05:20:00+00:00</code></td>
+            <td><strong>82</strong></td>
+            <td>41/60s</td>
+            <td><span class='s2'>82 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
+            <td><span class="status-no">Partial / Gap</span></td>
+        </tr>
+        
+        </tbody>
+    </table>
+
+    <div class="limitations">
+        <strong>Offline Monitoring Known Limitations:</strong>
+        <ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Offline synthetic monitoring cannot infer external causes, intent, or system failures.</li><li>Deduplication is bounded in memory; high volumes may trigger LRU eviction.</li><li>Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.</li><li>Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models.</li></ul>
+    </div>
+
+    <div>
+        <strong>Deterministic Analysis SHA-256 Digest:</strong>
+        <div class="hash-box">f6da86ec3290ca89049ed18c97bb4bcedc244eac547c57f8e198bcdcb23fd2a1</div>
+    </div>
+</div>
+</body>
+</html>

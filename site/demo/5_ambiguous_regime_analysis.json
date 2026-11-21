@@ -1,0 +1,315 @@
+{
+  "schema_version": "pulsewatch.report/1",
+  "pulsewatch_version": "0.1.0",
+  "input_metadata": {
+    "source_file": "demo/5_ambiguous_regime.jsonl",
+    "source_file_sha256": "53272985d0e3069feeb52446a6426e903d3b1584f9f8d8fc3517baab99c285e9",
+    "earliest_timestamp": 1795237200,
+    "latest_timestamp": 1795237499,
+    "total_span_seconds": 300
+  },
+  "ingestion_accounting": {
+    "total_lines_read": 2280,
+    "valid_records": 2280,
+    "control_records": 0,
+    "empty_lines": 0,
+    "oversized_lines": 0,
+    "malformed_json_lines": 0,
+    "schema_violations": 0,
+    "timestamp_parse_failures": 0,
+    "out_of_order_records": 0,
+    "record_cap_reached": false,
+    "declared_coverage_count": 0,
+    "warning_count": 0,
+    "warnings_sample": []
+  },
+  "deduplication_accounting": {
+    "total_input_records": 2280,
+    "retained_records": 2280,
+    "verified_unique_records": 2280,
+    "duplicates_removed": 0,
+    "identity_ineligible": 0,
+    "identity_conflicts": 0,
+    "unverifiable_due_to_eviction": 0,
+    "cap_degraded": false,
+    "evicted_keys_count": 0,
+    "exactness_status": "fully_verified_exact",
+    "duplicate_records_removed": 0,
+    "unverified_identity_records": 0,
+    "identity_conflict_records": 0,
+    "dedup_degraded": false,
+    "warnings_sample": []
+  },
+  "coverage_and_gaps": {
+    "earliest_sec": 1795237200,
+    "latest_sec": 1795237499,
+    "total_span_sec": 300,
+    "active_seconds": 300,
+    "known_zero_seconds": 0,
+    "assumed_zero_seconds": 0,
+    "unknown_gap_seconds": 0,
+    "coverage_ratio": 1.0,
+    "gap_threshold_sec": 900,
+    "unknown_gaps_count": 0,
+    "unknown_gaps": [],
+    "declared_coverage_count": 0
+  },
+  "primary_60s_windows": [
+    {
+      "start_sec": 1795237200,
+      "end_sec": 1795237260,
+      "start_iso": "2026-11-21T05:00:00+00:00",
+      "end_iso": "2026-11-21T05:01:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 27,
+        "/api/v1/items": 27,
+        "/api/v1/auth/login": 25,
+        "/api/v1/checkout": 21,
+        "/api/v1/user/profile": 20
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237260,
+      "end_sec": 1795237320,
+      "start_iso": "2026-11-21T05:01:00+00:00",
+      "end_iso": "2026-11-21T05:02:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 29,
+        "/api/v1/checkout": 24,
+        "/api/v1/items": 24,
+        "/api/v1/auth/login": 22,
+        "/api/v1/user/profile": 21
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237320,
+      "end_sec": 1795237380,
+      "start_iso": "2026-11-21T05:02:00+00:00",
+      "end_iso": "2026-11-21T05:03:00+00:00",
+      "total_requests": 120,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 120,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/checkout": 30,
+        "/api/v1/user/profile": 25,
+        "/api/v1/items/search": 24,
+        "/api/v1/items": 23,
+        "/api/v1/auth/login": 18
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237380,
+      "end_sec": 1795237440,
+      "start_iso": "2026-11-21T05:03:00+00:00",
+      "end_iso": "2026-11-21T05:04:00+00:00",
+      "total_requests": 960,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 960,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/items/search": 202,
+        "/api/v1/checkout": 200,
+        "/api/v1/items": 199,
+        "/api/v1/auth/login": 183,
+        "/api/v1/user/profile": 176
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    },
+    {
+      "start_sec": 1795237440,
+      "end_sec": 1795237500,
+      "start_iso": "2026-11-21T05:04:00+00:00",
+      "end_iso": "2026-11-21T05:05:00+00:00",
+      "total_requests": 960,
+      "active_seconds_count": 60,
+      "known_zeros_count": 0,
+      "assumed_zeros_count": 0,
+      "status_2xx": 960,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "top_routes": {
+        "/api/v1/auth/login": 211,
+        "/api/v1/checkout": 202,
+        "/api/v1/items": 185,
+        "/api/v1/user/profile": 182,
+        "/api/v1/items/search": 180
+      },
+      "is_complete": true,
+      "is_boundary": false,
+      "contains_gap": false
+    }
+  ],
+  "baseline_status": {
+    "fitted_rate_1s": 2.0,
+    "median_rate_1s": 2.0,
+    "initial_block_length_sec": 60,
+    "refitting_iterations": 1,
+    "fraction_time_masked": 0.0,
+    "fraction_events_masked": 0.0,
+    "reliability": "low",
+    "abstain_reason": null,
+    "warning": "Significant regime asymmetry detected (first/second half ratio: 0.15).",
+    "asymmetry_ratio": 0.152,
+    "masked_intervals_count": 0,
+    "dispersion_by_scale": {
+      "10": {
+        "scale_sec": 10,
+        "phi": 64.029,
+        "is_poisson": false,
+        "nb_r": 0.3173,
+        "nb_q": 0.9844
+      },
+      "60": {
+        "scale_sec": 60,
+        "phi": 464.2105,
+        "is_poisson": false,
+        "nb_r": 0.2591,
+        "nb_q": 0.9978
+      },
+      "300": {
+        "scale_sec": 300,
+        "phi": 464.2105,
+        "is_poisson": false,
+        "nb_r": 1.2953,
+        "nb_q": 0.9978
+      }
+    }
+  },
+  "detector_summary": {
+    "detector": "PW-Scan",
+    "scales_evaluated": [
+      10,
+      60,
+      300
+    ],
+    "candidate_detections_count": 62,
+    "fired_scales": [
+      10,
+      60
+    ],
+    "dispersion_modeling": "poisson_negative_binomial",
+    "abstention_state": false,
+    "abstention_reason": null
+  },
+  "incidents": [
+    {
+      "incident_id": "INC-001",
+      "observed_facts": {
+        "start_sec": 1795237380,
+        "end_sec": 1795237500,
+        "start_iso": "2026-11-21T05:03:00+00:00",
+        "end_iso": "2026-11-21T05:05:00+00:00",
+        "duration_sec": 120,
+        "peak_sec": 1795237380,
+        "peak_1s_rate": 16,
+        "total_observed_requests": 1920,
+        "estimated_excess_requests": 1680,
+        "top_routes": {
+          "/api/v1/checkout": 402,
+          "/api/v1/auth/login": 394,
+          "/api/v1/items": 384,
+          "/api/v1/items/search": 382,
+          "/api/v1/user/profile": 358
+        },
+        "status_distribution": {
+          "2xx": 1920,
+          "4xx": 0,
+          "5xx": 0,
+          "other": 0
+        },
+        "merged_windows_count": 62
+      },
+      "statistical_findings": {
+        "scales_fired": [
+          10,
+          60
+        ],
+        "max_z_score": 3.912,
+        "max_elevation_ratio": 8.0,
+        "min_log_p_value": -4.3725,
+        "baseline_expected_requests": 240.0,
+        "tail_probability_note": "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. Reported upper-tail probabilities are bounded empirical tail assessments."
+      },
+      "descriptive_pattern": {
+        "shape": "level_shift_candidate",
+        "rationale": "Elevated rate persists to segment boundary without returning to prior baseline."
+      },
+      "investigation_leads": [
+        {
+          "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+          "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+        },
+        {
+          "trigger": "Traffic elevation persisted to segment boundary without recovery to prior baseline",
+          "suggested_action": "Confirm whether an intentional service scaling step occurred or collect extended steady-state observations."
+        }
+      ],
+      "unknown_causes": "Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.",
+      "contributor_evidence": {
+        "top_clients": {
+          "client-010": 114,
+          "client-015": 107,
+          "client-018": 106,
+          "client-005": 105,
+          "client-011": 103
+        },
+        "top_routes": {
+          "/api/v1/checkout": 402,
+          "/api/v1/auth/login": 394,
+          "/api/v1/items": 384,
+          "/api/v1/items/search": 382,
+          "/api/v1/user/profile": 358
+        },
+        "status_distribution": {
+          "2xx": 1920
+        },
+        "concentration_tags": [
+          "broad_based"
+        ],
+        "share_basis": "estimated_excess"
+      }
+    }
+  ],
+  "data_notices": [
+    "Baseline notice: Significant regime asymmetry detected (first/second half ratio: 0.15)."
+  ],
+  "known_limitations": [
+    "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+    "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+    "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+    "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+  ],
+  "analysis_hash": "0fc75199253414a29df0aabf985f4cd7c55eeed807a770bf0ae3429a25c3e0fa"
+}
