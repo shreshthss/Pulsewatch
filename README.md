@@ -1,7 +1,10 @@
 # PulseWatch
 
 > **Evidence-Driven Offline API Traffic Anomaly Investigation**  
-> *Built for the API Traffic Watch Challenge — Aegython 2026*
+> *Built for the API Traffic Watch Challenge — Aegython 2026*  
+> 
+> 🌐 **Live Web Experience & Interactive Demo**: [https://shreshthss.github.io/Pulsewatch/](https://shreshthss.github.io/Pulsewatch/)  
+> 📦 **GitHub Repository**: [https://github.com/shreshthss/Pulsewatch](https://github.com/shreshthss/Pulsewatch)
 
 ---
 
@@ -188,3 +191,15 @@ To preserve scientific integrity, capabilities are explicitly partitioned by ver
 1. **Offline Retrospective Focus**: PulseWatch processes offline logs; it does not capture live streaming packets or perform active mitigation.
 2. **Identity Dependent Deduplication**: Telemetry stripped of request IDs or monotonic sequence numbers cannot be deduplicated with mathematical certainty; PulseWatch retains these records unverified and explicitly discloses the exactness status.
 3. **No External Threat Attribution**: Offline synthetic monitoring cannot identify threat-actor intent or physical infrastructure faults without underlying telemetry evidence.
+
+---
+
+## 9. Web Demonstration & GitHub Pages Deployment
+
+The static web console is deployed and hosted on GitHub Pages:  
+**[https://shreshthss.github.io/Pulsewatch/](https://shreshthss.github.io/Pulsewatch/)**
+
+### Important Architectural Distinction
+* **Static Web Demonstration**: GitHub Pages hosts the static console, interactive scenario explorer, pre-generated scenario reports, and benchmark tables. It provides zero-install access to explore the outputs, but does not execute live traffic captures or browser-side detection.
+* **Local Python Engine**: The full analysis engine (`pulsewatch`) runs locally and completely offline using Python 3.9+ standard library. It processes user-supplied JSONL logs without any external network access.
+* **Automated CI/CD**: The repository includes `.github/workflows/pages.yml` (official GitHub Pages deployment action) and `.github/workflows/test.yml` (automated unit tests on Python 3.11).
