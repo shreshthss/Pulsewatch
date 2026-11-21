@@ -35,10 +35,13 @@ The dataset was collected by Martin Arlitt and Tai Jin of Hewlett-Packard Labora
   - Plano, Texas (Servers 32–42)
   - Herndon, Virginia (Servers 64–73)
   - Paris, France (Servers 96–101)
-- **Time Representation:** Timestamps have 1-second resolution and are stored as integer seconds since the Unix epoch in GMT (UTC). Local venue time in France during the tournament was GMT+0200.
+- **Time Representation & Collection Boundaries:** Timestamps have 1-second resolution and are stored as integer seconds since the Unix epoch in GMT (UTC). Paris local venue time in France during the tournament was GMT+0200. Crucially, the official 88 collection-day boundaries are defined at midnight Paris local time (22:00:00 GMT of the preceding UTC date).
 - **File Distribution:** 249 compressed binary trace files named `wc_dayX_Y.gz`.
 - **Privacy & Anonymization:** Client IP addresses were mapped to integer client IDs. These mappings are 1-to-1, consistent across the entire 88-day archive, and individual client IP addresses were not released. Client IDs represent client proxies or user browsers, not individual validated authentication sessions.
-- **Redistribution Terms:** The raw trace logs and HP analysis software are governed by non-commercial research licensing terms from Hewlett-Packard and the Internet Traffic Archive. Raw `.gz` files and binary tools are not bundled in this repository.
+- **Licensing & Redistribution Conditions:**
+  - **Access Log Traces:** The official Internet Traffic Archive terms permit users to freely use and redistribute the access logs subject to preserving the required source attribution to Martin Arlitt and Tai Jin and retaining the unmodified copyright and disclaimer notice.
+  - **HP Analysis Software & Documentation:** The accompanying software tools (`checklog`, `recreate`, `read`) and documentation in `WorldCup_tools.tar.gz` carry separate copyright terms from Hewlett-Packard Company authorizing non-commercial research use only.
+  - Raw binary trace files and HP software tools are not bundled or committed in this repository.
 
 ---
 
@@ -48,7 +51,7 @@ Earlier preliminary validation discussions suggested the August 1995 NASA Kenned
 
 1. **Volume and Concurrency:** The NASA dataset covers a small single-server environment with approximately 3.4 million total requests and peak rates rarely exceeding 10–20 requests/second. The World Cup dataset captures a global, 33-server load-balanced deployment handling hundreds of requests per second, stressing PulseWatch's multi-scale Poisson/Negative-Binomial detector and sparse temporal engine.
 2. **Standardized Binary Format:** NASA logs are ASCII Common Log Format (CLF) files with arbitrary string variances, missing quotes, and timezone ambiguities. The World Cup dataset provides an authoritative, fixed 20-byte binary specification with published C verification tools (`checklog`, `recreate`, `read`) and exact checksum manifests.
-3. **Temporal Breadth:** The 88-day World Cup archive spans distinct operational phases: pre-tournament baseline preparation, opening day surges, and tournament final match traffic.
+3. **Temporal Breadth:** The 88-day World Cup archive spans distinct operational phases across pre-tournament baseline preparation, opening day traffic, and final tournament match days.
 
 ---
 
@@ -87,21 +90,20 @@ The adapter implements field decoders strictly matching Hewlett-Packard's offici
 
 ## 5. Sample Selection and Reproducibility
 
-### Selection Methodology and Streaming Invariant
-To maintain bounded execution without thinned or distorted sampling, contiguous 15-minute windows were extracted across three distinct phases of the tournament.
+### Selection Methodology and Streaming Memory Scope
+To evaluate pipeline behavior across varied historical collection phases, contiguous 15-minute windows were extracted from three candidate days:
 
-The extraction reader operates as a streaming pipeline:
-1. Gzip decompression and 20-byte record decoding occur incrementally in 32,768-record chunks (`chunk_bytes = 655,360` bytes), keeping adapter memory usage strictly bounded regardless of shard size.
-2. Because records are chronologically ordered in each shard, extraction streams sequentially from the start of the shard, begins collecting when `rec.timestamp >= start_ts`, and halts the stream the moment `rec.timestamp > end_ts`.
-3. Unselected records prior to `start_ts` are streamed through without buffering; records after `end_ts` are never decompressed or read.
+1. **Adapter Streaming Invariant:** The extraction reader (`WorldCupStreamReader`) operates as a streaming pipeline reading in fixed chunks of 32,768 records ($655,360$ bytes). Because records are chronologically ordered, records prior to $t_{start}$ are inspected and discarded without buffering; the stream halts immediately when $t > t_{end}$. The binary adapter therefore maintains bounded streaming memory regardless of multi-gigabyte uncompressed shard size.
+2. **PulseWatch Memory Scope:** In contrast to the streaming adapter, the downstream PulseWatch analysis pipeline materializes retained event records in memory for sparse temporal indexing and multi-scale windowing. PulseWatch's measured peak memory depends on the selected event count rather than being constant.
+3. **Operational Context of Selected Windows:** The official collection days begin at midnight Paris local time (22:00:00 GMT / UTC of the preceding date). Each selected window captures the **initial approximately 15 minutes of the collection day** (from 22:00:01 to 22:15:01 UTC), representing opening-hour traffic for that operational logging day. They are **not** sampled during match kickoff or match play, and do not represent match-time peak concurrency.
 
 ### Shard Scanning and Record Selection Statistics
 
-| Sample ID | Day & UTC Date | Phase & Operational Context | Source Shard File | Total Records in Shard | Records Scanned to Window End | Records Selected in Window | Valid Records Exported | Rejected Records | Selected Retention Denominator |
+| Sample ID | Collection Day (Paris Local Date) | Operational Day Context | Source Shard File | Total Records in Shard | Records Scanned to Window End | Records Selected in Window | Valid Records Exported | Rejected Records | Selected Retention Denominator |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| `day20` | Day 20 (1998-05-15) | Early collection (pre-tournament baseline) | `wc_day20_1.gz` | 2,084,016 | 17,210 | 17,209 | 17,209 | 0 | 17,209 / 17,209 (100.0%) |
-| `day46` | Day 46 (1998-06-10) | Mid-collection (opening day: Brazil vs Scotland) | `wc_day46_1.gz` | 6,999,999 | 210,289 | 210,288 | 210,287 | 1 | 210,287 / 210,288 (99.9995%) |
-| `day78` | Day 78 (1998-07-12) | Late collection (final match: France vs Brazil) | `wc_day78_1.gz` | 6,999,999 | 130,734 | 130,733 | 130,733 | 0 | 130,733 / 130,733 (100.0%) |
+| `day20` | Day 20 (15 May 1998) | Early collection: Day 20 opening 15 min (pre-tournament baseline) | `wc_day20_1.gz` | 2,084,016 | 17,210 | 17,209 | 17,209 | 0 | 17,209 / 17,209 (100.0%) |
+| `day46` | Day 46 (10 June 1998) | Mid-collection: Day 46 opening 15 min (tournament opening date) | `wc_day46_1.gz` | 6,999,999 | 210,289 | 210,288 | 210,287 | 1 | 210,287 / 210,288 (99.9995%) |
+| `day78` | Day 78 (12 July 1998) | Late collection: Day 78 opening 15 min (final match date) | `wc_day78_1.gz` | 6,999,999 | 130,734 | 130,733 | 130,733 | 0 | 130,733 / 130,733 (100.0%) |
 
 ### Explicit Documentation of Day 46 Rejected Record
 During extraction of the Day 46 window, exactly one record was rejected:
@@ -118,9 +120,9 @@ During extraction of the Day 46 window, exactly one record was rejected:
 
 | Sample ID | Generated JSONL Filename | Output Size | Output File SHA-256 | Start Timestamp (UTC) | End Timestamp (UTC) | Timestamp Interval ($\Delta t$) |
 |:---|:---|:---|:---|:---|:---|:---|
-| `day20` | `day20_sample.jsonl` | 1.8 MB | `ff8abb71a593b9ff4af1feb06a6b6549dd222f10565b23cf3987968f903900da` | 895183201 | 895184101 | 900 seconds |
-| `day46` | `day46_sample.jsonl` | 21.6 MB | `97c76316758a88c52165d60b64d289f87eef8c73afabfdaa17c35776da7e0ddc` | 897429601 | 897430501 | 900 seconds |
-| `day78` | `day78_sample.jsonl` | 13.9 MB | `e81b04cd7e9237609853a1fb2060050e735f9cd2e03ba2b00c84f2f2ab768f4f` | 900194401 | 900195301 | 900 seconds |
+| `day20` | `day20_sample.jsonl` | 1.8 MB | `ff8abb71a593b9ff4af1feb06a6b6549dd222f10565b23cf3987968f903900da` | 895183201 (1998-05-14 22:00:01 UTC) | 895184101 (1998-05-14 22:15:01 UTC) | 900 seconds |
+| `day46` | `day46_sample.jsonl` | 21.6 MB | `97c76316758a88c52165d60b64d289f87eef8c73afabfdaa17c35776da7e0ddc` | 897429601 (1998-06-09 22:00:01 UTC) | 897430501 (1998-06-09 22:15:01 UTC) | 900 seconds |
+| `day78` | `day78_sample.jsonl` | 13.9 MB | `e81b04cd7e9237609853a1fb2060050e735f9cd2e03ba2b00c84f2f2ab768f4f` | 900194401 (1998-07-11 22:00:01 UTC) | 900195301 (1998-07-11 22:15:01 UTC) | 900 seconds |
 
 ---
 
@@ -165,7 +167,7 @@ pulsewatch analyze INPUT.jsonl --json OUTPUT.json
 
 ### Execution Summary Across the Three Workloads
 
-| Pipeline Metric | Day 20 (Early Baseline) | Day 46 (Opening Day) | Day 78 (Final Match Day) |
+| Pipeline Metric | Day 20 (Early Baseline Opening) | Day 46 (Tournament Opening Date) | Day 78 (Final Match Date) |
 |:---|:---|:---|:---|
 | **Input Lines Read** | 17,209 | 210,287 | 130,733 |
 | **Valid Events Ingested** | 17,209 | 210,287 | 130,733 |
@@ -186,23 +188,26 @@ pulsewatch analyze INPUT.jsonl --json OUTPUT.json
 | **Observed Execution Time** | 0.28 seconds | 3.07 seconds | 1.95 seconds |
 | **Observed Peak RSS** | 30.1 MB | 134.9 MB | 92.6 MB |
 
-### Explanation of 900-Second Interval vs 901 Active Buckets
+### Explanation of 900-Second Interval vs 901 Active Buckets and Coverage Scope
 The window selection bounds are inclusive: $[t_{start}, t_{end}]$ where $t_{end} - t_{start} = 900$ seconds.
 - In `pulsewatch/temporal.py`, sparse aggregation groups timestamps by integer second:
   $$\text{effective\_earliest} = \min(t), \quad \text{effective\_latest} = \max(t)$$
   $$\text{total\_span} = \text{effective\_latest} - \text{effective\_earliest} + 1 = 900 + 1 = 901 \text{ seconds}$$
 - Because traffic was dense, requests arrived in every second from second $0$ through second $900$ inclusive.
 - Counting both endpoint seconds yields exactly 901 distinct active 1-second buckets ($N = 901$).
-- Total span and active seconds match exactly ($901 / 901 = 1.0$), correctly producing a 100.0% coverage ratio with zero gaps.
+- Total span and active seconds match exactly ($901 / 901 = 1.0$), producing a 100.0% coverage ratio with zero gaps in PulseWatch's temporal accounting.
+
+> **Observational Scope of Coverage:**  
+> All 901 integer-second buckets within the observed sample span contained at least one recorded request. This is an observation about the exported request trace, not proof that every incoming request was successfully logged.
 
 ---
 
 ## 8. Traffic and Contributor Observations
 
 1. **Observed Baseline Stationarity Across Three Distinct Regimes:**
-   - On Day 20, traffic was steady at ~19.25 req/s.
-   - On Day 46, opening-day traffic rose to ~237.58 req/s across 26 servers.
-   - On Day 78, final match day traffic settled at ~144.02 req/s across 30 servers.
+   - On Day 20, opening-hour traffic was steady at ~19.25 req/s.
+   - On Day 46, opening-hour traffic rose to ~237.58 req/s across 26 servers.
+   - On Day 78, opening-hour traffic settled at ~144.02 req/s across 30 servers.
    - In all three selected windows, traffic arrival counts adhered closely to the fitted baseline distributions across 10s, 60s, and 300s scales.
    - **Precise Detector Observation:** PulseWatch produced **0 incident candidates** across all three windows. This means that no time window exceeded the multi-scale Poisson/Negative-Binomial elevation thresholds ($Z \ge 3.0$, relative ratio $\ge 1.5$, absolute excess $\ge 5$ req/s).
    - **Crucial Methodological Distinction:** Because the 1998 World Cup logs contain no ground-truth anomaly annotations, the outcome of 0 incident candidates **cannot** be cited as evidence of "zero false alarms" or "detector accuracy". It establishes only that the baseline fitting and dispersion estimators accommodated these real-world web arrival rates without generating spurious alerts on stationary segments.
@@ -228,22 +233,22 @@ The window selection bounds are inclusive: $[t_{start}, t_{end}]$ where $t_{end}
 3. **Not Modern API Traffic:** The 1998 World Cup access logs represent HTTP/1.0 and early HTTP/1.1 static file requests and image downloads. Modern REST/GraphQL API traffic differs substantially in payload size, stateful authentication, query parameters, header metadata, and connection reuse (HTTP/2 and HTTP/3).
 4. **Proxy Aggregation (Lack of True Client Cardinality):** Many requests in 1998 originated from corporate caching forward-proxies (e.g., AOL, corporate gateways). A single `clientID` in this dataset can represent hundreds of distinct end-users behind a shared proxy IP.
 5. **Deduplication Efficacy Unverified on this Trace:** Because the dataset lacks request UUIDs or trace IDs, this experiment cannot and does not validate PulseWatch's deduplication engine. Deduplication correctness relies solely on Traffic Lab synthetic test scenarios.
-6. **Coverage Inferences:** The 100% coverage ratio observed within these contiguous windows reflects contiguous seconds with at least one recorded request; it does not verify that zero requests were dropped by web server syslog buffers before disk writing in 1998.
+6. **Narrow Scope of Coverage Claims:** All 901 integer-second buckets within the observed sample span contained at least one recorded request. This is an observation about the exported request trace, not proof that every incoming request was successfully logged by the origin servers or that server syslog daemon buffers never dropped requests in 1998.
 
 ---
 
 ## 10. Conclusions and Recommended Next Steps
 
 ### Key Conclusions
-1. **Streaming Scalability and Memory Bounds:** The streaming adapter processed over 210,000 binary records into JSONL incrementally, maintaining small memory buffers. PulseWatch ingested and evaluated 210,287 records in 3.07 seconds while consuming under 135 MB of RAM on the audit test machine.
+1. **Streaming Scalability and Memory Scope:** The streaming binary adapter decompressively processed over 210,000 binary records into JSONL in bounded chunk memory. PulseWatch ingested and evaluated 210,287 records in 3.07 seconds while consuming under 135 MB of RAM on the audit test machine, with memory consumption scaling as a function of materialized events.
 2. **Contract Preservation:** Ingestion accounting, partial identity handling, sparse windowing, and determinism invariants held on real-world multi-server web logs without modifying the core PulseWatch engine.
 3. **Absence of Spurious Candidate Alerts:** The PW-Scan multi-scale detector produced 0 incident candidates on steady historical web traffic across baseline rates of 19.25 req/s, 144.02 req/s, and 237.58 req/s.
 
 ### Benchmark and Validation Machine Context
 - **Operating Environment:** Linux x86_64 (`Linux-7.2.11-arch1-1-x86_64-with-glibc2.44`)
 - **Python Version:** Python 3.14.8
-- **Note on Performance Figures:** Runtime and peak resident set size (RSS) measurements are machine-specific observations obtained via Python standard library `resource.getrusage` (ru_maxrss in KB) and `time.perf_counter` in isolated sub-processes. They demonstrate pipeline bounded behavior rather than universal hardware constants.
+- **Note on Performance Figures:** Runtime and peak resident set size (RSS) measurements are machine-specific observations obtained via Python standard library `resource.getrusage` (ru_maxrss in KB) and `time.perf_counter` in isolated sub-processes. The binary adapter maintains bounded streaming memory, while PulseWatch's pipeline memory depends on the number of materialized event records.
 
 ### Recommended Next Steps
-- Implement an external validation adapter for a modern API gateway dataset (e.g., Envoy or Istio access access logs with distributed OpenTelemetry headers) if a public, anonymized trace becomes available.
+- Implement an external validation adapter for a modern API gateway dataset (e.g., Envoy or Istio access logs with distributed OpenTelemetry headers) if a public, anonymized trace becomes available.
 - Retain the 1998 World Cup validation pipeline on this branch (`validation/worldcup98`) as an independent regression suite for high-volume HTTP parsing and memory-bound verification.

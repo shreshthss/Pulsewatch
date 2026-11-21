@@ -3,12 +3,14 @@
     "python_version": "3.14.8 (main, Oct 2 2026, 10:23:31) [GCC 16.2.1 20260810]",
     "platform": "Linux-7.2.11-arch1-1-x86_64-with-glibc2.44",
     "architecture": "x86_64",
-    "notes": "Runtimes and memory measurements are machine-specific observations obtained via Python standard library resource.getrusage (ru_maxrss in KB) and time.perf_counter in isolated subprocesses."
+    "notes": "Runtimes and memory measurements are machine-specific observations obtained via Python standard library resource.getrusage (ru_maxrss in KB) and time.perf_counter in isolated subprocesses. The streaming binary adapter operates in bounded chunk memory, while PulseWatch analysis pipeline peak memory depends on the selected event count."
   },
   "samples": {
     "day20": {
       "sample_id": "day20",
-      "label": "Day 20 (Early collection)",
+      "label": "Day 20 (Early collection: 15 May 1998 opening 15 min, Paris local)",
+      "collection_day_paris_local": "Day 20 (15 May 1998)",
+      "utc_interval_iso": "1998-05-14 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day20_1.gz",
       "source_total_binary_records": 2084016,
       "source_records_scanned_to_window_end": 17210,
@@ -23,6 +25,7 @@
       "timestamp_elapsed_seconds": 900,
       "total_span_integer_seconds": 901,
       "active_seconds": 901,
+      "coverage_observational_statement": "All 901 integer-second buckets within the observed sample span contained at least one recorded request. This is an observation about the exported request trace, not proof that every incoming request was successfully logged.",
       "coverage_ratio": 1.0,
       "unknown_gaps_count": 0,
       "lines_read": 17209,
@@ -43,7 +46,9 @@
     },
     "day46": {
       "sample_id": "day46",
-      "label": "Day 46 (Tournament opening)",
+      "label": "Day 46 (Tournament opening: 10 June 1998 opening 15 min, Paris local)",
+      "collection_day_paris_local": "Day 46 (10 June 1998)",
+      "utc_interval_iso": "1998-06-09 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day46_1.gz",
       "source_total_binary_records": 6999999,
       "source_records_scanned_to_window_end": 210289,
@@ -68,6 +73,7 @@
       "timestamp_elapsed_seconds": 900,
       "total_span_integer_seconds": 901,
       "active_seconds": 901,
+      "coverage_observational_statement": "All 901 integer-second buckets within the observed sample span contained at least one recorded request. This is an observation about the exported request trace, not proof that every incoming request was successfully logged.",
       "coverage_ratio": 1.0,
       "unknown_gaps_count": 0,
       "lines_read": 210287,
@@ -88,7 +94,9 @@
     },
     "day78": {
       "sample_id": "day78",
-      "label": "Day 78 (Final match day)",
+      "label": "Day 78 (Final match date: 12 July 1998 opening 15 min, Paris local)",
+      "collection_day_paris_local": "Day 78 (12 July 1998)",
+      "utc_interval_iso": "1998-07-11 22:00:01 to 22:15:01 UTC",
       "source_trace_file": "wc_day78_1.gz",
       "source_total_binary_records": 6999999,
       "source_records_scanned_to_window_end": 130734,
@@ -103,6 +111,7 @@
       "timestamp_elapsed_seconds": 900,
       "total_span_integer_seconds": 901,
       "active_seconds": 901,
+      "coverage_observational_statement": "All 901 integer-second buckets within the observed sample span contained at least one recorded request. This is an observation about the exported request trace, not proof that every incoming request was successfully logged.",
       "coverage_ratio": 1.0,
       "unknown_gaps_count": 0,
       "lines_read": 130733,
