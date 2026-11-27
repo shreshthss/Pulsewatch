@@ -51,9 +51,14 @@ def generate_canonical_report(
     incidents: List[Incident],
     data_notices: Optional[List[str]] = None,
     known_limitations: Optional[List[str]] = None,
-    input_sha256: Optional[str] = None
+    input_sha256: Optional[str] = None,
+    detector_config_digest: Optional[str] = None,
+    analysis_config: Optional[Dict[str, Any]] = None,
+    calibration_status: Optional[Dict[str, Any]] = None,
+    second_pass_status: Optional[str] = None,
+    report_revision: int = 2,
 ) -> Dict[str, Any]:
-    """Assemble canonical pulsewatch.report/1 dictionary."""
+    """Assemble canonical pulsewatch.report/1 dictionary (Revision 2)."""
     notices = list(data_notices or [])
     limitations = list(known_limitations or [
         "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
@@ -81,7 +86,30 @@ def generate_canonical_report(
 
     report: Dict[str, Any] = {
         "schema_version": __schema_version__,
+        "report_revision": report_revision,
         "pulsewatch_version": __version__,
+        # Schema v2 normalized sections
+        "input": {
+            "source_label": input_file,
+            "source_sha256": input_sha256 or "",
+            "total_lines_read": ingest_acc.total_lines_read,
+            "valid_records": ingest_acc.valid_records,
+            "retained_records": dedup_acc.retained_records,
+            "duplicates_removed": dedup_acc.duplicates_removed,
+            "exactness_status": dedup_acc.exactness_status,
+        },
+        "coverage": {
+            "total_span_sec": coverage.total_span_sec,
+            "active_seconds": coverage.active_seconds,
+            "coverage_ratio": coverage.coverage_ratio,
+            "unknown_gaps_count": len(coverage.unknown_gaps),
+        },
+        "baseline_profile": baseline.to_dict(),
+        "detector_config_digest": detector_config_digest or "",
+        "analysis_config": analysis_config or {},
+        "calibration_status": calibration_status or {},
+        "second_pass_status": second_pass_status or "unverified",
+        # Legacy sections preserved for 100% backward compatibility
         "input_metadata": {
             "source_file": input_file,
             "source_file_sha256": input_sha256,

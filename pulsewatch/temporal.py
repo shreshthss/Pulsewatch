@@ -138,8 +138,15 @@ class TemporalEngine:
         # object per distinct route across all buckets; it changes no value or ordering.
         self._route_pool: Dict[str, str] = {}
 
-    def ingest_record(self, record: EventRecord) -> None:
-        t = record.timestamp_sec
+    def ingest_record(self, record: Any) -> None:
+        if isinstance(record, dict):
+            t = int(record.get("timestamp_sec", record.get("timestamp", 0)))
+            status = int(record.get("status", 200))
+            route = str(record.get("route", "/"))
+        else:
+            t = record.timestamp_sec
+            status = record.status
+            route = record.route
         if self.earliest_sec is None or t < self.earliest_sec:
             self.earliest_sec = t
         if self.latest_sec is None or t > self.latest_sec:
@@ -151,7 +158,6 @@ class TemporalEngine:
         bucket = self.sparse_buckets[t]
         bucket.total_requests += 1
 
-        status = record.status
         if 200 <= status <= 299:
             bucket.status_2xx += 1
         elif 400 <= status <= 499:
@@ -161,7 +167,6 @@ class TemporalEngine:
         else:
             bucket.status_other += 1
 
-        route = record.route
         bucket.routes[self._route_pool.setdefault(route, route)] += 1
 
     def ingest_records(self, records: Iterable[EventRecord]) -> None:

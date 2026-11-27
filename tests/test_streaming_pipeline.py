@@ -134,12 +134,31 @@ def legacy_run_pipeline(input_path, gap_threshold=DEFAULT_GAP_THRESHOLD_SEC):
         candidates, engine, baseline.fitted_rate_1s,
         latest_segment_end_sec=segments[-1].end_sec if segments else None,
     )
+    second_pass_status = "none"
     if incidents:
-        collect_second_pass_evidence(incidents, input_path, file_hash)
+        second_pass_status = collect_second_pass_evidence(incidents, input_path, file_hash)
+
+    analysis_config = {
+        "screening_z_threshold": detector.screening_z_threshold,
+        "min_elevation_ratio": detector.min_elevation_ratio,
+        "min_excess_counts": detector.min_excess_counts,
+        "scales": [10, 60, 300],
+        "gap_threshold_sec": gap_threshold,
+    }
+    calibration_status = {
+        "is_calibrated": detector.is_calibrated,
+        "status_message": detector.calibration_status_message,
+        "active_z_threshold": detector.active_z_threshold,
+    }
     return generate_canonical_report(
         input_file=input_path, input_sha256=file_hash, ingest_acc=ingest_acc,
         dedup_acc=dedup_acc, coverage=coverage, windows_60s=windows_60s,
         baseline=baseline, candidates=candidates, incidents=incidents,
+        report_revision=2,
+        detector_config_digest=detector.config_fingerprint(),
+        analysis_config=analysis_config,
+        calibration_status=calibration_status,
+        second_pass_status=second_pass_status,
     )
 
 

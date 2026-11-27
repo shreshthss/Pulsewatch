@@ -88,9 +88,14 @@ class StatisticalFindings:
     min_log_p_value: float
     baseline_expected_requests: float
     tail_probability_note: str
+    observed_over_expected: Optional[float] = None
+    min_p_value: Optional[float] = None
+    all_tails_exact: Optional[bool] = None
+    max_omitted_mass_bound: Optional[float] = None
+    detection_windows: Optional[List[Dict[str, Any]]] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        d: Dict[str, Any] = {
             "scales_fired": self.scales_fired,
             "max_z_score": round(self.max_z_score, 3),
             "max_elevation_ratio": round(self.max_elevation_ratio, 3),
@@ -98,6 +103,17 @@ class StatisticalFindings:
             "baseline_expected_requests": round(self.baseline_expected_requests, 2),
             "tail_probability_note": self.tail_probability_note,
         }
+        if self.observed_over_expected is not None:
+            d["observed_over_expected"] = round(self.observed_over_expected, 3)
+        if self.min_p_value is not None:
+            d["min_p_value"] = round(self.min_p_value, 6)
+        if self.all_tails_exact is not None:
+            d["all_tails_exact"] = self.all_tails_exact
+        if self.max_omitted_mass_bound is not None:
+            d["max_omitted_mass_bound"] = round(self.max_omitted_mass_bound, 6)
+        if self.detection_windows is not None:
+            d["detection_windows"] = self.detection_windows
+        return d
 
 
 @dataclass
@@ -330,6 +346,11 @@ class IncidentMerger:
                     "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. "
                     "Reported upper-tail probabilities are bounded empirical tail assessments."
                 ),
+                observed_over_expected=total_obs / max(0.1, baseline_expected),
+                min_p_value=min(c.p_value for c in cluster),
+                all_tails_exact=all(c.tail_exact for c in cluster),
+                max_omitted_mass_bound=max(c.omitted_mass_bound for c in cluster),
+                detection_windows=[c.to_dict() for c in sorted(cluster, key=lambda c: -c.z_score)[:40]],
             )
 
             pattern = DescriptivePattern(shape=shape, rationale=rationale)
