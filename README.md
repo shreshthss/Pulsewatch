@@ -155,7 +155,7 @@ Alternatively:
 python3 -m unittest discover tests -v
 ```
 
-The repository documents 29 automated tests covering ingestion, deduplication, temporal gaps, statistical detection, reporting and CLI functionality.
+The repository includes 133 comprehensive automated tests covering streaming ingestion, identity deduplication, temporal gaps, statistical rate stability and calibration, multi-scale anomaly detection, evaluation metrics, sidecar manifests, reproduction verification, and reporting.
 
 ## **7. Run the benchmark suite (optional)**
 
@@ -274,11 +274,20 @@ Open any generated standalone report (e.g. `demo/3_genuine_surge_report.html`) i
 # 1. Summarize deduplicated traffic windows
 ./bin/pulsewatch summarize data/sample.jsonl
 
-# 2. Analyze traffic anomalies and output canonical JSON
+# 2. Analyze traffic anomalies and output canonical JSON + sidecar manifest
 ./bin/pulsewatch analyze data/sample.jsonl --json data/analysis.json
 
-# 3. Render self-contained offline HTML report from JSON
+# 3. Verify cryptographic integrity and deterministic reproduction
+./bin/pulsewatch verify data/analysis.json --input data/sample.jsonl --reproduce
+
+# 4. Render self-contained offline HTML report from JSON
 ./bin/pulsewatch report data/analysis.json --html data/report.html
+```
+
+### Automated Judge Demonstration
+To run the automated 6-scene demonstration sequence (nominal traffic, collector outage, genuine surge, replay attack, authentic World Cup 1998 trace, and component ablations):
+```bash
+python3 scripts/judge_demo.py
 ```
 
 ---
