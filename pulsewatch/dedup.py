@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Set, Tuple
 
 from pulsewatch.ingest import EventRecord
 
@@ -223,21 +223,107 @@ class Deduplicator:
         return record
 
 
+class RetentionLog:
+    """One bit per input record: 1 if the record was retained, 0 if it was dropped as a duplicate.
+
+    Lets a later pass over the *same, unchanged* source reproduce the first pass's retain/drop
+    decisions without re-hashing every record. Memory is N/8 bytes for N input records
+    (125 KB per million), independent of record size.
+    """
+
+    __slots__ = ("_bits", "_n")
+
+    def __init__(self) -> None:
+        self._bits = bytearray()
+        self._n = 0
+
+    def append(self, retained: bool) -> None:
+        n = self._n
+        if not n & 7:
+            self._bits.append(0)
+        if retained:
+            self._bits[n >> 3] |= 1 << (n & 7)
+        self._n = n + 1
+
+    def __len__(self) -> int:
+        return self._n
+
+    def is_retained(self, index: int) -> bool:
+        return bool(self._bits[index >> 3] & (1 << (index & 7)))
+
+
+class RetentionMismatch(Exception):
+    """The replayed source does not have the same record sequence the log was built from."""
+
+
+def iter_replayed(records: Iterable[EventRecord], log: RetentionLog) -> Iterator[EventRecord]:
+    """Yield the records the first pass retained, using its recorded decisions.
+
+    ``records`` must be the same ordered valid-record sequence the log was built from. If it
+    has more or fewer records than the log, ``RetentionMismatch`` is raised rather than
+    guessing, because the source must have changed.
+    """
+    n = len(log)
+    i = 0
+    for r in records:
+        if i >= n:
+            raise RetentionMismatch("source has more records than the first pass")
+        if log.is_retained(i):
+            yield r
+        i += 1
+    if i != n:
+        raise RetentionMismatch("source has fewer records than the first pass")
+
+
+def iter_deduplicated(
+    records: Iterable[EventRecord],
+    accounting: DedupAccounting,
+    max_keys: int = DEFAULT_MAX_DEDUP_KEYS,
+    retention: Optional[RetentionLog] = None
+) -> Iterator[EventRecord]:
+    """Lazily yield retained records, applying exactly the semantics of ``Deduplicator``.
+
+    This is the single implementation of the retain/drop decision; the list-returning
+    ``deduplicate_records`` is a wrapper over it, so the two cannot diverge.
+
+    Contract for callers:
+
+    * ``accounting`` is mutated live while the iterator is consumed. Its counters are
+      **final only after the iterator is exhausted**; mid-stream values are partial.
+    * The iterator is single-use. Records are yielded in input order, which is also the
+      order in which the "first occurrence wins" rule is applied.
+    * If the source iterable raises, the exception propagates from ``next()`` and
+      ``accounting`` reflects only the records processed so far; callers must not report
+      it as a complete result.
+    * Records without usable identity are always yielded (never dropped on attributes
+      alone), exactly as in ``Deduplicator.process_record``.
+    * State held is the bounded ``Deduplicator`` table (at most ``max_keys`` live
+      identity hashes plus the bounded evicted-history set); no yielded record is retained.
+    * If ``retention`` is given, one retain/drop bit per input record is appended to it
+      (N/8 bytes total) so a later pass over the unchanged source can replay the decisions
+      with ``iter_replayed``.
+    """
+    dedup = Deduplicator(max_keys=max_keys)
+    for r in records:
+        out = dedup.process_record(r, accounting)
+        if retention is not None:
+            retention.append(out is not None)
+        if out is not None:
+            yield out
+
+
 def deduplicate_records(
     records: Iterator[EventRecord],
     accounting: Optional[DedupAccounting] = None,
     max_keys: int = DEFAULT_MAX_DEDUP_KEYS
 ) -> Tuple[List[EventRecord], DedupAccounting]:
-    """Deduplicate records stream and return retained records and accounting."""
+    """Deduplicate records stream and return retained records and accounting.
+
+    Compatibility wrapper: materialises ``iter_deduplicated`` into a list. Prefer
+    ``iter_deduplicated`` when the consumer can process records incrementally.
+    """
     if accounting is None:
         accounting = DedupAccounting()
 
-    dedup = Deduplicator(max_keys=max_keys)
-    retained: List[EventRecord] = []
-
-    for r in records:
-        out = dedup.process_record(r, accounting)
-        if out is not None:
-            retained.append(out)
-
+    retained: List[EventRecord] = list(iter_deduplicated(records, accounting, max_keys))
     return retained, accounting

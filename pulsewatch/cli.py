@@ -7,15 +7,50 @@ import hashlib
 import json
 import os
 import sys
+import warnings
 from typing import Optional
 
-from pulsewatch.dedup import deduplicate_records
+from pulsewatch.dedup import DedupAccounting, RetentionLog, iter_deduplicated
 from pulsewatch.detector import PWScanDetector
 from pulsewatch.html_report import render_html_report
-from pulsewatch.incident import IncidentMerger, collect_second_pass_evidence, compute_file_sha256
+from pulsewatch.incident import (
+    SECOND_PASS_INPUT_CHANGED,
+    IncidentMerger,
+    collect_second_pass_evidence,
+)
 from pulsewatch.ingest import IngestAccounting, ingest_jsonl_stream
 from pulsewatch.report import format_cli_summary, generate_canonical_report
+from pulsewatch.stream_io import HashedTextFile
 from pulsewatch.temporal import DEFAULT_GAP_THRESHOLD_SEC, TemporalEngine
+
+
+def _stream_into_engine(input_path: str, gap_threshold: int):
+    """Single streaming pass: ingest -> deduplicate -> temporal aggregation.
+
+    Retained events are never collected into a list; each is folded into the engine's
+    sparse buckets and released. Accounting is read only after the stream is exhausted.
+    Declared coverage control records can appear anywhere in the file, so they are handed
+    to the engine after exhaustion (the engine copies the list it is given).
+
+    The SHA-256 is computed over the bytes actually consumed (and any unread remainder),
+    so it always describes the analysed content.
+
+    A one-bit-per-record retention log is kept so the evidence pass can replay the
+    retain/drop decisions instead of re-deduplicating.
+
+    Returns (engine, ingest_acc, dedup_acc, input_sha256, retention). Read errors
+    (``OSError``) propagate; no partial result is returned.
+    """
+    ingest_acc = IngestAccounting()
+    dedup_acc = DedupAccounting()
+    retention = RetentionLog()
+    engine = TemporalEngine(gap_threshold_sec=gap_threshold)
+    with HashedTextFile(input_path) as src:
+        records_iter = ingest_jsonl_stream(src.stream, ingest_acc)
+        engine.ingest_records(iter_deduplicated(records_iter, dedup_acc, retention=retention))
+        input_sha256 = src.sha256_hexdigest()
+    engine.set_declared_coverage(ingest_acc.declared_coverage_intervals)
+    return engine, ingest_acc, dedup_acc, input_sha256, retention
 
 
 def run_pipeline(
@@ -23,18 +58,7 @@ def run_pipeline(
     gap_threshold: int = DEFAULT_GAP_THRESHOLD_SEC
 ):
     """Core analysis pipeline execution."""
-    file_hash = compute_file_sha256(input_path) if os.path.exists(input_path) else None
-
-    ingest_acc = IngestAccounting()
-    with open(input_path, "r", encoding="utf-8", errors="replace") as f:
-        records_iter = ingest_jsonl_stream(f, ingest_acc)
-        retained_records, dedup_acc = deduplicate_records(records_iter)
-
-    engine = TemporalEngine(
-        gap_threshold_sec=gap_threshold,
-        declared_coverage_intervals=ingest_acc.declared_coverage_intervals
-    )
-    engine.ingest_records(iter(retained_records))
+    engine, ingest_acc, dedup_acc, file_hash, retention = _stream_into_engine(input_path, gap_threshold)
 
     coverage = engine.compute_coverage()
     gaps, segments = engine.compute_gaps_and_segments()
@@ -53,9 +77,28 @@ def run_pipeline(
         latest_segment_end_sec=latest_seg_end
     )
 
-    # Second pass for contributor evidence & concentration tags
-    if incidents and file_hash:
-        collect_second_pass_evidence(incidents, input_path, file_hash)
+    # Second pass for contributor evidence & concentration tags. It re-reads the source
+    # (rather than holding a second copy of the events) and verifies the bytes it reads
+    # against the hash of the first pass.
+    if incidents:
+        try:
+            second_pass_status = collect_second_pass_evidence(
+                incidents, input_path, file_hash, retention=retention
+            )
+        except OSError as exc:
+            warnings.warn(
+                f"Contributor evidence unavailable: could not re-read '{input_path}' ({exc}).",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        else:
+            if second_pass_status == SECOND_PASS_INPUT_CHANGED:
+                warnings.warn(
+                    f"Input '{input_path}' changed after it was analysed; contributor evidence "
+                    "omitted so that evidence from a different version is not mixed into the report.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
 
     report = generate_canonical_report(
         input_file=input_path,
@@ -78,16 +121,11 @@ def cmd_summarize(args: argparse.Namespace) -> int:
         return 1
 
     gap_thresh = args.gap_threshold if hasattr(args, "gap_threshold") and args.gap_threshold else DEFAULT_GAP_THRESHOLD_SEC
-    ingest_acc = IngestAccounting()
-    with open(input_path, "r", encoding="utf-8", errors="replace") as f:
-        records_iter = ingest_jsonl_stream(f, ingest_acc)
-        retained, dedup_acc = deduplicate_records(records_iter)
-
-    engine = TemporalEngine(
-        gap_threshold_sec=gap_thresh,
-        declared_coverage_intervals=ingest_acc.declared_coverage_intervals
-    )
-    engine.ingest_records(iter(retained))
+    try:
+        engine, ingest_acc, dedup_acc, _, _ = _stream_into_engine(input_path, gap_thresh)
+    except OSError as exc:
+        sys.stderr.write(f"Error: could not read input '{input_path}': {exc}\n")
+        return 1
     coverage = engine.compute_coverage()
     windows_60s = engine.generate_60s_windows()
 
@@ -125,7 +163,11 @@ def cmd_analyze(args: argparse.Namespace) -> int:
         return 1
 
     gap_thresh = args.gap_threshold if hasattr(args, "gap_threshold") and args.gap_threshold else DEFAULT_GAP_THRESHOLD_SEC
-    report, _, _, _, _ = run_pipeline(input_path, gap_threshold=gap_thresh)
+    try:
+        report, _, _, _, _ = run_pipeline(input_path, gap_threshold=gap_thresh)
+    except OSError as exc:
+        sys.stderr.write(f"Error: could not read input '{input_path}': {exc}\n")
+        return 1
 
     if args.json:
         with open(args.json, "w", encoding="utf-8") as f:
