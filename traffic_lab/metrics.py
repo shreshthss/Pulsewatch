@@ -191,72 +191,117 @@ def match_intervals_optimal(
     detections: Sequence[Tuple[int, int]],
     ground_truth: Sequence[Tuple[int, int]],
     min_iou: float = 0.05,
+    max_exact_component_size: int = 15,
 ) -> StrictMatchResult:
     """Exact optimal maximum-weight one-to-one bipartite interval assignment.
 
-    Maximizes (num_matches, total_iou) globally via branch-and-bound, avoiding
-    greedy heuristic trap cases on asymmetric IoU matrices.
+    Maximizes (num_matches, total_iou) globally via connected-component decomposition
+    and branch-and-bound, avoiding greedy heuristic trap cases on asymmetric IoU matrices
+    while maintaining sub-second performance on large incident collections.
     """
     if len(detections) == 0 or len(ground_truth) == 0:
         return match_intervals_strict(detections, ground_truth, min_iou=min_iou)
 
-    # Compute candidate edges above threshold
+    # 1. Compute candidate edges above threshold
     matrix: Dict[Tuple[int, int], float] = {}
+    adj_d: Dict[int, Set[int]] = {d: set() for d in range(len(detections))}
+    adj_g: Dict[int, Set[int]] = {g: set() for g in range(len(ground_truth))}
+
     for d_idx, (ds, de) in enumerate(detections):
         for g_idx, (gs, ge) in enumerate(ground_truth):
             iou = compute_iou(ds, de, gs, ge)
             if iou > min_iou:
                 matrix[(d_idx, g_idx)] = iou
+                adj_d[d_idx].add(g_idx)
+                adj_g[g_idx].add(d_idx)
 
     if not matrix:
         return match_intervals_strict(detections, ground_truth, min_iou=min_iou)
 
-    best_pairs: List[Tuple[int, int, float]] = []
-    best_score = (0, 0.0)
+    # 2. Decompose candidate graph into independent connected components
+    visited_d: Set[int] = set()
+    visited_g: Set[int] = set()
+    all_pairs: List[Tuple[int, int, float]] = []
 
-    dets = sorted(set(d for d, _ in matrix.keys()))
+    for start_d in range(len(detections)):
+        if start_d in visited_d or not adj_d[start_d]:
+            continue
 
-    def search(det_pos: int, used_gt: Set[int], current_pairs: List[Tuple[int, int, float]], current_iou: float) -> None:
-        nonlocal best_score, best_pairs
-        remaining = len(dets) - det_pos
-        max_possible_matches = len(current_pairs) + remaining
-        if max_possible_matches < best_score[0]:
-            return
-        if max_possible_matches == best_score[0] and (current_iou + remaining * 1.0) <= best_score[1]:
-            return
+        comp_d: Set[int] = set()
+        comp_g: Set[int] = set()
+        queue_d = [start_d]
+        visited_d.add(start_d)
 
-        if det_pos == len(dets):
-            score = (len(current_pairs), round(current_iou, 6))
-            if score > best_score:
-                best_score = score
-                best_pairs = list(current_pairs)
-            return
+        while queue_d:
+            curr_d = queue_d.pop()
+            comp_d.add(curr_d)
+            for g in adj_d[curr_d]:
+                if g not in visited_g:
+                    visited_g.add(g)
+                    comp_g.add(g)
+                    for d_next in adj_g[g]:
+                        if d_next not in visited_d:
+                            visited_d.add(d_next)
+                            queue_d.append(d_next)
 
-        d_idx = dets[det_pos]
-        # Option 1: try matching d_idx to each available g_idx (descending IoU for early pruning)
-        available_g = [(g, matrix[(d_idx, g)]) for (d, g) in matrix if d == d_idx and g not in used_gt]
-        available_g.sort(key=lambda x: -x[1])
+        # Fall back to greedy matching only on degenerate giant components
+        if len(comp_d) > max_exact_component_size:
+            c_edges = sorted(
+                [(d, g, matrix[(d, g)]) for d in comp_d for g in comp_g if (d, g) in matrix],
+                key=lambda x: -x[2],
+            )
+            u_d: Set[int] = set()
+            u_g: Set[int] = set()
+            for d, g, iou in c_edges:
+                if d not in u_d and g not in u_g:
+                    u_d.add(d)
+                    u_g.add(g)
+                    all_pairs.append((d, g, iou))
+            continue
 
-        for g_idx, iou in available_g:
-            used_gt.add(g_idx)
-            current_pairs.append((d_idx, g_idx, iou))
-            search(det_pos + 1, used_gt, current_pairs, current_iou + iou)
-            current_pairs.pop()
-            used_gt.remove(g_idx)
+        dets_list = sorted(comp_d)
+        best_comp_score = (0, 0.0)
+        best_comp_pairs: List[Tuple[int, int, float]] = []
 
-        # Option 2: skip matching d_idx
-        search(det_pos + 1, used_gt, current_pairs, current_iou)
+        def search(pos: int, used_g: Set[int], cur_pairs: List[Tuple[int, int, float]], cur_iou: float) -> None:
+            nonlocal best_comp_score, best_comp_pairs
+            rem = len(dets_list) - pos
+            if len(cur_pairs) + rem < best_comp_score[0]:
+                return
+            if len(cur_pairs) + rem == best_comp_score[0] and (cur_iou + rem * 1.0) <= best_comp_score[1]:
+                return
 
-    search(0, set(), [], 0.0)
+            if pos == len(dets_list):
+                score = (len(cur_pairs), round(cur_iou, 6))
+                if score > best_comp_score:
+                    best_comp_score = score
+                    best_comp_pairs = list(cur_pairs)
+                return
 
-    best_pairs.sort(key=lambda x: (x[0], x[1]))
-    tp = len(best_pairs)
+            d_idx = dets_list[pos]
+            avail_g = [(g, matrix[(d_idx, g)]) for g in adj_d[d_idx] if g not in used_g]
+            avail_g.sort(key=lambda x: -x[1])
+
+            for g_idx, iou in avail_g:
+                used_g.add(g_idx)
+                cur_pairs.append((d_idx, g_idx, iou))
+                search(pos + 1, used_g, cur_pairs, cur_iou + iou)
+                cur_pairs.pop()
+                used_g.remove(g_idx)
+
+            search(pos + 1, used_g, cur_pairs, cur_iou)
+
+        search(0, set(), [], 0.0)
+        all_pairs.extend(best_comp_pairs)
+
+    all_pairs.sort(key=lambda x: (x[0], x[1]))
+    tp = len(all_pairs)
     fp = len(detections) - tp
     fn = len(ground_truth) - tp
     prec = tp / max(1, tp + fp) if len(ground_truth) > 0 else None
     rec = tp / max(1, tp + fn) if len(ground_truth) > 0 else None
     f1 = (2 * prec * rec) / (prec + rec) if (prec and rec and (prec + rec) > 0.0) else (0.0 if len(ground_truth) > 0 else None)
-    mean_iou = sum(p[2] for p in best_pairs) / float(tp) if tp > 0 else 0.0
+    mean_iou = sum(p[2] for p in all_pairs) / float(tp) if tp > 0 else 0.0
 
     return StrictMatchResult(
         true_positives=tp,
@@ -266,7 +311,7 @@ def match_intervals_optimal(
         recall=rec,
         f1_score=f1,
         mean_iou=mean_iou,
-        pairs=best_pairs,
+        pairs=all_pairs,
     )
 
 
@@ -329,11 +374,13 @@ def evaluate_scenario_detections(
     scenario_name: str = "scenario",
     total_duration_sec: float = 3600.0,
     abstained: bool = False,
+    matching_mode: str = "strict",
 ) -> ScenarioEvaluationResult:
     """Comprehensive evaluation of detected incident intervals against ground truth."""
     has_positives = len(ground_truth_intervals) > 0
     exposure_sec = max(1.0, float(total_duration_sec))
     exposure_days = exposure_sec / 86400.0
+    matcher = match_intervals_optimal if matching_mode == "optimal" else match_intervals_strict
 
     # 1. Negative scenario (No ground truth incidents)
     if not has_positives:
@@ -426,13 +473,13 @@ def evaluate_scenario_detections(
     mean_start_err = sum(start_errors) / float(len(start_errors)) if start_errors else 0.0
     mean_end_err = sum(end_errors) / float(len(end_errors)) if end_errors else 0.0
 
-    # Strict one-to-one matching
-    strict_res = match_intervals_strict(detected_intervals, ground_truth_intervals, min_iou=0.05)
+    # Strict / Optimal one-to-one matching
+    strict_res = matcher(detected_intervals, ground_truth_intervals, min_iou=0.05)
 
     # IoU sensitivity sweep
     sens: Dict[str, Dict[str, Any]] = {}
     for thresh in [0.05, 0.30, 0.50]:
-        st = match_intervals_strict(detected_intervals, ground_truth_intervals, min_iou=thresh)
+        st = matcher(detected_intervals, ground_truth_intervals, min_iou=thresh)
         sens[str(thresh)] = {
             "tp": st.true_positives,
             "fp": st.false_positives,

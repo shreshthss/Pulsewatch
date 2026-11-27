@@ -186,6 +186,12 @@ def verify_analysis(
         agrees = True
         discrepancies = []
 
+        m_filename = m_rep.get("file_name")
+        if m_filename:
+            if "/" in m_filename or "\\" in m_filename or ".." in m_filename or m_filename != os.path.basename(report_path):
+                agrees = False
+                discrepancies.append("file_name")
+
         if m_rep.get("analysis_hash") != report_data.get("analysis_hash"):
             agrees = False
             discrepancies.append("analysis_hash")

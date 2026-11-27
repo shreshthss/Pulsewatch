@@ -216,6 +216,70 @@ class TestVerifierRules(unittest.TestCase):
         ret = main(["verify", self.report_path, "--input", self.input_path, "--reproduce"])
         self.assertEqual(ret, 0)
 
+    def test_negative_path_traversal_in_manifest_fails_m3(self):
+        with open(self.manifest_path, "r", encoding="utf-8") as f:
+            m_data = json.load(f)
+        m_data["report"]["file_name"] = "../../etc/shadow"
+        # Recompute self digest so M2 passes but M3 catches path traversal
+        m_data["manifest_sha256"] = canonical_sha256(m_data, exclude_keys={"manifest_sha256"})
+        with open(self.manifest_path, "w", encoding="utf-8") as f:
+            json.dump(m_data, f, indent=2)
+
+        summary = verify_analysis(self.report_path, manifest_path=self.manifest_path)
+        self.assertEqual(summary.exit_code, 1)
+        m3 = next(r for r in summary.results if r.rule_id == "M3")
+        self.assertEqual(m3.status, CheckStatus.FAIL)
+        self.assertIn("file_name", m3.message)
+
+    def test_negative_symlink_escape_broken_link(self):
+        link_path = os.path.join(self.tmpdir, "broken_link.json")
+        os.symlink(os.path.join(self.tmpdir, "missing_target.json"), link_path)
+        summary = verify_analysis(report_path=link_path)
+        self.assertEqual(summary.exit_code, 2)
+        self.assertEqual(summary.overall_status, "FAILED")
+
+    def test_negative_incorrect_config_fingerprint_fails_r5(self):
+        with open(self.report_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data["detector_config_digest"] = "f" * 64
+        data["analysis_hash"] = canonical_sha256(data, exclude_keys={"analysis_hash"})
+        with open(self.report_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
+        summary = verify_analysis(self.report_path)
+        self.assertEqual(summary.exit_code, 1)
+        r5 = next(r for r in summary.results if r.rule_id == "R5")
+        self.assertEqual(r5.status, CheckStatus.FAIL)
+
+    def test_negative_invalid_revision_fails_r2(self):
+        with open(self.report_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data["report_revision"] = 999
+        data["analysis_hash"] = canonical_sha256(data, exclude_keys={"analysis_hash"})
+        with open(self.report_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2)
+
+        summary = verify_analysis(self.report_path)
+        self.assertEqual(summary.exit_code, 1)
+        r2 = next(r for r in summary.results if r.rule_id == "R2")
+        self.assertEqual(r2.status, CheckStatus.FAIL)
+
+    def test_negative_malformed_manifest_fails_m1(self):
+        with open(self.manifest_path, "w", encoding="utf-8") as f:
+            f.write("{corrupted_json_syntax: 123")
+        summary = verify_analysis(self.report_path, manifest_path=self.manifest_path)
+        self.assertEqual(summary.exit_code, 1)
+        m1 = next(r for r in summary.results if r.rule_id == "M1")
+        self.assertEqual(m1.status, CheckStatus.FAIL)
+
+    def test_negative_interrupted_artifact_generation_fails_r1(self):
+        with open(self.report_path, "w", encoding="utf-8") as f:
+            f.write('{"schema_version": "pulsewatch.report/1", "input": {"total_lines"')
+        summary = verify_analysis(self.report_path)
+        self.assertEqual(summary.exit_code, 1)
+        r1 = next(r for r in summary.results if r.rule_id == "R1")
+        self.assertEqual(r1.status, CheckStatus.FAIL)
+
 
 class TestHTMLForensicReport(unittest.TestCase):
     def test_render_html_report_sections(self):
