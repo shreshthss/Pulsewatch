@@ -17,11 +17,11 @@
 |---|---|---|---|---|
 | **1** | **Git Branch Discipline** | Verify protected refs (`main`, `validation/worldcup98`, baseline commit `3be4557`) remain unmodified. | All 3 protected refs bit-identical; commit history clean. | **PASS** |
 | **2** | **Python Ecosystem Policy** | Zero third-party packages in runtime or evaluation (`math`, `hashlib`, `json`, `collections` standard library only). | Verified clean environment; 0 pip requirements. | **PASS** |
-| **3** | **Actual Python 3.9 Runtime** | Executed complete regression suite on real Python 3.9 interpreter (`/home/s1/.pyenv/versions/3.9.21/bin/python3.9`). | **149 tests pass in 5.19s** on Python 3.9.21 (Linux x86_64). | **PASS** |
+| **3** | **Actual Python 3.9 Runtime** | Executed complete regression suite (149 tests), judge demo, demo script, benchmark v2, and ablations on real Python 3.9 interpreter (`/home/s1/.pyenv/versions/3.9.21/bin/python3.9`). | **149 tests pass in 5.19s** on Python 3.9.21; all demonstrations & benchmarks bit-identical. | **PASS** |
 | **4** | **Unit & Integration Suite** | Comprehensive automated regression test discovery (`python3 -m unittest discover tests -v`). | **149 tests pass** in 2.88s on Python 3.14 (0 failures, 0 errors). | **PASS** |
 | **5** | **Exact Mathematical Limits** | Garwood Poisson & Clopper-Pearson binomial confidence boundaries against theoretical formulas. | Garwood error $8.88 \times 10^{-16}$; Clopper-Pearson error $1.11 \times 10^{-16}$. | **PASS** |
 | **6** | **Statistical API Validation** | Invalid inputs ($k < 0, k > n, n \le 0, \text{conf} \notin (0, 1)$) must raise `ValueError` and never mask as `(0.0, 1.0)`. | Invalid inputs raise `ValueError`; valid edge cases ($k=0, k=n$) exact. | **PASS** |
-| **7** | **Statistical Rate Stability** | Score test $Q \ge 20.0$ evaluated across $\ge 20,000$ stationary Poisson null simulations. | **1 crossing in 20,000 trials** ($\hat{p} = 0.000050$, theoretical $0.000170$). | **PASS** |
+| **7** | **Statistical Rate Stability** | Score test $Q \ge 20.0$ evaluated across 20,000 stationary Poisson null simulations with sampling uncertainty documented. | **1 crossing in 20,000 trials** ($\hat{p} = 0.000050$, 95% CI $[1.3\times 10^{-6}, 2.78\times 10^{-4}]$ covers theoretical $0.000170$). | **PASS** |
 | **8** | **Optimal Interval Matching** | Exact bipartite matching with connected-component decomposition compared to brute force on random graphs. | 100/100 random instances match brute force; $N=1,000$ solves in 782ms. | **PASS** |
 | **9** | **Benchmark v2 Reproduction** | 39 multi-scale scenarios across 5 categories re-executed from scratch (`benchmark_v2.py`). | Bit-identical output; 0 bytes diff against committed data. | **PASS** |
 | **10** | **Ablation Reproduction** | 5 architectural ablation experiments re-executed from scratch (`ablations.py`). | Bit-identical output; 0 bytes diff against committed data. | **PASS** |
@@ -75,7 +75,12 @@ PulseWatch preserves two distinct benchmark comparisons representing different e
 The runtime difference between Series A (5.92s for 1M events) and Series B (21.19s for 1M events) is expected and technically justified:
 - Series A measures raw Pass 1 streaming ingestion only.
 - Series B measures the full end-to-end analytical lifecycle, executing both passes, 3 temporal detection scales, contributor evidence aggregation, and cryptographic manifest verification.
-- **Key Invariant Preserved:** Despite the addition of 4 complete analytical stages, the peak RAM consumption remains bounded under **141.0 MB**, proving that memory complexity remains $O(1)$ with respect to raw request stream length.
+- **Accurate Memory Complexity Profile:**
+  - Input ingestion uses bounded line-by-line buffering without materializing raw JSON logs into memory.
+  - The `RetentionLog` stores exactly one bit per input record and therefore has $O(N)$ memory complexity ($N/8$ bytes = 125 KB for 1M events).
+  - Temporal aggregates scale with the number of observed active 1-second time buckets and distinct route cardinality.
+  - Incident and evidence structures scale with the output and detected incident workload.
+  - The integrated implementation demonstrated approximately 141 MB peak RSS on the tested 1,000,000-event workload; asymptotic constant memory is explicitly not claimed.
 
 ---
 

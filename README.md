@@ -309,8 +309,13 @@ PulseWatch enforces a strict 4-level identity hierarchy:
 * **No Content-Only Dropping**: Distinct requests (e.g. valid polling with unique IDs) are never deduplicated even if their contents look identical.
 * **Degradation Transparency**: Emits explicit exactness ledgers (`fully_verified_exact`, `partial_identity_coverage`, `degraded_due_to_capacity_eviction`).
 
-### B. Sparse 1-Second Temporal Engine
-* Memory allocation is strictly $O(\text{active events})$, never dense arrays proportional to elapsed wall-clock time.
+### B. Sparse 1-Second Temporal Engine & Memory Profile
+* **Streaming Architecture**:
+  - Input ingestion uses bounded line-by-line buffering.
+  - The `RetentionLog` stores one bit per input record ($O(N)$ memory complexity, exactly $N/8$ bytes).
+  - Temporal aggregates scale with the number of observed active 1-second time buckets and distinct route cardinality, avoiding dense allocations across unobserved time.
+  - Incident and evidence structures scale with the detected incident workload and forensic attribution details.
+  - The integrated implementation demonstrated approximately 141 MB peak RSS on the tested 1,000,000-event workload (without claiming asymptotic constant memory).
 * **Coverage Semantics**:
   - *Declared Coverage*: Specified via `{"_pw": "coverage", "start": ..., "end": ...}` control records.
   - *Known Zero*: Verified zero-traffic seconds within declared coverage.

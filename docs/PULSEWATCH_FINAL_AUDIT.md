@@ -310,7 +310,12 @@ Workloads were executed using `benchmarks/pipeline_memory.py` on synthetic JSONL
 | **Retention Log Size** | 2.5 KB | 2.5 KB | 25.0 KB | 25.0 KB | 125.0 KB | 125.0 KB |
 
 ### 12.2 Key Performance Findings:
-1. **Peak Memory Conservation:** Peak memory footprint remains under **141.0 MB** even when processing **1,000,000 records**, demonstrating $O(1)$ intermediate state allocation with respect to raw request logs.
+1. **Measured Memory Envelope:** The integrated implementation demonstrated **141.0 MB peak RSS** on the tested 1,000,000-event workload:
+   - Input ingestion processes events via bounded line-by-line streaming without loading the raw JSONL file into memory.
+   - The `RetentionLog` allocates exactly 1 bit per input record ($O(N)$ memory complexity, requiring 125.0 KB for 1,000,000 records).
+   - Temporal aggregate structures scale with the number of active 1-second time buckets and distinct route cardinality.
+   - Incident and evidence records scale with the detected incident workload and contributor attributions.
+   - The system is explicitly $O(N)$ due to the retention bit-vector and output structures; asymptotic constant memory is not claimed.
 2. **High-Throughput Streaming:** Throughput scales to over **47,000 requests/second** on standard commodity Linux hardware using pure Python.
 3. **No Integration Overhead:** The inclusion of statistical calibration, multi-scale anomaly scanning, contributor evidence tracking, and cryptographic sidecar manifest generation introduces less than 1.3% overhead at 1M events.
 - **Verdict: PASS**
@@ -370,13 +375,14 @@ A complete adversarial audit was conducted on commit `9d2d7e1` and extended in `
 **Assertion Verification:** No existing assertions were weakened, loosened, or deleted. All modifications were strictly additive guardrails protecting against edge-case degeneracies ($k < 0, k > n$), sub-second connected-component decomposition for bipartite matching, path traversal protection, and automated injection experiment execution.
 
 ### 15.2 Statistical Validation of Rate Stability (Agent 1)
-To establish empirical performance without relying on small-sample assumptions, 20,000 seeded stationary-null simulations were executed via `scripts/rate_stability_validation.py`:
+To assess empirical behavior on stationary Poisson arrivals, 20,000 seeded stationary-null simulations were executed via `scripts/rate_stability_validation.py`:
 - **Simulations Executed:** 20,000 independent 720-second stationary Poisson traces ($\lambda = 5.0$ req/s).
 - **Threshold Crossings ($Q \ge 20.0$):** **1 out of 20,000** trials.
-- **Empirical False-Positive Rate:** $\hat{p} = \frac{1}{20000} = 0.000050$ ($0.005\%$).
-- **Theoretical Significance Level:** Under $H_0$, $Q \sim \chi^2_3$, with $P(\chi^2_3 \ge 20.0) = 0.000170$.
+- **Empirical Point Estimate:** $\hat{p} = \frac{1}{20000} = 0.000050$ ($0.005\%$).
+- **Theoretical Significance Level:** Under $H_0$, $Q \sim \chi^2_3$, with $P(\chi^2_3 \ge 20.0) \approx 0.000170$.
+- **Sampling Uncertainty Around Empirical Estimate:** With only 1 observed crossing out of 20,000 trials, the exact 95% Clopper-Pearson binomial confidence interval for $\hat{p}$ is $[0.0000013, 0.000278]$ ($[1.3 \times 10^{-6}, 2.78 \times 10^{-4}]$). This wide confidence interval spans two orders of magnitude and comfortably includes the theoretical value $0.000170$.
+- **Methodological Qualification:** A rare-event tail probability on the order of $10^{-4}$ cannot be estimated with high statistical precision from 20,000 trials. The experiment empirically demonstrates consistency with the asymptotic $\chi^2_3$ distribution and confirms that stationary Poisson traffic does not suffer elevated false downgrades, without overstating the empirical confidence of the numerical point estimate.
 - **Mean Score Statistic:** $\bar{Q} = 2.677$ across initial 1,000 trials (theoretically expected $E[\chi^2_3] = 3.0$).
-- **Distinction Clarification:** The theoretical $\chi^2_3$ tail probability of $0.00017$ represents an asymptotic continuous approximation under ideal homogeneous Poisson arrivals. In finite discrete count processes with empirical overdispersion estimation ($\hat{\phi}$ from 60s blocks), the empirical Monte Carlo false-positive rate is observed at $0.000050$.
 - **Comprehensive Regime Tests:**
   - *Stable Stationary Traffic:* Confirmed stable ($\lambda=5.0 \implies Q=1.65$).
   - *Genuine Rate Shifts:* 50% shift ($Q=113.6$), 100% shift ($Q=333.8$), 300% shift ($Q=667.5$) all trigger immediate `heterogeneous` downgrade.
@@ -396,6 +402,10 @@ To establish empirical performance without relying on small-sample assumptions, 
 - **Evaluation Contract:** `evaluate_scenario_detections()` now supports `matching_mode="optimal"` while retaining default `"strict"` for 100% bit-identical historical benchmark backward compatibility.
 
 ### 15.4 Runtime and Platform Compatibility (Python 3.9+)
+- **Actual Python 3.9.21 Runtime Execution:**
+  - Full test suite formally executed directly on `/home/s1/.pyenv/versions/3.9.21/bin/python3.9`:
+    **149 unit and integration tests passed in 5.185s** (0 failures, 0 errors).
+  - Demonstrations (`demo.py`, `scripts/judge_demo.py`) and benchmark suites (`traffic_lab.benchmark_v2`, `traffic_lab.ablations`) were also executed under Python 3.9.21, reproducing all verdicts and bit-identical data.
 - **Static Syntax & AST Audit:** Complete AST scanner evaluated all 45 Python source files in the repository.
 - **Verified Restrictions:**
   - Zero Python 3.10+ pattern matching (`match` / `case`).
@@ -404,7 +414,7 @@ To establish empirical performance without relying on small-sample assumptions, 
   - Zero Python 3.11+ `datetime.UTC` (standard `datetime.timezone.utc` used).
   - Zero Python 3.11+ exception groups (`try ... except*`).
   - Zero pipe union type expressions (`X | Y`) without `from __future__ import annotations`.
-- **Platform Verified:** Linux 6.18.2-arch1-1 (x86_64), Python 3.14.8 & Python 3.9 AST compatibility.
+- **Platform Verified:** Linux 6.18.2-arch1-1 (x86_64), Python 3.9.21 & Python 3.14.8. Zero external dependencies.
 
 ### 15.5 Manifest Security Completion (Agent 4)
 Negative verification test suite in `tests/test_evidence_report.py` expanded to cover:
@@ -451,10 +461,12 @@ Documentation strictly distinguishes:
 4. **Observed Baseline Noise:** Background logs exhibit 0 false alarms across unperturbed intervals.
 
 ### 15.8 Final Test Suite Execution
-- **Command:** `python3 -m unittest discover tests -v`
-- **Result:** **147 tests passed** in 2.803s (0 failures, 0 errors).
-- **Demonstration Suite:** `make demo` and `python3 scripts/judge_demo.py` execute cleanly across all 6 demonstration scenes.
-- **Reproducibility:** `python3 -m traffic_lab.benchmark_v2` and `python3 -m traffic_lab.ablations` reproduce committed data files with 0 bytes diff.
+- **Command (Python 3.9.21):** `/home/s1/.pyenv/versions/3.9.21/bin/python3.9 -m unittest discover tests -v`
+  - **Result:** **149 tests passed** in 5.185s (0 failures, 0 errors).
+- **Command (System Python 3.14.8):** `python3 -m unittest discover tests -v`
+  - **Result:** **149 tests passed** in 2.878s (0 failures, 0 errors).
+- **Demonstration Suite:** `make demo` and `python3 scripts/judge_demo.py` execute cleanly across all 6 demonstration scenes under both interpreters.
+- **Reproducibility:** `python3 -m traffic_lab.benchmark_v2` and `python3 -m traffic_lab.ablations` reproduce committed data files with 0 bytes diff under both interpreters.
 
 ### 15.9 Final Acceptance Verdict
 **STATUS: RELEASE READY (PASS)**  
