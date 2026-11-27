@@ -181,6 +181,20 @@ class TestIntervalEstimation(unittest.TestCase):
         expected = 1.0 - math.pow(0.05, 0.01)
         ub = clopper_pearson_upper_bound(0, 100)
         self.assertAlmostEqual(ub, expected, places=4)
+        # All successes: upper bound is 1.0
+        self.assertEqual(clopper_pearson_upper_bound(100, 100), 1.0)
+
+    def test_clopper_pearson_invalid_inputs_raise_value_error(self):
+        with self.assertRaises(ValueError):
+            clopper_pearson_upper_bound(-1, 10)
+        with self.assertRaises(ValueError):
+            clopper_pearson_upper_bound(11, 10)
+        with self.assertRaises(ValueError):
+            clopper_pearson_upper_bound(5, 0)
+        with self.assertRaises(ValueError):
+            clopper_pearson_upper_bound(5, -5)
+        with self.assertRaises(ValueError):
+            clopper_pearson_upper_bound(5, 10, confidence=1.5)
 
     def test_bootstrap_ratio_under_clustering(self):
         # High clustering: one trace has 20 incidents, 9 traces have 0 incidents

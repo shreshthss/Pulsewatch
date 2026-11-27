@@ -27,9 +27,30 @@ def compute_iou(s1: int, e1: int, s2: int, e2: int) -> float:
 
 
 def clopper_pearson(k: int, n: int, confidence: float = 0.95) -> Tuple[float, float]:
-    """Exact two-sided Clopper-Pearson binomial confidence interval for success probability."""
-    if n <= 0 or k < 0 or k > n:
-        return (0.0, 1.0)
+    """Exact two-sided Clopper-Pearson binomial confidence interval for success probability.
+
+    Parameters:
+        k: number of observed successes (0 <= k <= n)
+        n: total number of independent trials (n > 0)
+        confidence: confidence level in (0, 1), default 0.95
+
+    Returns:
+        (lower_bound, upper_bound) in [0.0, 1.0]
+
+    Raises:
+        ValueError: if parameters violate binomial constraints (n <= 0, k < 0, k > n)
+                    or confidence is not in (0, 1). Invalid inputs are rejected explicitly
+                    and never masked as statistically valid full-width intervals.
+    """
+    if not (0.0 < confidence < 1.0):
+        raise ValueError(f"Confidence level must be strictly between 0 and 1, got {confidence}")
+    if n <= 0:
+        raise ValueError(f"Number of trials n must be a positive integer, got n={n}")
+    if k < 0:
+        raise ValueError(f"Number of successes k cannot be negative, got k={k}")
+    if k > n:
+        raise ValueError(f"Number of successes k ({k}) cannot exceed total trials n ({n})")
+
     alpha = 1.0 - confidence
     alpha2 = alpha / 2.0
 

@@ -96,10 +96,34 @@ class TestClopperPearson(unittest.TestCase):
         self.assertLess(low, 0.50)
         self.assertGreater(high, 0.50)
 
-    def test_degenerate_and_boundary_parameters(self):
-        self.assertEqual(clopper_pearson(-1, 10), (0.0, 1.0))
-        self.assertEqual(clopper_pearson(11, 10), (0.0, 1.0))
-        self.assertEqual(clopper_pearson(0, 0), (0.0, 1.0))
+    def test_invalid_parameters_raise_value_error(self):
+        """Invalid observations must raise ValueError and never silently mask as valid full-width intervals."""
+        with self.assertRaises(ValueError):
+            clopper_pearson(-1, 10)
+        with self.assertRaises(ValueError):
+            clopper_pearson(11, 10)
+        with self.assertRaises(ValueError):
+            clopper_pearson(0, 0)
+        with self.assertRaises(ValueError):
+            clopper_pearson(5, -10)
+        with self.assertRaises(ValueError):
+            clopper_pearson(5, 10, confidence=0.0)
+        with self.assertRaises(ValueError):
+            clopper_pearson(5, 10, confidence=1.0)
+
+    def test_valid_edge_case_behaviour(self):
+        """Valid boundary observations (k=0, k=n) must produce exact non-masked limits."""
+        # k = 0: lower bound is strictly 0.0, upper bound is exact
+        low0, high0 = clopper_pearson(0, 10)
+        self.assertEqual(low0, 0.0)
+        self.assertAlmostEqual(high0, 1.0 - math.pow(0.025, 0.1), places=6)
+
+        # k = n: upper bound is strictly 1.0, lower bound is exact
+        low_n, high_n = clopper_pearson(10, 10)
+        self.assertEqual(high_n, 1.0)
+        self.assertAlmostEqual(low_n, math.pow(0.025, 0.1), places=6)
+
+        # n = 1 single trial
         low1, high1 = clopper_pearson(1, 1)
         self.assertEqual(high1, 1.0)
         self.assertAlmostEqual(low1, 0.025, places=4)

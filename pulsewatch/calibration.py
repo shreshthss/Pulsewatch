@@ -130,11 +130,33 @@ def poisson_upper_bound(count: int, exposure_days: float, confidence: float = 0.
 
 
 def clopper_pearson_upper_bound(successes: int, trials: int, confidence: float = 0.95) -> float:
-    """Exact one-sided Clopper-Pearson binomial upper bound P(X >= 1) <= bound."""
-    if trials <= 0 or successes >= trials:
-        return 1.0
+    """Exact one-sided Clopper-Pearson binomial upper bound P(X >= 1) <= bound.
+
+    Parameters:
+        successes: number of observed positive incidents (0 <= successes <= trials)
+        trials: number of independent trace trials (trials > 0)
+        confidence: confidence level in (0, 1), default 0.95
+
+    Returns:
+        Exact upper bound in [0.0, 1.0]
+
+    Raises:
+        ValueError: if parameters violate binomial constraints (trials <= 0, successes < 0,
+                    successes > trials) or confidence is not in (0, 1). Invalid observations
+                    are rejected explicitly and never masked.
+    """
+    if not (0.0 < confidence < 1.0):
+        raise ValueError(f"Confidence level must be strictly between 0 and 1, got {confidence}")
+    if trials <= 0:
+        raise ValueError(f"Number of trials must be a positive integer, got trials={trials}")
     if successes < 0:
-        return 0.0
+        raise ValueError(f"Number of successes cannot be negative, got successes={successes}")
+    if successes > trials:
+        raise ValueError(f"Number of successes ({successes}) cannot exceed trials ({trials})")
+
+    if successes == trials:
+        return 1.0
+
     alpha = 1.0 - confidence
     if successes == 0:
         # 1 - (1 - p)^n = 1 - alpha => (1 - p)^n = alpha => p = 1 - alpha^(1/n)
