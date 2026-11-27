@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
+import warnings
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set, Tuple
 
@@ -11,6 +14,136 @@ from pulsewatch.temporal import ContinuousSegment, CoverageReport, TemporalEngin
 
 SCALES_SEC = [10, 60, 300]
 BASELINE_BLOCK_LENGTHS = [60, 300, 900, 3600]
+
+FIXED_Z_THRESHOLD: float = 3.5
+ALGORITHM_REVISION: str = "pwscan-v1.2"
+
+
+def compute_detector_config_fingerprint(
+    revision: str = ALGORITHM_REVISION,
+    screening_z_threshold: float = 4.0,
+    min_elevation_ratio: float = 1.3,
+    min_excess_counts: Optional[Dict[int, int]] = None,
+    scales: Optional[List[int]] = None,
+) -> str:
+    """Compute deterministic SHA-256 fingerprint for detector configuration."""
+    cfg = {
+        "revision": revision,
+        "screening_z_threshold": round(screening_z_threshold, 4),
+        "min_elevation_ratio": round(min_elevation_ratio, 4),
+        "min_excess_counts": {str(k): v for k, v in sorted((min_excess_counts or {10: 4, 60: 12, 300: 25}).items())},
+        "scales": list(scales or SCALES_SEC),
+    }
+    raw = json.dumps(cfg, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
+
+
+def assess_rate_stability(
+    engine: TemporalEngine,
+    segments: List[ContinuousSegment],
+    excluded_seconds: Optional[Set[int]] = None,
+) -> Dict[str, Any]:
+    """Assess rate homogeneity across 4 equal consecutive parts of the observation timeline.
+
+    Computes score statistic Q = sum_{k=0}^3 (N_k - r_bar * D_k)^2 / (phi * r_bar * D_k),
+    approx chi2(3) under stationary Poisson traffic.
+    Excludes seconds identified as masked/contaminated.
+    """
+    excluded = set(excluded_seconds or [])
+    timeline_counts: List[int] = []
+    for seg in segments:
+        for sec in range(seg.start_sec, seg.end_sec):
+            if sec not in excluded:
+                cnt = engine.sparse_buckets[sec].total_requests if sec in engine.sparse_buckets else 0
+                timeline_counts.append(cnt)
+
+    T = len(timeline_counts)
+    total_events = sum(timeline_counts)
+
+    if T < 720:
+        return {
+            "label": "not_assessed",
+            "statistic": None,
+            "df": 3,
+            "phi": None,
+            "part_rates": [],
+            "critical_value": 20.0,
+            "reason": "insufficient_duration",
+        }
+
+    if total_events == 0:
+        return {
+            "label": "not_assessed",
+            "statistic": None,
+            "df": 3,
+            "phi": None,
+            "part_rates": [0.0, 0.0, 0.0, 0.0],
+            "critical_value": 20.0,
+            "reason": "no_traffic",
+        }
+
+    part_len = T // 4
+    parts = [timeline_counts[k * part_len : (k + 1) * part_len] for k in range(4)]
+    part_counts = [sum(p) for p in parts]
+    part_rates = [round(c / float(part_len), 4) for c in part_counts]
+    overall_rate = float(sum(part_counts)) / float(4 * part_len)
+
+    if overall_rate <= 0.0:
+        return {
+            "label": "not_assessed",
+            "statistic": None,
+            "df": 3,
+            "phi": None,
+            "part_rates": part_rates,
+            "critical_value": 20.0,
+            "reason": "no_traffic",
+        }
+
+    # Estimate pooled within-part overdispersion from 60s blocks
+    block_size = 60
+    pooled_sq_diff = 0.0
+    total_blocks = 0
+    pooled_mean_sum = 0.0
+
+    for p in parts:
+        num_blocks = len(p) // block_size
+        if num_blocks >= 2:
+            blocks = [sum(p[b * block_size : (b + 1) * block_size]) for b in range(num_blocks)]
+            b_mean = sum(blocks) / float(num_blocks)
+            if b_mean > 0:
+                pooled_sq_diff += sum((x - b_mean) ** 2 for x in blocks)
+                total_blocks += num_blocks
+                pooled_mean_sum += sum(blocks)
+
+    if total_blocks > 4 and pooled_mean_sum > 0:
+        pooled_mean = pooled_mean_sum / float(total_blocks)
+        pooled_var = pooled_sq_diff / float(total_blocks - 4)
+        phi = max(1.0, pooled_var / max(0.1, pooled_mean))
+    else:
+        phi = 1.0
+
+    expected_per_part = overall_rate * float(part_len)
+    variance_per_part = max(0.1, phi * expected_per_part)
+
+    Q = sum(((N_k - expected_per_part) ** 2) / variance_per_part for N_k in part_counts)
+
+    if Q >= 20.0:
+        label = "heterogeneous"
+        reason = f"score_statistic_{round(Q, 2)}_exceeds_critical_20"
+    else:
+        label = "stable"
+        reason = "score_statistic_below_critical_20"
+
+    return {
+        "label": label,
+        "statistic": round(Q, 3),
+        "df": 3,
+        "phi": round(phi, 3),
+        "part_rates": part_rates,
+        "critical_value": 20.0,
+        "reason": reason,
+    }
+
 
 
 @dataclass
@@ -64,6 +197,7 @@ class BaselineProfile:
         median_rate_1s: Optional[float] = None,
         mad_1s: Optional[float] = None,
         dispersion_1s: Optional[float] = None,
+        rate_stability: Optional[Dict[str, Any]] = None,
     ):
         if isinstance(fraction_time_masked, str):
             # Legacy positional call: (rate, mad, disp, reliability, abstain_reason, warning)
@@ -78,6 +212,7 @@ class BaselineProfile:
             self.asymmetry_ratio = 1.0
             self.masked_intervals = []
             self.dispersion_by_scale = {}
+            self.rate_stability = rate_stability
         else:
             self.fitted_rate_1s = float(median_rate_1s) if median_rate_1s is not None else float(fitted_rate_1s)
             self.initial_block_length_sec = int(initial_block_length_sec)
@@ -90,13 +225,14 @@ class BaselineProfile:
             self.asymmetry_ratio = asymmetry_ratio
             self.masked_intervals = list(masked_intervals or [])
             self.dispersion_by_scale = dict(dispersion_by_scale or {})
+            self.rate_stability = rate_stability
 
     @property
     def median_rate_1s(self) -> float:
         return self.fitted_rate_1s
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        d = {
             "fitted_rate_1s": round(self.fitted_rate_1s, 4),
             "median_rate_1s": round(self.fitted_rate_1s, 4),
             "initial_block_length_sec": self.initial_block_length_sec,
@@ -110,6 +246,9 @@ class BaselineProfile:
             "masked_intervals_count": len(self.masked_intervals),
             "dispersion_by_scale": {str(k): v.to_dict() for k, v in self.dispersion_by_scale.items()},
         }
+        if self.rate_stability is not None:
+            d["rate_stability"] = self.rate_stability
+        return d
 
 
 @dataclass
@@ -236,15 +375,85 @@ class PWScanDetector:
 
     def __init__(
         self,
-        target_false_incidents_per_day: float = 1.0,
+        target_false_incidents_per_day: Optional[float] = None,
         screening_z_threshold: float = 4.0,
         min_elevation_ratio: float = 1.3,
-        min_excess_counts: Optional[Dict[int, int]] = None
+        min_excess_counts: Optional[Dict[int, int]] = None,
+        z_threshold: Optional[float] = None,
+        calibration: Optional[Any] = None,
     ):
         self.target_false_incidents_per_day = target_false_incidents_per_day
         self.screening_z_threshold = screening_z_threshold
         self.min_elevation_ratio = min_elevation_ratio
         self.min_excess_counts = min_excess_counts or {10: 4, 60: 12, 300: 25}
+        self.calibration = calibration
+
+        # Resolve active threshold and calibration state
+        self.active_z_threshold: float = FIXED_Z_THRESHOLD
+        self.is_calibrated: bool = False
+        self.calibration_status_message: str = "uncalibrated_fixed_default"
+
+        if z_threshold is not None:
+            self.active_z_threshold = float(z_threshold)
+            self.calibration_status_message = f"manual_override_z_{self.active_z_threshold}"
+        elif calibration is not None:
+            current_fp = self.config_fingerprint()
+            calib_fp = getattr(calibration, "detector_fingerprint", "")
+            if calib_fp and calib_fp != current_fp:
+                warnings.warn(
+                    f"Calibration profile fingerprint mismatch: profile={calib_fp} != detector={current_fp}. "
+                    "Refusing incompatible calibration profile and falling back to fixed threshold.",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                self.calibration_status_message = "fingerprint_mismatch_fallback_to_fixed"
+            elif getattr(calibration, "rejection_reason", None):
+                self.calibration_status_message = f"calibration_rejected: {calibration.rejection_reason}"
+            else:
+                target = target_false_incidents_per_day if target_false_incidents_per_day is not None else 1.0
+                selected_z = None
+                if hasattr(calibration, "threshold_mapping") and target in calibration.threshold_mapping:
+                    selected_z = calibration.threshold_mapping[target]
+                elif getattr(calibration, "selected_z_threshold", None) is not None:
+                    selected_z = calibration.selected_z_threshold
+
+                if selected_z is not None:
+                    self.active_z_threshold = float(selected_z)
+                    self.is_calibrated = bool(getattr(calibration, "calibrated", True))
+                    claim = bool(getattr(calibration, "false_alarm_claim_supported", False))
+                    self.calibration_status_message = (
+                        f"calibrated_z_{self.active_z_threshold}_for_target_{target}/day"
+                        + ("_holdout_verified" if claim else "_unverified")
+                    )
+                else:
+                    self.calibration_status_message = "no_threshold_in_calibration"
+        elif target_false_incidents_per_day is not None:
+            warnings.warn(
+                f"target_false_incidents_per_day={target_false_incidents_per_day} specified without an applicable "
+                f"CalibrationProfile. Falling back to uncalibrated fixed threshold {FIXED_Z_THRESHOLD}.",
+                UserWarning,
+                stacklevel=2,
+            )
+            self.calibration_status_message = "uncalibrated_target_ignored_fallback_to_fixed"
+
+    def config_fingerprint(self) -> str:
+        return compute_detector_config_fingerprint(
+            revision=ALGORITHM_REVISION,
+            screening_z_threshold=self.screening_z_threshold,
+            min_elevation_ratio=self.min_elevation_ratio,
+            min_excess_counts=self.min_excess_counts,
+            scales=SCALES_SEC,
+        )
+
+    def calibration_info(self) -> Dict[str, Any]:
+        return {
+            "active_z_threshold": self.active_z_threshold,
+            "target_false_incidents_per_day": self.target_false_incidents_per_day,
+            "calibrated": self.is_calibrated,
+            "calibration_fingerprint": getattr(self.calibration, "detector_fingerprint", None) if self.calibration else None,
+            "false_alarm_claim_supported": bool(getattr(self.calibration, "false_alarm_claim_supported", False)) if self.calibration else False,
+            "status": self.calibration_status_message,
+        }
 
     def select_initial_block_length(
         self,
@@ -490,6 +699,19 @@ class PWScanDetector:
             reliability = "low"
             warning = "Limited observation time or coverage."
 
+        # Rate-stability assessment
+        masked_sec_set: Set[int] = set()
+        for mi in masked_intervals:
+            for s in range(mi.start_sec, mi.end_sec):
+                masked_sec_set.add(s)
+
+        rate_stability = assess_rate_stability(engine, segments, excluded_seconds=masked_sec_set)
+        if rate_stability["label"] == "heterogeneous":
+            if reliability in ("high", "medium"):
+                reliability = "low"
+                warn_msg = f"Significant rate heterogeneity detected across observation window (score: {rate_stability['statistic']} >= 20.0). Baseline reliability downgraded to low."
+                warning = f"{warning} {warn_msg}" if warning else warn_msg
+
         return BaselineProfile(
             fitted_rate_1s=current_rate,
             initial_block_length_sec=block_len,
@@ -501,40 +723,49 @@ class PWScanDetector:
             asymmetry_ratio=asymmetry_ratio,
             masked_intervals=masked_intervals,
             dispersion_by_scale=dispersion_by_scale,
+            rate_stability=rate_stability,
         )
 
     def scan(
         self,
         engine: TemporalEngine,
-        coverage: CoverageReport,
-        segments: List[ContinuousSegment],
-        baseline: BaselineProfile
+        coverage: Any,
+        segments: Optional[List[ContinuousSegment]] = None,
+        baseline: Optional[BaselineProfile] = None,
+        z_threshold: Optional[float] = None,
     ) -> List[DetectionCandidate]:
         """Multi-scale sliding window scan across continuous segments with calibrated thresholds."""
-        if baseline.reliability == "abstain":
+        if baseline is None and isinstance(coverage, list):
+            actual_segments = coverage
+            actual_baseline = segments  # type: ignore
+            actual_z = z_threshold
+        else:
+            actual_segments = segments or []
+            actual_baseline = baseline  # type: ignore
+            actual_z = z_threshold
+
+        if actual_baseline is None or actual_baseline.reliability == "abstain":
             return []
 
+        effective_z = float(actual_z) if actual_z is not None else self.active_z_threshold
         candidates: List[DetectionCandidate] = []
 
         for scale in SCALES_SEC:
             min_excess = self.min_excess_counts.get(scale, 5)
             step = max(1, scale // 5)
-            disp = baseline.dispersion_by_scale.get(
+            disp = actual_baseline.dispersion_by_scale.get(
                 scale,
                 DispersionProfile(scale_sec=scale, phi=1.0, is_poisson=True)
             )
 
             # Expected count in window of scale
-            base_count = baseline.fitted_rate_1s * scale
+            base_count = actual_baseline.fitted_rate_1s * scale
             base_variance = base_count * disp.phi
             base_sigma = math.sqrt(max(0.25, base_variance))
 
-            # Incident false-alarm calibration: c threshold
-            # r_w(c) = (86400 / w) * kappa * c^2 * Psi(c)
-            # Default practical c is around 3.5 to 4.0 calibrated for target_false_incidents_per_day
-            calibrated_z_thresh = 3.5
+            calibrated_z_thresh = effective_z
 
-            for seg in segments:
+            for seg in actual_segments:
                 if seg.duration_sec < scale:
                     continue
 
