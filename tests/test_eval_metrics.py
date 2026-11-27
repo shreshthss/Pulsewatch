@@ -7,6 +7,7 @@ from traffic_lab.metrics import (
     compute_iou,
     evaluate_scenario_detections,
     garwood_poisson_interval,
+    match_intervals_optimal,
     match_intervals_strict,
 )
 
@@ -94,6 +95,29 @@ class TestClopperPearson(unittest.TestCase):
         low, high = clopper_pearson(50, 100, confidence=0.95)
         self.assertLess(low, 0.50)
         self.assertGreater(high, 0.50)
+
+    def test_degenerate_and_boundary_parameters(self):
+        self.assertEqual(clopper_pearson(-1, 10), (0.0, 1.0))
+        self.assertEqual(clopper_pearson(11, 10), (0.0, 1.0))
+        self.assertEqual(clopper_pearson(0, 0), (0.0, 1.0))
+        low1, high1 = clopper_pearson(1, 1)
+        self.assertEqual(high1, 1.0)
+        self.assertAlmostEqual(low1, 0.025, places=4)
+
+
+class TestOptimalMatching(unittest.TestCase):
+    def test_adversarial_matrix_optimal_vs_greedy(self):
+        # Construct intervals with asymmetric IoU structure:
+        # G0: [100, 200), G1: [250, 350)
+        # D0: [100, 205) -> IoU with G0 ~ 0.95, IoU with G1 = 0
+        # D1: [100, 210) -> IoU with G0 ~ 0.90, IoU with G1 = 0
+        # Also test direct optimal assignment function:
+        dets = [(100, 190), (105, 205)]
+        gts = [(100, 200)]
+        res_opt = match_intervals_optimal(dets, gts, min_iou=0.05)
+        self.assertEqual(res_opt.true_positives, 1)
+        self.assertEqual(res_opt.false_positives, 1)
+        self.assertEqual(res_opt.false_negatives, 0)
 
 
 if __name__ == "__main__":

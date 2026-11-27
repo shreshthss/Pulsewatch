@@ -28,7 +28,7 @@ def compute_iou(s1: int, e1: int, s2: int, e2: int) -> float:
 
 def clopper_pearson(k: int, n: int, confidence: float = 0.95) -> Tuple[float, float]:
     """Exact two-sided Clopper-Pearson binomial confidence interval for success probability."""
-    if n <= 0:
+    if n <= 0 or k < 0 or k > n:
         return (0.0, 1.0)
     alpha = 1.0 - confidence
     alpha2 = alpha / 2.0
@@ -184,6 +184,89 @@ def match_intervals_strict(
         f1_score=f1,
         mean_iou=mean_iou,
         pairs=pairs,
+    )
+
+
+def match_intervals_optimal(
+    detections: Sequence[Tuple[int, int]],
+    ground_truth: Sequence[Tuple[int, int]],
+    min_iou: float = 0.05,
+) -> StrictMatchResult:
+    """Exact optimal maximum-weight one-to-one bipartite interval assignment.
+
+    Maximizes (num_matches, total_iou) globally via branch-and-bound, avoiding
+    greedy heuristic trap cases on asymmetric IoU matrices.
+    """
+    if len(detections) == 0 or len(ground_truth) == 0:
+        return match_intervals_strict(detections, ground_truth, min_iou=min_iou)
+
+    # Compute candidate edges above threshold
+    matrix: Dict[Tuple[int, int], float] = {}
+    for d_idx, (ds, de) in enumerate(detections):
+        for g_idx, (gs, ge) in enumerate(ground_truth):
+            iou = compute_iou(ds, de, gs, ge)
+            if iou > min_iou:
+                matrix[(d_idx, g_idx)] = iou
+
+    if not matrix:
+        return match_intervals_strict(detections, ground_truth, min_iou=min_iou)
+
+    best_pairs: List[Tuple[int, int, float]] = []
+    best_score = (0, 0.0)
+
+    dets = sorted(set(d for d, _ in matrix.keys()))
+
+    def search(det_pos: int, used_gt: Set[int], current_pairs: List[Tuple[int, int, float]], current_iou: float) -> None:
+        nonlocal best_score, best_pairs
+        remaining = len(dets) - det_pos
+        max_possible_matches = len(current_pairs) + remaining
+        if max_possible_matches < best_score[0]:
+            return
+        if max_possible_matches == best_score[0] and (current_iou + remaining * 1.0) <= best_score[1]:
+            return
+
+        if det_pos == len(dets):
+            score = (len(current_pairs), round(current_iou, 6))
+            if score > best_score:
+                best_score = score
+                best_pairs = list(current_pairs)
+            return
+
+        d_idx = dets[det_pos]
+        # Option 1: try matching d_idx to each available g_idx (descending IoU for early pruning)
+        available_g = [(g, matrix[(d_idx, g)]) for (d, g) in matrix if d == d_idx and g not in used_gt]
+        available_g.sort(key=lambda x: -x[1])
+
+        for g_idx, iou in available_g:
+            used_gt.add(g_idx)
+            current_pairs.append((d_idx, g_idx, iou))
+            search(det_pos + 1, used_gt, current_pairs, current_iou + iou)
+            current_pairs.pop()
+            used_gt.remove(g_idx)
+
+        # Option 2: skip matching d_idx
+        search(det_pos + 1, used_gt, current_pairs, current_iou)
+
+    search(0, set(), [], 0.0)
+
+    best_pairs.sort(key=lambda x: (x[0], x[1]))
+    tp = len(best_pairs)
+    fp = len(detections) - tp
+    fn = len(ground_truth) - tp
+    prec = tp / max(1, tp + fp) if len(ground_truth) > 0 else None
+    rec = tp / max(1, tp + fn) if len(ground_truth) > 0 else None
+    f1 = (2 * prec * rec) / (prec + rec) if (prec and rec and (prec + rec) > 0.0) else (0.0 if len(ground_truth) > 0 else None)
+    mean_iou = sum(p[2] for p in best_pairs) / float(tp) if tp > 0 else 0.0
+
+    return StrictMatchResult(
+        true_positives=tp,
+        false_positives=fp,
+        false_negatives=fn,
+        precision=prec,
+        recall=rec,
+        f1_score=f1,
+        mean_iou=mean_iou,
+        pairs=best_pairs,
     )
 
 

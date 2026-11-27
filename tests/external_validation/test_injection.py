@@ -1,5 +1,7 @@
 """Tests for WorldCup98 semi-synthetic perturbation injection layer."""
 
+import json
+import os
 import unittest
 from external_validation.worldcup98.inject import inject_perturbation
 
@@ -57,6 +59,27 @@ class TestInjectionLayer(unittest.TestCase):
 
         self.assertEqual(ev1, ev2)
         self.assertNotEqual(ev1, ev3)
+
+
+    def test_injection_experiment_runner(self):
+        import tempfile
+        from external_validation.worldcup98.injection_experiment import run_injection_experiment
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            bg_file = os.path.join(tmpdir, "bg.jsonl")
+            with open(bg_file, "w", encoding="utf-8") as f:
+                for t in range(1000, 1600):
+                    f.write(json.dumps({
+                        "timestamp": t,
+                        "method": "GET",
+                        "route": "/home",
+                        "client": "10.0.0.1",
+                        "status": 200,
+                    }) + "\n")
+            out_dir = os.path.join(tmpdir, "out")
+            summary = run_injection_experiment(bg_file, output_dir=out_dir, seeds_count=1)
+            self.assertEqual(summary["total_trials"], 6)
+            self.assertTrue(len(summary["results"]) == 6)
 
 
 if __name__ == "__main__":

@@ -131,8 +131,10 @@ def poisson_upper_bound(count: int, exposure_days: float, confidence: float = 0.
 
 def clopper_pearson_upper_bound(successes: int, trials: int, confidence: float = 0.95) -> float:
     """Exact one-sided Clopper-Pearson binomial upper bound P(X >= 1) <= bound."""
-    if trials <= 0:
+    if trials <= 0 or successes >= trials:
         return 1.0
+    if successes < 0:
+        return 0.0
     alpha = 1.0 - confidence
     if successes == 0:
         # 1 - (1 - p)^n = 1 - alpha => (1 - p)^n = alpha => p = 1 - alpha^(1/n)

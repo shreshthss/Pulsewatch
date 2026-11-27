@@ -171,7 +171,11 @@ def _maxrss_mb() -> float:
 
 def child_main(path: str, report_out: Optional[str]) -> None:
     import time
-    from pulsewatch.cli import run_pipeline  # imported from the tree selected via PYTHONPATH
+    try:
+        from pulsewatch.cli import run_pipeline  # imported from the tree selected via PYTHONPATH
+    except ModuleNotFoundError:
+        sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        from pulsewatch.cli import run_pipeline
 
     baseline_rss = _maxrss_mb()
     t0 = time.perf_counter()
