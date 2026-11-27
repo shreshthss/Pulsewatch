@@ -1,0 +1,256 @@
+{
+  "base_seed": 20261127,
+  "calibrated": true,
+  "calibration_results": {},
+  "detector_fingerprint": "76551df9e0c6722335bbf22f3e4d6168341c607715c9b8f44b870d84017c1205",
+  "false_alarm_claim_supported": true,
+  "holdout_results": {
+    "gaps": {
+      "bootstrap_ub_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "dispersion_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "exposure_days": 64.15,
+      "family": "gaps",
+      "incidents_by_z": {
+        "10.0": 0,
+        "3.0": 0,
+        "3.5": 0,
+        "4.0": 0,
+        "4.5": 0,
+        "5.0": 0,
+        "5.5": 0,
+        "6.0": 0,
+        "7.0": 0,
+        "8.0": 0
+      },
+      "poisson_ub_by_z": {
+        "10.0": 0.047,
+        "3.0": 0.047,
+        "3.5": 0.047,
+        "4.0": 0.047,
+        "4.5": 0.047,
+        "5.0": 0.047,
+        "5.5": 0.047,
+        "6.0": 0.047,
+        "7.0": 0.047,
+        "8.0": 0.047
+      },
+      "prob_incident_ub_by_z": {
+        "10.0": 0.003,
+        "3.0": 0.003,
+        "3.5": 0.003,
+        "4.0": 0.003,
+        "4.5": 0.003,
+        "5.0": 0.003,
+        "5.5": 0.003,
+        "6.0": 0.003,
+        "7.0": 0.003,
+        "8.0": 0.003
+      },
+      "traces_evaluated": 1000
+    },
+    "modulated": {
+      "bootstrap_ub_by_z": {
+        "8.0": 0.418
+      },
+      "dispersion_by_z": {
+        "8.0": 1.5
+      },
+      "exposure_days": 60.83,
+      "family": "modulated",
+      "incidents_by_z": {
+        "8.0": 18
+      },
+      "poisson_ub_by_z": {
+        "8.0": 0.439
+      },
+      "prob_incident_ub_by_z": {
+        "8.0": 0.0242
+      },
+      "traces_evaluated": 1000
+    },
+    "nb_iid": {
+      "bootstrap_ub_by_z": {
+        "8.0": 0.694
+      },
+      "dispersion_by_z": {
+        "8.0": 2.43
+      },
+      "exposure_days": 59.27,
+      "family": "nb_iid",
+      "incidents_by_z": {
+        "8.0": 29
+      },
+      "poisson_ub_by_z": {
+        "8.0": 0.667
+      },
+      "prob_incident_ub_by_z": {
+        "8.0": 0.0313
+      },
+      "traces_evaluated": 1000
+    },
+    "poisson": {
+      "bootstrap_ub_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "dispersion_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "exposure_days": 58.03,
+      "family": "poisson",
+      "incidents_by_z": {
+        "10.0": 0,
+        "3.0": 0,
+        "3.5": 0,
+        "4.0": 0,
+        "4.5": 0,
+        "5.0": 0,
+        "5.5": 0,
+        "6.0": 0,
+        "7.0": 0,
+        "8.0": 0
+      },
+      "poisson_ub_by_z": {
+        "10.0": 0.052,
+        "3.0": 0.052,
+        "3.5": 0.052,
+        "4.0": 0.052,
+        "4.5": 0.052,
+        "5.0": 0.052,
+        "5.5": 0.052,
+        "6.0": 0.052,
+        "7.0": 0.052,
+        "8.0": 0.052
+      },
+      "prob_incident_ub_by_z": {
+        "10.0": 0.003,
+        "3.0": 0.003,
+        "3.5": 0.003,
+        "4.0": 0.003,
+        "4.5": 0.003,
+        "5.0": 0.003,
+        "5.5": 0.003,
+        "6.0": 0.003,
+        "7.0": 0.003,
+        "8.0": 0.003
+      },
+      "traces_evaluated": 1000
+    },
+    "poisson_low": {
+      "bootstrap_ub_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "dispersion_by_z": {
+        "10.0": null,
+        "3.0": null,
+        "3.5": null,
+        "4.0": null,
+        "4.5": null,
+        "5.0": null,
+        "5.5": null,
+        "6.0": null,
+        "7.0": null,
+        "8.0": null
+      },
+      "exposure_days": 58.34,
+      "family": "poisson_low",
+      "incidents_by_z": {
+        "10.0": 0,
+        "3.0": 0,
+        "3.5": 0,
+        "4.0": 0,
+        "4.5": 0,
+        "5.0": 0,
+        "5.5": 0,
+        "6.0": 0,
+        "7.0": 0,
+        "8.0": 0
+      },
+      "poisson_ub_by_z": {
+        "10.0": 0.051,
+        "3.0": 0.051,
+        "3.5": 0.051,
+        "4.0": 0.051,
+        "4.5": 0.051,
+        "5.0": 0.051,
+        "5.5": 0.051,
+        "6.0": 0.051,
+        "7.0": 0.051,
+        "8.0": 0.051
+      },
+      "prob_incident_ub_by_z": {
+        "10.0": 0.003,
+        "3.0": 0.003,
+        "3.5": 0.003,
+        "4.0": 0.003,
+        "4.5": 0.003,
+        "5.0": 0.003,
+        "5.5": 0.003,
+        "6.0": 0.003,
+        "7.0": 0.003,
+        "8.0": 0.003
+      },
+      "traces_evaluated": 1000
+    }
+  },
+  "protocol_version": "1.0.0",
+  "rejection_reason": null,
+  "schema_version": "pulsewatch.calibration/1",
+  "selected_z_threshold": 8.0,
+  "target_false_incidents_per_day": 1.0,
+  "threshold_mapping": {
+    "1.0": 8.0,
+    "10.0": 5.5,
+    "24.0": 4.5,
+    "4.0": 6.0
+  },
+  "traces_per_family": 1000
+}

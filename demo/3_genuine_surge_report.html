@@ -1,355 +1,641 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';">
-<title>PulseWatch Incident &amp; Traffic Report</title>
-<style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        line-height: 1.5;
-        color: #0f172a;
-        background-color: #f1f5f9;
-        margin: 0;
-        padding: 24px;
-    }
-    .container {
-        max-width: 1160px;
-        margin: 0 auto;
-        background: #ffffff;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
-        padding: 32px;
-    }
-    .header {
-        border-bottom: 2px solid #e2e8f0;
-        padding-bottom: 16px;
-        margin-bottom: 24px;
-    }
-    .header h1 {
-        margin: 0 0 6px 0;
-        font-size: 1.8rem;
-        color: #0f172a;
-    }
-    .header-sub {
-        color: #64748b;
-        font-size: 0.9rem;
-    }
-    .exec-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-        margin-bottom: 24px;
-    }
-    .exec-card {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 6px;
-        padding: 16px;
-    }
-    .exec-card .lbl {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: #64748b;
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-    .exec-card .val {
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-    .panel-integrity {
-        background: #f8fafc;
-        border: 1px solid #cbd5e1;
-        border-radius: 6px;
-        padding: 18px;
-        margin-bottom: 24px;
-    }
-    .panel-integrity h3 {
-        margin: 0 0 12px 0;
-        font-size: 1.05rem;
-        color: #1e293b;
-    }
-    .integrity-cols {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        font-size: 0.9rem;
-    }
-    .incident-card {
-        background: #ffffff;
-        border: 1px solid #cbd5e1;
-        border-left: 5px solid #2563eb;
-        border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 24px;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    .incident-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .incident-id {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #1e3a8a;
-        margin-right: 8px;
-    }
-    .incident-time {
-        font-size: 0.85rem;
-        color: #475569;
-        font-family: monospace;
-    }
-    .incident-metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        background: #f8fafc;
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 16px;
-        gap: 8px;
-    }
-    .inc-metric .lbl {
-        display: block;
-        font-size: 0.75rem;
-        color: #64748b;
-        text-transform: uppercase;
-        font-weight: 600;
-    }
-    .inc-metric .val {
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #0f172a;
-    }
-    .contributors-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-        font-size: 0.88rem;
-    }
-    .contributor-col ul {
-        margin: 4px 0 0 0;
-        padding-left: 20px;
-    }
-    .leads-box {
-        background: #eff6ff;
-        border: 1px solid #bfdbfe;
-        border-radius: 6px;
-        padding: 14px;
-        margin-bottom: 14px;
-    }
-    .leads-header {
-        font-size: 0.8rem;
-        font-weight: 700;
-        color: #1e40af;
-        letter-spacing: 0.05em;
-        margin-bottom: 10px;
-    }
-    .lead-item {
-        margin-bottom: 8px;
-        padding-bottom: 8px;
-        border-bottom: 1px dashed #cbd5e1;
-        font-size: 0.88rem;
-    }
-    .lead-item:last-child {
-        margin-bottom: 0;
-        padding-bottom: 0;
-        border-bottom: none;
-    }
-    .lead-trigger {
-        color: #334155;
-    }
-    .lead-action {
-        color: #1e3a8a;
-        margin-top: 2px;
-    }
-    .lead-none {
-        font-size: 0.85rem;
-        color: #64748b;
-        margin: 0;
-    }
-    .incident-rationale {
-        font-size: 0.85rem;
-        color: #334155;
-    }
-    .badge {
-        display: inline-block;
-        padding: 3px 8px;
-        font-size: 0.75rem;
-        border-radius: 4px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-    .badge-shape {
-        background: #dbeafe;
-        color: #1e40af;
-    }
-    .badge-tag {
-        background: #fef3c7;
-        color: #92400e;
-    }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 24px;
-        font-size: 0.88rem;
-    }
-    th, td {
-        text-align: left;
-        padding: 8px 12px;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    th {
-        background: #f8fafc;
-        color: #475569;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-    }
-    .status-yes {
-        color: #15803d;
-        font-weight: 600;
-    }
-    .status-no {
-        color: #b91c1c;
-        font-weight: 600;
-    }
-    .s2 { color: #15803d; }
-    .s4 { color: #d97706; }
-    .s5 { color: #dc2626; }
-    .notices {
-        background: #fffbeb;
-        border-left: 4px solid #f59e0b;
-        padding: 14px;
-        margin-bottom: 24px;
-        font-size: 0.88rem;
-    }
-    .limitations {
-        background: #f8fafc;
-        border-left: 4px solid #64748b;
-        padding: 14px;
-        margin-bottom: 24px;
-        font-size: 0.85rem;
-    }
-    .hash-box {
-        font-family: monospace;
-        font-size: 0.8rem;
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        padding: 8px 12px;
-        border-radius: 4px;
-        word-break: break-all;
-    }
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseWatch Incident &amp; Traffic Report: demo/3_genuine_surge.jsonl</title>
+    <style>
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #2563eb;
+            --success: #15803d;
+            --warning: #d97706;
+            --danger: #b91c1c;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 2rem 1.5rem;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font-family);
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1040px;
+            margin: 0 auto;
+        }
+        header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 1.5rem;
+        }
+        h1, h2, h3, h4 {
+            color: var(--text);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        h1 { font-size: 1.75rem; margin: 0 0 0.5rem 0; }
+        h2 { font-size: 1.35rem; margin: 0 0 1rem 0; }
+        h3 { font-size: 1.1rem; margin: 0 0 0.5rem 0; }
+        code {
+            font-family: var(--font-mono);
+            font-size: 0.88em;
+            background: #f1f5f9;
+            padding: 0.15em 0.35em;
+            border-radius: 4px;
+            color: #1e293b;
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-body {
+            padding: 1.25rem;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .metric-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .metric-card .label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        .metric-card .value {
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .metric-card .subtext {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2em 0.6em;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-abstain { background: #ffedd5; color: #9a3412; }
+        .badge-info { background: #e0f2fe; color: #075985; }
+        .badge-neutral { background: #f1f5f9; color: #475569; }
+        .badge-shape { background: #ede9fe; color: #5b21b6; }
+        .badge-tag { background: #e2e8f0; color: #334155; font-size: 0.72rem; text-transform: none; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .data-table th, .data-table td {
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #475569;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .lead-item {
+            background: #f8fafc;
+            border-left: 3px solid var(--primary);
+            padding: 0.65rem 0.85rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0 4px 4px 0;
+            font-size: 0.9rem;
+        }
+        .lead-trigger { margin-bottom: 0.25rem; }
+        .notice-box {
+            padding: 0.85rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .notice-warning { background: #fffbeb; border-left: 4px solid var(--warning); color: #78350f; }
+        .notice-danger { background: #fef2f2; border-left: 4px solid var(--danger); color: #7f1d1d; }
+        @media print {
+            body { background: #ffffff; padding: 0; font-size: 10pt; }
+            .card { box-shadow: none; border: 1px solid #cbd5e1; page-break-inside: avoid; }
+            header { border-bottom: 1px solid #94a3b8; }
+            .no-print { display: none; }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <div class="header">
-        <h1>PulseWatch Incident &amp; Traffic Report</h1>
-        <div class="header-sub">Source: <code>demo/3_genuine_surge.jsonl</code> &bull; SHA-256: <code>de94a614c2d1476c...</code> &bull; Contract: <code>pulsewatch.report/1</code></div>
-    </div>
-
-    <!-- Executive Summary Grid -->
-    <div class="exec-grid">
-        <div class="exec-card">
-            <div class="lbl">Retained Records</div>
-            <div class="val">2,790</div>
-        </div>
-        <div class="exec-card">
-            <div class="lbl">Duplicates Filtered</div>
-            <div class="val">0</div>
-        </div>
-        <div class="exec-card">
-            <div class="lbl">Coverage Ratio</div>
-            <div class="val">100.0%</div>
-        </div>
-        <div class="exec-card">
-            <div class="lbl">Baseline Status</div>
-            <div class="val">LOW <span style="font-size: 0.9rem; font-weight: 400;">(2.00 r/s)</span></div>
-        </div>
-        <div class="exec-card">
-            <div class="lbl">Incidents Detected</div>
-            <div class="val" style="color: #b91c1c;">1</div>
-        </div>
-    </div>
-
-    <!-- Telemetry Integrity & Deduplication Panel -->
-    <div class="panel-integrity">
-        <h3>Telemetry Integrity &amp; Coverage Ledger</h3>
-        <div class="integrity-cols">
+    <header>
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
-                <strong>Identity &amp; Deduplication Exactness:</strong> <code>fully_verified_exact</code><br>
-                &bull; Verified Unique Records: 2,790<br>
-                &bull; Ineligible (Identity Missing): 0<br>
-                &bull; Conflicting Attribute Collisions: 0<br>
-                &bull; Capacity Degradation: No (Within Bounds)
+                <h1>PulseWatch Incident &amp; Traffic Report</h1>
+                <div style="color:var(--text-muted); font-size:0.95rem;">
+                    Target: <code>demo/3_genuine_surge.jsonl</code> | PulseWatch v0.2.0
+                </div>
             </div>
-            <div>
-                <strong>Temporal Coverage &amp; Gaps:</strong><br>
-                &bull; Active Observation Seconds: 360s<br>
-                &bull; Known Zero Traffic: 0s<br>
-                &bull; Assumed Zero Traffic (&le;900s): 0s<br>
-                &bull; Unknown Coverage Gaps (&gt;900s): 0 intervals (0s)
+            <div style="text-align:right;">
+                <span class="badge badge-danger" style="font-size:1rem; padding:0.4em 0.8em;">1 ANOMALY INCIDENT DETECTED</span>
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-top:0.4rem;">
+                    Report Revision: 2
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- SECTION 1: Status Panel -->
+    <div class="card" id="section-status">
+        <div class="card-header">
+            <h2 style="margin:0;">1. Executive Status Panel</h2>
+        </div>
+        <div class="card-body">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="label">Decision Verdict</span>
+                    <span class="value" style="font-size:1.15rem;">1 ANOMALY INCIDENT DETECTED</span>
+                    <span class="subtext">Identified 1 statistically significant traffic surge incident(s).</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Baseline Reliability</span>
+                    <span class="value"><span class="badge badge-warning">low</span></span>
+                    <span class="subtext">Rate: 2.00 req/s</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Calibration Mode</span>
+                    <span class="value"><span class="badge badge-info">uncalibrated_fixed_default</span></span>
+                    <span class="subtext">Active Z: 3.5</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Replay Verification</span>
+                    <span class="value">ok</span>
+                    <span class="subtext">Second-pass byte match</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="notices"><strong>Data Integrity Notices:</strong><ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Baseline notice: High baseline contamination: 50.0% of time masked during refitting.</li></ul></div>
+    <!-- SECTION 2: Input & Coverage Quality -->
+    <div class="card" id="section-input-coverage">
+        <div class="card-header">
+            <h2 style="margin:0;">2. Input &amp; Coverage Quality</h2>
+        </div>
+        <div class="card-body">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="label">Total Lines Read</span>
+                    <span class="value">2,790</span>
+                    <span class="subtext">Valid records: 2,790</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Total Span</span>
+                    <span class="value">360s</span>
+                    <span class="subtext">Active: 360s (100.0%)</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Coverage Ratio</span>
+                    <span class="value">100.0%</span>
+                    <span class="subtext">Active / Total Span</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Unknown Gaps</span>
+                    <span class="value">0</span>
+                    <span class="subtext">Gaps exceeding threshold</span>
+                </div>
+            </div>
+            <div style="margin-top:1rem; font-size:0.85rem; color:var(--text-muted);">
+                <strong>Input File SHA-256:</strong> <code>de94a614c2d1476cb714e5848f179608f89ea06c027d8adb44bcb648d699dd67</code>
+            </div>
+        </div>
+    </div>
 
-    <h2>Incident Investigations (1)</h2>
+    <!-- SECTION 3: Identity & Deduplication -->
+    <div class="card" id="section-dedup">
+        <div class="card-header">
+            <h2 style="margin:0;">3. Identity &amp; Deduplication Accounting</h2>
+        </div>
+        <div class="card-body">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="label">Valid Records</span>
+                    <span class="value">2,790</span>
+                    <span class="subtext">Ingested JSONL records</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Retained Records</span>
+                    <span class="value">2,790</span>
+                    <span class="subtext">Unique event identities</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Duplicates Removed</span>
+                    <span class="value">0</span>
+                    <span class="subtext">0.00% duplicate reduction</span>
+                </div>
+                <div class="metric-card">
+                    <span class="label">Exactness Status</span>
+                    <span class="value">fully_verified_exact</span>
+                    <span class="subtext">Single-pass bit-packed dedup</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 4: Baseline Reliability -->
+    <div class="card" id="section-baseline">
+        <div class="card-header">
+            <h2 style="margin:0;">4. Statistical Baseline &amp; Rate Stability</h2>
+        </div>
+        <div class="card-body">
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td style="width:25%;"><strong>Fitted Rate (&lambda;)</strong></td>
+                        <td style="width:25%;"><strong>2.000 req/s</strong></td>
+                        <td style="width:25%;"><strong>Rate Stability</strong></td>
+                        <td style="width:25%;"><span class="badge badge-warning">not_assessed</span> (Score Q = N/A, &phi; = N/A)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>4-Part Temporal Rates</strong></td>
+                        <td><code>[N/A]</code> req/s</td>
+                        <td><strong>Masking Impact</strong></td>
+                        <td>119 intervals (Time: 50.0%, Events: 87.1%)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Quasi-Poisson &phi;</strong></td>
+                        <td colspan="3">
+                            <table style="width:100%; border:none;">
+                                <tr><td><strong>Scale 10s:</strong> &phi; = 1.00 (poisson)</td><td><strong>Scale 60s:</strong> &phi; = 1.00 (poisson)</td><td><strong>Scale 300s:</strong> &phi; = 1.00 (poisson)</td></tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECTION 5: Incident Summary & 60s Timeline -->
+    <div class="card" id="section-incidents">
+        <div class="card-header">
+            <h2 style="margin:0;">5. Incident Summary &amp; 60-Second UTC Timeline</h2>
+        </div>
+        <div class="card-body">
+            
+    <div class="svg-timeline-container" style="overflow-x:auto;">
+        <svg viewBox="0 0 960 200" width="100%" height="200" style="max-width:960px; display:block; margin:0 auto;">
+            <line x1="60" y1="165.0" x2="930" y2="165.0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" /><text x="52" y="169.0" fill="#64748b" font-size="10" text-anchor="end">0</text><line x1="60" y1="92.5" x2="930" y2="92.5" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" /><text x="52" y="96.5" fill="#64748b" font-size="10" text-anchor="end">750</text><line x1="60" y1="20.0" x2="930" y2="20.0" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3" /><text x="52" y="24.0" fill="#64748b" font-size="10" text-anchor="end">1,500</text><text x="60" y="192" fill="#64748b" font-size="10" text-anchor="start">2026-11-21T05:00:00</text><text x="930" y="192" fill="#64748b" font-size="10" text-anchor="end">2026-11-21T05:05:00</text>
+            <rect x="60.0" y="153.4" width="144.5" height="11.6" fill="#3b82f6" opacity="0.85"><title>2026-11-21T05:00:00+00:00: 120 reqs</title></rect><rect x="205.0" y="153.4" width="144.5" height="11.6" fill="#3b82f6" opacity="0.85"><title>2026-11-21T05:01:00+00:00: 120 reqs</title></rect><rect x="350.0" y="153.4" width="144.5" height="11.6" fill="#3b82f6" opacity="0.85"><title>2026-11-21T05:02:00+00:00: 120 reqs</title></rect><rect x="495.0" y="20.0" width="144.5" height="145.0" fill="#ef4444" opacity="0.85"><title>2026-11-21T05:03:00+00:00: 1500 reqs</title></rect><rect x="640.0" y="86.7" width="144.5" height="78.3" fill="#ef4444" opacity="0.85"><title>2026-11-21T05:04:00+00:00: 810 reqs</title></rect><rect x="785.0" y="153.4" width="144.5" height="11.6" fill="#3b82f6" opacity="0.85"><title>2026-11-21T05:05:00+00:00: 120 reqs</title></rect>
+            <g transform="translate(750, 25)"><rect x="0" y="0" width="12" height="12" fill="#3b82f6" /><text x="18" y="10" fill="#475569" font-size="11">Nominal (60s)</text><rect x="100" y="0" width="12" height="12" fill="#ef4444" /><text x="118" y="10" fill="#475569" font-size="11">Incident Window</text></g>
+        </svg>
+    </div>
     
-        <div class="incident-card">
-            <div class="incident-card-header">
-                <div>
-                    <span class="incident-id">INC-001</span>
-                    <span class="badge badge-shape">sustained_surge</span>
-                    <span class="badge badge-tag">broad_based</span> <span class="badge badge-tag">route_concentrated</span> 
-                </div>
-                <div class="incident-time">2026-11-21T05:03:00+00:00 &rarr; 2026-11-21T05:04:30+00:00 (90s duration)</div>
+            <div style="margin-top:1.5rem;">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Incident ID</th>
+                            <th>Time Range (UTC)</th>
+                            <th>Duration</th>
+                            <th>Observed</th>
+                            <th>Excess</th>
+                            <th>Peak Rate</th>
+                            <th>Shape</th>
+                            <th>Tags</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+        <tr>
+            <td><strong>INC-001</strong></td>
+            <td>2026-11-21T05:03:00+00:00<br>&rarr; 2026-11-21T05:04:30+00:00</td>
+            <td>90s</td>
+            <td>2,250</td>
+            <td style="color:#b91c1c; font-weight:600;">+2,070</td>
+            <td>25 req/s</td>
+            <td><span class="badge badge-shape">sustained_surge</span></td>
+            <td><span class="badge badge-tag">broad_based</span> <span class="badge badge-tag">route_concentrated</span></td>
+        </tr>
+        
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
 
-            <div class="incident-metrics">
-                <div class="inc-metric">
-                    <span class="lbl">Observed Traffic</span>
-                    <span class="val">2,250</span>
-                </div>
-                <div class="inc-metric">
-                    <span class="lbl">Estimated Excess</span>
-                    <span class="val" style="color: #b91c1c;">+2,070</span>
-                </div>
-                <div class="inc-metric">
-                    <span class="lbl">Peak Rate</span>
-                    <span class="val">25 req/s</span>
-                </div>
-                <div class="inc-metric">
-                    <span class="lbl">Max Statistical Z</span>
-                    <span class="val">125.98</span>
-                </div>
-                <div class="inc-metric">
-                    <span class="lbl">Scales Fired</span>
-                    <span class="val">[10, 60, 300]</span>
-                </div>
+    <!-- SECTION 6 & 7: Multi-Scale Evidence Details & Contributors -->
+    <div id="section-evidence"><h2 style="margin-top:2rem;">6 &amp; 7. Multi-Scale Evidence Details &amp; Forensic Contributors</h2>
+        <div class="card incident-detail-card" style="margin-top:1.5rem;">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0;">Incident INC-001 Details</h3>
+                <div><span class="badge badge-tag">broad_based</span> <span class="badge badge-tag">route_concentrated</span></div>
             </div>
-
-            <div class="contributors-grid">
-                <div class="contributor-col">
-                    <strong>Leading Routes:</strong>
-                    <ul><li><code>/api/v1/items/search</code>: 2250 reqs (100.0%)</li></ul>
+            <div class="card-body">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="label">Max Z-Score</span>
+                        <span class="value" style="color:#b91c1c;">125.98</span>
+                        <span class="subtext">Scales: [10, 60, 300]</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Observed / Expected</span>
+                        <span class="value">12.50x</span>
+                        <span class="subtext">Elevation multiplier</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Min P-Value</span>
+                        <span class="value">0.0000e+00</span>
+                        <span class="subtext">Exact tails: Yes</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Omitted Mass Bound</span>
+                        <span class="value">0.00e+00</span>
+                        <span class="subtext">Tail truncation bound</span>
+                    </div>
                 </div>
-                <div class="contributor-col">
-                    <strong>Leading Callers:</strong>
-                    <ul><li><code>client-010</code>: 134 reqs (6.0%)</li><li><code>client-015</code>: 133 reqs (5.9%)</li><li><code>client-018</code>: 125 reqs (5.6%)</li></ul>
-                </div>
-            </div>
 
-            <div class="leads-box">
-                <div class="leads-header">OPERATOR INVESTIGATION LEADS</div>
+                <h4 style="margin:1.25rem 0 0.5rem 0;">Multi-Scale Scanning Evidence Windows (40 total)</h4>
+                <table class="data-table" style="font-size:0.85rem;">
+                    <thead>
+                        <tr>
+                            <th>Scale</th>
+                            <th>Interval (s)</th>
+                            <th>Observed</th>
+                            <th>Baseline</th>
+                            <th>Excess</th>
+                            <th>Z-Score</th>
+                            <th>Elevation</th>
+                            <th>P-Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+            <tr>
+                <td>60s</td>
+                <td>1795237380 &rarr; 1795237440</td>
+                <td>1,500</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+1,380</td>
+                <td><strong>125.98</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237392 &rarr; 1795237452</td>
+                <td>1,500</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+1,380</td>
+                <td><strong>125.98</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237404 &rarr; 1795237464</td>
+                <td>1,500</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+1,380</td>
+                <td><strong>125.98</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237416 &rarr; 1795237476</td>
+                <td>1,362</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+1,242</td>
+                <td><strong>113.38</strong></td>
+                <td>11.35x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237368 &rarr; 1795237428</td>
+                <td>1,224</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+1,104</td>
+                <td><strong>100.78</strong></td>
+                <td>10.20x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237428 &rarr; 1795237488</td>
+                <td>1,086</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+966</td>
+                <td><strong>88.18</strong></td>
+                <td>9.05x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>300s</td>
+                <td>1795237200 &rarr; 1795237500</td>
+                <td>2,670</td>
+                <td>600.0</td>
+                <td style="color:#b91c1c;">+2,070</td>
+                <td><strong>84.51</strong></td>
+                <td>4.45x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>300s</td>
+                <td>1795237260 &rarr; 1795237560</td>
+                <td>2,670</td>
+                <td>600.0</td>
+                <td style="color:#b91c1c;">+2,070</td>
+                <td><strong>84.51</strong></td>
+                <td>4.45x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237356 &rarr; 1795237416</td>
+                <td>948</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+828</td>
+                <td><strong>75.59</strong></td>
+                <td>7.90x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>60s</td>
+                <td>1795237440 &rarr; 1795237500</td>
+                <td>810</td>
+                <td>120.0</td>
+                <td style="color:#b91c1c;">+690</td>
+                <td><strong>62.99</strong></td>
+                <td>6.75x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237380 &rarr; 1795237390</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237382 &rarr; 1795237392</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237384 &rarr; 1795237394</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237386 &rarr; 1795237396</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237388 &rarr; 1795237398</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237390 &rarr; 1795237400</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237392 &rarr; 1795237402</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237394 &rarr; 1795237404</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237396 &rarr; 1795237406</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+            <tr>
+                <td>10s</td>
+                <td>1795237398 &rarr; 1795237408</td>
+                <td>250</td>
+                <td>20.0</td>
+                <td style="color:#b91c1c;">+230</td>
+                <td><strong>51.43</strong></td>
+                <td>12.50x</td>
+                <td>0.00e+00</td>
+            </tr>
+            
+                    </tbody>
+                </table>
+
+                <h4 style="margin:1.25rem 0 0.5rem 0;">Top Contributors &amp; Concentration</h4>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
+                    <div>
+                        <strong>Leading Routes:</strong>
+                        <ul style="margin:0.25rem 0; padding-left:1.25rem;"><li><code>/api/v1/items/search</code>: 2,250 reqs (100.0%)</li></ul>
+                    </div>
+                    <div>
+                        <strong>Leading Clients:</strong>
+                        <ul style="margin:0.25rem 0; padding-left:1.25rem;"><li><code>client-010</code>: 134 reqs (6.0%)</li><li><code>client-015</code>: 133 reqs (5.9%)</li><li><code>client-018</code>: 125 reqs (5.6%)</li><li><code>client-005</code>: 124 reqs (5.5%)</li><li><code>client-003</code>: 122 reqs (5.4%)</li></ul>
+                    </div>
+                </div>
+
+                <h4 style="margin:1.25rem 0 0.5rem 0;">Forensic Investigation Leads</h4>
                 
             <div class="lead-item">
                 <div class="lead-trigger"><strong>Observation:</strong> Dispersed load across 20 distinct clients without a single dominating caller</div>
@@ -362,87 +648,143 @@
             </div>
             
             </div>
-
-            <div class="incident-rationale">
-                <strong>Pattern Rationale:</strong> Sustained elevated volume lasting 90s across multi-scale windows.<br>
-                <small style="color: #64748b;"><em>Note: Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.</em></small>
-            </div>
         </div>
-        
+        </div>
 
-    <h2>Primary 60-Second Windows (Sample)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Window Start (UTC)</th>
-                <th>Observed Requests</th>
-                <th>Active Seconds</th>
-                <th>Status Breakdown (2xx / 4xx / 5xx)</th>
-                <th>Observation Integrity</th>
-            </tr>
-        </thead>
-        <tbody>
-            
+    <!-- SECTION 8: Warnings & Data Notices -->
+    <div class="card" id="section-warnings" style="margin-top:2rem;">
+        <div class="card-header">
+            <h2 style="margin:0;">8. Data Notices &amp; Quality Warnings</h2>
+        </div>
+        <div class="card-body">
+            <ul style="margin:0; padding-left:1.25rem;">
+                <li>Baseline notice: High baseline contamination: 50.0% of time masked during refitting.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 9: Known Limitations -->
+    <div class="card" id="section-limitations">
+        <div class="card-header">
+            <h2 style="margin:0;">9. System Limitations &amp; Bounds</h2>
+        </div>
+        <div class="card-body">
+            <ul style="margin:0; padding-left:1.25rem;">
+                <li>Offline synthetic monitoring cannot infer external causes, intent, or system failures.</li><li>Deduplication is bounded in memory; high volumes may trigger LRU eviction.</li><li>Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.</li><li>Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- SECTION 10: Integrity & Verification -->
+    <div class="card" id="section-integrity">
+        <div class="card-header">
+            <h2 style="margin:0;">10. Cryptographic Integrity &amp; Reproduction</h2>
+        </div>
+        <div class="card-body">
+            <table class="data-table">
+                <tbody>
+                    <tr>
+                        <td style="width:30%;"><strong>Report Schema &amp; Revision</strong></td>
+                        <td><code>pulsewatch.report/1</code> (Revision 2)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Analysis Canonical Hash</strong></td>
+                        <td><code>92e5a847332f5d1ab79c62d9111d28812271ba5cd92861a7523f3a8fb98fcc67</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detector Fingerprint</strong></td>
+                        <td><code>76551df9e0c6722335bbf22f3e4d6168341c607715c9b8f44b870d84017c1205</code></td>
+                    </tr>
+                    
+                    <tr>
+                        <td><strong>Independent Reproduction</strong></td>
+                        <td>
+                            Run CLI verifier to check cryptographic integrity and reproduce analysis:
+                            <br><br>
+                            <code>pulsewatch verify &lt;report.json&gt; --input &lt;input.jsonl&gt; --reproduce</code>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    
+    
+    <div class="card" id="appendix-windows" style="margin-top:2rem;">
+        <div class="card-header">
+            <h2 style="margin:0;">Appendix B: Primary 60-Second Windows (6 total)</h2>
+        </div>
+        <div class="card-body">
+            <p style="color:#64748b; font-size:0.85rem;">Displaying up to first 100 UTC 60-second primary evaluation windows.</p>
+            <div style="max-height: 400px; overflow-y:auto;">
+                <table class="data-table" style="font-size:0.85rem;">
+                    <thead>
+                        <tr>
+                            <th>Window Start (UTC)</th>
+                            <th>Requests</th>
+                            <th>Active Sec</th>
+                            <th>Status (2xx / 4xx / 5xx)</th>
+                            <th>Complete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
         <tr>
             <td><code>2026-11-21T05:00:00+00:00</code></td>
-            <td><strong>120</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>120</td>
+            <td>60s</td>
+            <td>120 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
         <tr>
             <td><code>2026-11-21T05:01:00+00:00</code></td>
-            <td><strong>120</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>120</td>
+            <td>60s</td>
+            <td>120 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
         <tr>
             <td><code>2026-11-21T05:02:00+00:00</code></td>
-            <td><strong>120</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>120</td>
+            <td>60s</td>
+            <td>120 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
         <tr>
             <td><code>2026-11-21T05:03:00+00:00</code></td>
-            <td><strong>1,500</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>1500 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>1,500</td>
+            <td>60s</td>
+            <td>1500 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
         <tr>
             <td><code>2026-11-21T05:04:00+00:00</code></td>
-            <td><strong>810</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>810 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>810</td>
+            <td>60s</td>
+            <td>810 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
         <tr>
             <td><code>2026-11-21T05:05:00+00:00</code></td>
-            <td><strong>120</strong></td>
-            <td>60/60s</td>
-            <td><span class='s2'>120 2xx</span> / <span class='s4'>0 4xx</span> / <span class='s5'>0 5xx</span></td>
-            <td><span class="status-yes">Complete</span></td>
+            <td>120</td>
+            <td>60s</td>
+            <td>120 / 0 / 0</td>
+            <td>Yes</td>
         </tr>
         
-        </tbody>
-    </table>
-
-    <div class="limitations">
-        <strong>Offline Monitoring Known Limitations:</strong>
-        <ul style="margin: 4px 0 0 0; padding-left: 20px;"><li>Offline synthetic monitoring cannot infer external causes, intent, or system failures.</li><li>Deduplication is bounded in memory; high volumes may trigger LRU eviction.</li><li>Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.</li><li>Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models.</li></ul>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+    
 
-    <div>
-        <strong>Deterministic Analysis SHA-256 Digest:</strong>
-        <div class="hash-box">d2ca7c8a9cc8269a86086fefb2f5315a46ade2f06898bd7bd52e98e438071875</div>
-    </div>
 </div>
 </body>
 </html>

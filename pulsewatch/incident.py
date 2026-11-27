@@ -9,7 +9,15 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 from pulsewatch.detector import DetectionCandidate
+from pulsewatch.dedup import (
+    DedupAccounting,
+    RetentionLog,
+    RetentionMismatch,
+    iter_deduplicated,
+    iter_replayed,
+)
 from pulsewatch.ingest import EventRecord, ingest_jsonl_stream
+from pulsewatch.stream_io import HashedTextFile
 from pulsewatch.temporal import TemporalEngine
 
 VALID_SHAPES = frozenset({
@@ -80,9 +88,14 @@ class StatisticalFindings:
     min_log_p_value: float
     baseline_expected_requests: float
     tail_probability_note: str
+    observed_over_expected: Optional[float] = None
+    min_p_value: Optional[float] = None
+    all_tails_exact: Optional[bool] = None
+    max_omitted_mass_bound: Optional[float] = None
+    detection_windows: Optional[List[Dict[str, Any]]] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        d: Dict[str, Any] = {
             "scales_fired": self.scales_fired,
             "max_z_score": round(self.max_z_score, 3),
             "max_elevation_ratio": round(self.max_elevation_ratio, 3),
@@ -90,6 +103,17 @@ class StatisticalFindings:
             "baseline_expected_requests": round(self.baseline_expected_requests, 2),
             "tail_probability_note": self.tail_probability_note,
         }
+        if self.observed_over_expected is not None:
+            d["observed_over_expected"] = round(self.observed_over_expected, 3)
+        if self.min_p_value is not None:
+            d["min_p_value"] = round(self.min_p_value, 6)
+        if self.all_tails_exact is not None:
+            d["all_tails_exact"] = self.all_tails_exact
+        if self.max_omitted_mass_bound is not None:
+            d["max_omitted_mass_bound"] = round(self.max_omitted_mass_bound, 6)
+        if self.detection_windows is not None:
+            d["detection_windows"] = self.detection_windows
+        return d
 
 
 @dataclass
@@ -322,6 +346,11 @@ class IncidentMerger:
                     "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. "
                     "Reported upper-tail probabilities are bounded empirical tail assessments."
                 ),
+                observed_over_expected=total_obs / max(0.1, baseline_expected),
+                min_p_value=min(c.p_value for c in cluster),
+                all_tails_exact=all(c.tail_exact for c in cluster),
+                max_omitted_mass_bound=max(c.omitted_mass_bound for c in cluster),
+                detection_windows=[c.to_dict() for c in sorted(cluster, key=lambda c: -c.z_score)[:40]],
             )
 
             pattern = DescriptivePattern(shape=shape, rationale=rationale)
@@ -347,20 +376,36 @@ def compute_file_sha256(file_path: str) -> str:
     return h.hexdigest()
 
 
+SECOND_PASS_OK = "ok"
+SECOND_PASS_NO_INCIDENTS = "no_incidents"
+SECOND_PASS_INPUT_CHANGED = "input_changed"
+
+
 def collect_second_pass_evidence(
     incidents: List[Incident],
     input_file: str,
-    expected_file_hash: Optional[str] = None
-) -> None:
-    """Bounded second pass over unchanged input to collect contributor evidence and concentration tags."""
-    if not incidents:
-        return
+    expected_file_hash: Optional[str] = None,
+    retention: Optional[RetentionLog] = None
+) -> str:
+    """Bounded second pass over unchanged input to collect contributor evidence and concentration tags.
 
-    # Verify input file hasn't mutated
-    if expected_file_hash:
-        curr_hash = compute_file_sha256(input_file)
-        if curr_hash != expected_file_hash:
-            return
+    The pass re-reads the source rather than retaining a second copy of the events. To keep
+    the evidence consistent with the incident totals (which come from the deduplicated
+    engine), only records the first pass retained are counted. If ``retention`` (the first
+    pass's retain/drop log) is supplied, those decisions are replayed exactly; otherwise a
+    fresh deduplicator is run, which is deterministic over the same byte stream and so
+    retains the same records.
+
+    The input's SHA-256 is computed *while* reading. If ``expected_file_hash`` is given and
+    the bytes read differ, no evidence is attached and ``SECOND_PASS_INPUT_CHANGED`` is
+    returned, so evidence from a different version of the source is never mixed into the
+    report. Read errors (``OSError``) propagate to the caller.
+
+    Returns one of ``SECOND_PASS_OK``, ``SECOND_PASS_NO_INCIDENTS`` or
+    ``SECOND_PASS_INPUT_CHANGED``.
+    """
+    if not incidents:
+        return SECOND_PASS_NO_INCIDENTS
 
     # Map intervals to incidents
     intervals = [(inc.observed_facts.start_sec, inc.observed_facts.end_sec, inc) for inc in incidents]
@@ -369,16 +414,29 @@ def collect_second_pass_evidence(
     incident_routes: Dict[str, Dict[str, int]] = {inc.incident_id: defaultdict(int) for inc in incidents}
     incident_statuses: Dict[str, Dict[str, int]] = {inc.incident_id: defaultdict(int) for inc in incidents}
 
-    with open(input_file, "r", encoding="utf-8", errors="replace") as f:
-        for rec in ingest_jsonl_stream(f):
-            t = rec.timestamp_sec
-            for start, end, inc in intervals:
-                if start <= t < end:
-                    iid = inc.incident_id
-                    incident_clients[iid][rec.client] += 1
-                    incident_routes[iid][rec.route] += 1
-                    status_group = f"{rec.status // 100}xx"
-                    incident_statuses[iid][status_group] += 1
+    try:
+        with HashedTextFile(input_file) as src:
+            valid_records = ingest_jsonl_stream(src.stream)
+            if retention is not None:
+                retained = iter_replayed(valid_records, retention)
+            else:
+                # throwaway accounting; the first pass's accounting is authoritative
+                retained = iter_deduplicated(valid_records, DedupAccounting())
+            for rec in retained:
+                t = rec.timestamp_sec
+                for start, end, inc in intervals:
+                    if start <= t < end:
+                        iid = inc.incident_id
+                        incident_clients[iid][rec.client] += 1
+                        incident_routes[iid][rec.route] += 1
+                        status_group = f"{rec.status // 100}xx"
+                        incident_statuses[iid][status_group] += 1
+            observed_hash = src.sha256_hexdigest()
+    except RetentionMismatch:
+        return SECOND_PASS_INPUT_CHANGED
+
+    if expected_file_hash and observed_hash != expected_file_hash:
+        return SECOND_PASS_INPUT_CHANGED
 
     for inc in incidents:
         iid = inc.incident_id
@@ -458,3 +516,5 @@ def collect_second_pass_evidence(
             ))
 
         inc.investigation_leads = leads
+
+    return SECOND_PASS_OK

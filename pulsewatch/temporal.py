@@ -5,7 +5,7 @@ from __future__ import annotations
 import datetime
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Any, Dict, Iterator, List, Optional, Tuple
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 from pulsewatch.ingest import EventRecord
 
@@ -133,9 +133,20 @@ class TemporalEngine:
         self.sparse_buckets: Dict[int, SecondBucket] = {}
         self.earliest_sec: Optional[int] = None
         self.latest_sec: Optional[int] = None
+        # Canonical route strings. json.loads yields a fresh str per record, and each bucket's
+        # dict would otherwise keep its own copy of every route it sees. Pooling shares one
+        # object per distinct route across all buckets; it changes no value or ordering.
+        self._route_pool: Dict[str, str] = {}
 
-    def ingest_record(self, record: EventRecord) -> None:
-        t = record.timestamp_sec
+    def ingest_record(self, record: Any) -> None:
+        if isinstance(record, dict):
+            t = int(record.get("timestamp_sec", record.get("timestamp", 0)))
+            status = int(record.get("status", 200))
+            route = str(record.get("route", "/"))
+        else:
+            t = record.timestamp_sec
+            status = record.status
+            route = record.route
         if self.earliest_sec is None or t < self.earliest_sec:
             self.earliest_sec = t
         if self.latest_sec is None or t > self.latest_sec:
@@ -147,7 +158,6 @@ class TemporalEngine:
         bucket = self.sparse_buckets[t]
         bucket.total_requests += 1
 
-        status = record.status
         if 200 <= status <= 299:
             bucket.status_2xx += 1
         elif 400 <= status <= 499:
@@ -157,11 +167,29 @@ class TemporalEngine:
         else:
             bucket.status_other += 1
 
-        bucket.routes[record.route] += 1
+        bucket.routes[self._route_pool.setdefault(route, route)] += 1
 
-    def ingest_records(self, records: Iterator[EventRecord]) -> None:
+    def ingest_records(self, records: Iterable[EventRecord]) -> None:
+        """Fold records into the sparse buckets one at a time.
+
+        Accepts any iterable, including a one-shot generator; no record is retained.
+        Aggregation is order-independent (counts plus min/max), so streaming order does
+        not affect the result.
+        """
         for r in records:
             self.ingest_record(r)
+
+    def set_declared_coverage(self, intervals: Iterable[Tuple[int, int]]) -> None:
+        """Set declared coverage intervals after (or between) ingestion.
+
+        Coverage control records may appear anywhere in the input, so a streaming caller
+        only knows the complete list once the stream is exhausted. The constructor
+        copies its argument, which would freeze whatever was known at construction time;
+        this method replaces that copy. Coverage is only consulted by
+        ``compute_coverage``, ``compute_gaps_and_segments`` and
+        ``generate_60s_windows``, so it must be set before those are called.
+        """
+        self.declared_coverage = list(intervals)
 
     def is_in_declared_coverage(self, sec: int) -> bool:
         """Check if a second is covered by explicitly declared coverage intervals."""

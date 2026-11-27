@@ -1,208 +1,19 @@
 /**
- * PulseWatch — Interactive Demonstration & Console Logic
- * 100% vanilla JavaScript with zero external runtime dependencies.
+ * PulseWatch — Data-Driven Interactive Demonstration, Benchmark & Ablation Explorer
+ * Pure vanilla JavaScript, zero external runtime dependencies.
+ * Loads pre-generated SHA-256 verified artifacts from ./data/ and ./demo/.
  */
 
-const SCENARIOS = {
-  normal: {
-    id: "normal",
-    title: "Scenario 1: Stationary Normal Traffic",
-    subtitle: "Steady baseline arrivals modeled with discrete Poisson point processes",
-    badge: "0 False Alarms",
-    badgeClass: "badge-success",
-    metrics: [
-      { label: "Observed Span", val: "720s (12m)" },
-      { label: "Valid Records", val: "2,183" },
-      { label: "Deduplication", val: "0 removed (100% unique)" },
-      { label: "Exactness Status", val: "fully_verified_exact" },
-      { label: "Coverage Ratio", val: "100.0%" },
-      { label: "Baseline Status", val: "HIGH (rate: 3.05 req/s)" },
-      { label: "Contamination Masked", val: "0.0% of time" },
-      { label: "Detected Incidents", val: "0 flagged" }
-    ],
-    highlight: "Zero False Alarms on Stationary Poisson Traffic",
-    explanation: "Standard anomaly detectors often struggle with discrete integer variance, flagging natural Poisson fluctuations as bursts. PulseWatch selects an adaptive initial block length (60s) where expected arrivals E >= 20, correctly estimating baseline dispersion and achieving zero false positives over 12 continuous minutes.",
-    leads: [
-      "Stationary baseline validated: Poisson dispersion phi = 1.00.",
-      "Reliability assigned: HIGH (observation span >= 600s, coverage >= 85%, clean unmasked baseline)."
-    ],
-    hash: "6beb434ce07400dae09279974ea950f17450a0d814c566e76e2361592c858a7d",
-    reportPath: "demo/1_normal_traffic_report.html",
-    jsonPath: "demo/1_normal_traffic_analysis.json"
-  },
-  dedup: {
-    id: "dedup",
-    title: "Scenario 2: Duplicate Proxy Storm",
-    subtitle: "Heavy client/proxy retries replaying identical request identities",
-    badge: "235 Duplicates Removed",
-    badgeClass: "badge-cyan",
-    metrics: [
-      { label: "Observed Span", val: "240s (4m)" },
-      { label: "Ingested Lines", val: "715" },
-      { label: "Duplicates Filtered", val: "235 (32.9% replayed)" },
-      { label: "Retained Records", val: "480" },
-      { label: "Exactness Status", val: "fully_verified_exact" },
-      { label: "Coverage Ratio", val: "100.0%" },
-      { label: "Baseline Status", val: "MEDIUM (rate: 2.00 req/s)" },
-      { label: "Detected Incidents", val: "0 (Apparent spike filtered)" }
-    ],
-    highlight: "Apparent 50% Rate Spike Dismissed via BLAKE2b Hashing",
-    explanation: "Upstream retry storms or proxy re-deliveries create phantom volume spikes in raw server logs. PulseWatch enforces a 4-level identity hierarchy using 16-byte BLAKE2b digests. Exact duplicate records matching normalized event attributes are discarded before detection, preventing costly false alarms.",
-    leads: [
-      "Filtered 235 replayed logs with verified matching attributes (method, route, caller, status).",
-      "Exactness ledger: fully_verified_exact; no degradation occurred."
-    ],
-    hash: "8521a2903b00168d85bdac1f1e269182ed29b18fa2c914b0d921bb9805f4fcd4",
-    reportPath: "demo/2_duplicate_replay_report.html",
-    jsonPath: "demo/2_duplicate_replay_analysis.json"
-  },
-  surge: {
-    id: "surge",
-    title: "Scenario 3: Genuine 90s API Surge",
-    subtitle: "Multi-client load spike on search route with localized 1-second boundaries",
-    badge: "1 Incident Flagged",
-    badgeClass: "badge-danger",
-    metrics: [
-      { label: "Observed Span", val: "360s (6m)" },
-      { label: "Valid Records", val: "2,790" },
-      { label: "Incident Duration", val: "90s (Active bounds)" },
-      { label: "Peak 1s Rate", val: "25 req/s (12.5x base)" },
-      { label: "Observed Volume", val: "2,250 requests" },
-      { label: "Estimated Excess", val: "+2,070 requests" },
-      { label: "Maximum Z-Score", val: "125.98" },
-      { label: "Concentration Tags", val: "broad_based, route_concentrated" }
-    ],
-    highlight: "Exact Boundary Localization (IoU = 1.00) & Actionable SRE Leads",
-    explanation: "A genuine 90-second surge on /api/v1/items/search was detected across 10s, 60s, and 300s timescales. Rather than suffering from moving-average boundary lag (which degrades standard detectors to 0.50–0.75 IoU), PulseWatch trims candidates to 1-second active excess, achieving exact IoU = 1.00 and generating deterministic investigation leads.",
-    leads: [
-      "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment.",
-      "Investigate endpoint '/api/v1/items/search' capacity, database query efficiency, and upstream dependency health.",
-      "Baseline contamination warning: 50.0% of observation time sticky-masked during refitting."
-    ],
-    hash: "d2ca7c8a9cc8269a86086fefb2f5315a46ade2f06898bd7bd52e98e438071875",
-    reportPath: "demo/3_genuine_surge_report.html",
-    jsonPath: "demo/3_genuine_surge_analysis.json"
-  },
-  gap: {
-    id: "gap",
-    title: "Scenario 4: Collector Outage & Coverage Gap",
-    subtitle: "1,000-second telemetry drop resulting in explicit, defensible abstention",
-    badge: "Detector Abstained",
-    badgeClass: "badge-warning",
-    metrics: [
-      { label: "Total Wall Span", val: "1,241s (~20.7m)" },
-      { label: "Active Observation", val: "240s (4m)" },
-      { label: "Unknown Gap", val: "1,000s (>900s threshold)" },
-      { label: "Coverage Ratio", val: "19.3%" },
-      { label: "Baseline Status", val: "ABSTAIN" },
-      { label: "Abstain Reason", val: "Coverage (19.3%) below 40% threshold" },
-      { label: "False Positives", val: "0 (Naive baselines fire on resume)" },
-      { label: "Detected Incidents", val: "0" }
-    ],
-    highlight: "Defensible Abstention Prevents Telemetry Resume False Alarms",
-    explanation: "When telemetry pipelines crash or restart, naïve moving averages (Trailing Mean, EWMA, MAD) treat the unobserved silence as zero-traffic, firing spurious alerts as soon as normal traffic resumes. PulseWatch tracks sparse 1s bins, flags unknown gaps > 900s, recognizes that coverage (19.3%) is below the defensible threshold, and deliberately abstains.",
-    leads: [
-      "Coverage ratio 19.3% is below minimum defensible baseline threshold (40.0%).",
-      "Detector explicitly abstained from emission to prevent false alarm fatigue."
-    ],
-    hash: "f6da86ec3290ca89049ed18c97bb4bcedc244eac547c57f8e198bcdcb23fd2a1",
-    reportPath: "demo/4_coverage_gap_report.html",
-    jsonPath: "demo/4_coverage_gap_analysis.json"
-  },
-  regime: {
-    id: "regime",
-    title: "Scenario 5: Ambiguous Regime Level Shift",
-    subtitle: "Permanent rate elevation from 2 to 16 req/s triggering asymmetry warning",
-    badge: "Level Shift Candidate",
-    badgeClass: "badge-amber",
-    metrics: [
-      { label: "Observed Span", val: "300s (5m)" },
-      { label: "Valid Records", val: "2,280" },
-      { label: "Post-Shift Duration", val: "120s" },
-      { label: "Elevated Rate", val: "16 req/s (8.0x base)" },
-      { label: "Asymmetry Ratio", val: "0.15 (Significant skew)" },
-      { label: "Incident Shape", val: "level_shift_candidate" },
-      { label: "Baseline Status", val: "LOW (regime asymmetry)" },
-      { label: "Detected Incidents", val: "1 candidate" }
-    ],
-    highlight: "Symmetric Split Check Identifies Permanent Service Scaling",
-    explanation: "When traffic doubles due to scheduled service scale-up or permanent consumer adoption, standard detectors continuously scream anomaly. PulseWatch evaluates first-half vs. second-half arrival rates (asymmetry ratio 0.15 outside [0.40, 2.50]), flags the incident as `level_shift_candidate`, downgrades baseline reliability to LOW, and prompts the engineer to verify scaling.",
-    leads: [
-      "Significant regime asymmetry detected (first/second half clean ratio: 0.15).",
-      "Confirm whether an intentional service scaling step occurred or collect extended steady-state observations."
-    ],
-    hash: "0fc75199253414a29df0aabf985f4cd7c55eeed807a770bf0ae3429a25c3e0fa",
-    reportPath: "demo/5_ambiguous_regime_report.html",
-    jsonPath: "demo/5_ambiguous_regime_analysis.json"
-  }
+"use strict";
+
+const STATE = {
+  scenariosData: null,
+  benchmarkData: null,
+  ablationsData: null,
+  activeScenarioKey: "surge",
+  activeBenchmarkCategory: "all",
+  activeAblationIndex: 0,
 };
-
-function selectScenario(scenarioKey) {
-  const data = SCENARIOS[scenarioKey];
-  if (!data) return;
-
-  // Update tabs
-  document.querySelectorAll(".scenario-tab").forEach(tab => {
-    const isSelected = tab.dataset.scenario === scenarioKey;
-    tab.setAttribute("aria-selected", isSelected ? "true" : "false");
-    tab.classList.toggle("active", isSelected);
-  });
-
-  // Update header & badges
-  document.getElementById("sc-title").textContent = data.title;
-  document.getElementById("sc-subtitle").textContent = data.subtitle;
-  const badgeEl = document.getElementById("sc-badge");
-  badgeEl.textContent = data.badge;
-  badgeEl.className = "badge " + data.badgeClass;
-
-  // Update metrics grid
-  const metricsContainer = document.getElementById("sc-metrics");
-  metricsContainer.innerHTML = "";
-  data.metrics.forEach(m => {
-    const card = document.createElement("div");
-    card.className = "metric-box";
-    card.innerHTML = `
-      <div class="metric-label">${escapeHtml(m.label)}</div>
-      <div class="metric-value">${escapeHtml(m.val)}</div>
-    `;
-    metricsContainer.appendChild(card);
-  });
-
-  // Update explanation & highlight
-  document.getElementById("sc-highlight").textContent = data.highlight;
-  document.getElementById("sc-explanation").textContent = data.explanation;
-
-  // Update leads
-  const leadsContainer = document.getElementById("sc-leads");
-  leadsContainer.innerHTML = "";
-  data.leads.forEach(lead => {
-    const li = document.createElement("li");
-    li.textContent = lead;
-    leadsContainer.appendChild(li);
-  });
-
-  // Update hash & links
-  document.getElementById("sc-hash").textContent = data.hash;
-  const reportBtn = document.getElementById("sc-report-link");
-  reportBtn.href = data.reportPath;
-  const jsonBtn = document.getElementById("sc-json-link");
-  jsonBtn.href = data.jsonPath;
-}
-
-function copyCode(btn, codeId) {
-  const el = document.getElementById(codeId);
-  if (!el) return;
-  const text = el.innerText || el.textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const orig = btn.innerHTML;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
-    btn.classList.add("copied");
-    setTimeout(() => {
-      btn.innerHTML = orig;
-      btn.classList.remove("copied");
-    }, 2000);
-  });
-}
 
 function escapeHtml(str) {
   return String(str)
@@ -213,20 +24,576 @@ function escapeHtml(str) {
     .replace(/'/g, "&#039;");
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize default scenario
-  selectScenario("surge");
+function fmtNum(val) {
+  if (val === null || val === undefined) return "N/A";
+  return Number(val).toLocaleString("en-US");
+}
 
-  // Tab click listeners
-  document.querySelectorAll(".scenario-tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      selectScenario(tab.dataset.scenario);
+function fmtFloat(val, digits = 4) {
+  if (val === null || val === undefined) return "N/A";
+  return Number(val).toFixed(digits);
+}
+
+/* -------------------------------------------------------------------------- */
+/* SVG Traffic Visualization                                                  */
+/* -------------------------------------------------------------------------- */
+
+function renderTraceSvg(sc) {
+  const tl = sc.timeline;
+  const bins = (tl && tl.bins) ? tl.bins : [];
+  if (bins.length === 0) {
+    return `<div style="padding:2rem;text-align:center;color:var(--text-dim);">No time-series bins available.</div>`;
+  }
+
+  const W = 900;
+  const H = 250;
+  const padL = 52;
+  const padR = 20;
+  const padT = 22;
+  const padB = 34;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  const span = Math.max(1, tl.span_sec);
+  const binW = tl.bin_size_sec || 10;
+  const baseRate = sc.metrics.baseline_rate_1s || 0;
+
+  let maxRps = Math.max(5, baseRate * 1.5);
+  bins.forEach(b => {
+    if (b.raw_rps > maxRps) maxRps = b.raw_rps;
+    if (b.dedup_rps > maxRps) maxRps = b.dedup_rps;
+  });
+  maxRps = Math.ceil(maxRps * 1.15);
+
+  const xOf = (t) => padL + (Math.min(span, Math.max(0, t)) / span) * plotW;
+  const yOf = (r) => padT + plotH - (Math.min(maxRps, Math.max(0, r)) / maxRps) * plotH;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Traffic rate over time">`;
+
+  // Horizontal grid lines
+  for (let i = 0; i <= 4; i++) {
+    const val = (maxRps / 4) * i;
+    const y = yOf(val);
+    svg += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W - padR}" y2="${y.toFixed(1)}" stroke="#1e293b" stroke-width="1"/>`;
+    svg += `<text x="${padL - 8}" y="${(y + 4).toFixed(1)}" fill="#64748b" font-size="11" text-anchor="end" font-family="monospace">${val.toFixed(0)}</text>`;
+  }
+
+  // Coverage gaps shading (>900s)
+  (tl.gap_intervals_rel || []).forEach(([gs, ge]) => {
+    const gx = xOf(gs);
+    const gw = Math.max(2, xOf(ge) - gx);
+    svg += `<rect x="${gx.toFixed(1)}" y="${padT}" width="${gw.toFixed(1)}" height="${plotH}" fill="rgba(245, 158, 11, 0.14)" stroke="rgba(245, 158, 11, 0.5)" stroke-dasharray="4 3"/>`;
+    svg += `<text x="${(gx + gw / 2).toFixed(1)}" y="${padT + 18}" fill="#fbbf24" font-size="11" text-anchor="middle" font-weight="600">UNKNOWN GAP (${ge - gs}s)</text>`;
+  });
+
+  // Ground-truth intervals (dashed outline)
+  (sc.ground_truth_intervals_rel || []).forEach(([gs, ge]) => {
+    const gx = xOf(gs);
+    const gw = Math.max(3, xOf(ge) - gx);
+    svg += `<rect x="${gx.toFixed(1)}" y="${padT}" width="${gw.toFixed(1)}" height="${plotH}" fill="none" stroke="#34d399" stroke-width="1.5" stroke-dasharray="5 3"/>`;
+  });
+
+  // Detected incident intervals (rose tint)
+  (tl.incident_intervals_rel || []).forEach(([is, ie]) => {
+    const ix = xOf(is);
+    const iw = Math.max(3, xOf(ie) - ix);
+    svg += `<rect x="${ix.toFixed(1)}" y="${padT}" width="${iw.toFixed(1)}" height="${plotH}" fill="rgba(244, 63, 94, 0.16)" stroke="rgba(251, 113, 133, 0.7)" stroke-width="1"/>`;
+    svg += `<text x="${(ix + iw / 2).toFixed(1)}" y="${padT + 15}" fill="#fb7185" font-size="11" text-anchor="middle" font-weight="600">DETECTED</text>`;
+  });
+
+  // Baseline rate line
+  if (baseRate > 0) {
+    const by = yOf(baseRate);
+    svg += `<line x1="${padL}" y1="${by.toFixed(1)}" x2="${W - padR}" y2="${by.toFixed(1)}" stroke="#34d399" stroke-width="1.5" stroke-dasharray="6 4"/>`;
+  }
+
+  // Raw rate polyline (shown when duplicates exist)
+  const hasDups = (sc.metrics.duplicates_removed || 0) > 0;
+  if (hasDups) {
+    const rawPts = bins.map(b => `${xOf(b.t_rel + binW * 0.5).toFixed(1)},${yOf(b.raw_rps).toFixed(1)}`).join(" ");
+    svg += `<polyline fill="none" stroke="#fbbf24" stroke-width="1.8" stroke-dasharray="4 3" points="${rawPts}"/>`;
+  }
+
+  // Deduplicated rate polyline
+  const dedupPts = bins.map(b => `${xOf(b.t_rel + binW * 0.5).toFixed(1)},${yOf(b.dedup_rps).toFixed(1)}`).join(" ");
+  svg += `<polyline fill="none" stroke="#38bdf8" stroke-width="2.2" points="${dedupPts}"/>`;
+
+  // X-axis labels
+  for (let i = 0; i <= 4; i++) {
+    const t = Math.round((span / 4) * i);
+    const x = xOf(t);
+    svg += `<text x="${x.toFixed(1)}" y="${H - 10}" fill="#64748b" font-size="11" text-anchor="middle" font-family="monospace">${t}s</text>`;
+  }
+
+  svg += `<text x="14" y="${padT + plotH / 2}" fill="#64748b" font-size="11" text-anchor="middle" transform="rotate(-90 14 ${padT + plotH / 2})">req/s</text>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderWorldCupSvg(sc) {
+  const samples = sc.samples || [];
+  const W = 900;
+  const H = 220;
+  const padL = 70;
+  const padR = 30;
+  const padT = 25;
+  const padB = 38;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const maxRec = Math.max(...samples.map(s => s.records), 1);
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="WorldCup98 sample volumes">`;
+  const slotW = plotW / Math.max(1, samples.length);
+  samples.forEach((s, idx) => {
+    const barW = Math.min(120, slotW * 0.5);
+    const barH = (s.records / maxRec) * plotH;
+    const x = padL + idx * slotW + (slotW - barW) / 2;
+    const y = padT + plotH - barH;
+    svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${barH.toFixed(1)}" rx="4" fill="rgba(56, 189, 248, 0.25)" stroke="#38bdf8" stroke-width="1.5"/>`;
+    svg += `<text x="${(x + barW / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" fill="#f8fafc" font-size="12" text-anchor="middle" font-family="monospace">${fmtNum(s.records)} reqs</text>`;
+    svg += `<text x="${(x + barW / 2).toFixed(1)}" y="${H - 14}" fill="#94a3b8" font-size="11" text-anchor="middle">${escapeHtml(s.sample_id.toUpperCase())} (${s.baseline_rate_1s} req/s)</text>`;
+  });
+  svg += `</svg>`;
+  return svg;
+}
+
+function renderAblationSummarySvg() {
+  const exps = (STATE.ablationsData && STATE.ablationsData.experiments) || [];
+  const W = 900;
+  const H = 200;
+  const padL = 60;
+  const padR = 30;
+  const padT = 24;
+  const padB = 36;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Ablation false positive impact">`;
+  const slotW = plotW / Math.max(1, exps.length);
+  exps.forEach((exp, idx) => {
+    const fpDiff = exp.scenarios.reduce((acc, s) => acc + Math.max(0, (s.ablated_fp || 0) - (s.control_fp || 0)), 0);
+    const maxH = Math.max(1, plotH * (Math.min(10, Math.max(1, fpDiff)) / 10));
+    const barW = Math.min(80, slotW * 0.45);
+    const x = padL + idx * slotW + (slotW - barW) / 2;
+    const y = padT + plotH - maxH;
+    const color = fpDiff > 0 ? "#fb7185" : "#34d399";
+    svg += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${maxH.toFixed(1)}" rx="4" fill="rgba(56, 189, 248, 0.14)" stroke="${color}" stroke-width="1.5"/>`;
+    svg += `<text x="${(x + barW / 2).toFixed(1)}" y="${(y - 6).toFixed(1)}" fill="${color}" font-size="11" text-anchor="middle" font-family="monospace">+${fpDiff} FP</text>`;
+    svg += `<text x="${(x + barW / 2).toFixed(1)}" y="${H - 12}" fill="#94a3b8" font-size="11" text-anchor="middle">${escapeHtml(exp.experiment_id.split("_")[0])}</text>`;
+  });
+  svg += `</svg>`;
+  return svg;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Scenario Explorer                                                          */
+/* -------------------------------------------------------------------------- */
+
+function buildEvidenceAccordion(sc) {
+  const panels = [];
+  if (sc.kind === "trace") {
+    const ev = sc.evidence || {};
+    const m = sc.metrics || {};
+
+    // Panel 1: Incident Overview & Leads
+    const leadsHtml = (ev.investigation_leads || []).length > 0
+      ? `<ul style="padding-left:1.2rem;">${ev.investigation_leads.map(l => `<li><strong>${escapeHtml(l.trigger)}:</strong> ${escapeHtml(l.suggested_action)}</li>`).join("")}</ul>`
+      : `<p>No anomaly incidents triggered in this scenario.</p>`;
+
+    const incInfo = (sc.incidents || []).length > 0
+      ? sc.incidents.map(inc => `
+          <div style="margin-bottom:0.65rem;">
+            <strong>${escapeHtml(inc.incident_id)}</strong> · Shape: <code>${escapeHtml(inc.descriptive_pattern.shape)}</code> ·
+            Max Z: <code>${inc.statistical_findings.max_z_score}</code> ·
+            Scales: <code>[${(inc.statistical_findings.scales_fired || []).join(", ")}]</code> ·
+            Excess: <code>+${fmtNum(inc.observed_facts.estimated_excess_requests)} reqs</code>
+          </div>`).join("")
+      : "";
+
+    panels.push(`
+      <details class="evidence-panel" open>
+        <summary>Incident Overview &amp; Deterministic Investigation Leads</summary>
+        <div class="evidence-content">
+          ${incInfo}
+          ${leadsHtml}
+        </div>
+      </details>
+    `);
+
+    // Panel 2: Contributor Evidence (Routes, Clients, Status Codes, Tags)
+    const routesEntries = Object.entries(ev.leading_routes || {}).slice(0, 5);
+    const clientsEntries = Object.entries(ev.top_clients || {}).slice(0, 5);
+    const statusEntries = Object.entries(ev.status_distribution || {});
+
+    panels.push(`
+      <details class="evidence-panel">
+        <summary>Contributor Distribution, Leading Routes &amp; Status Codes</summary>
+        <div class="evidence-content">
+          <div class="evidence-grid">
+            <div class="evidence-subcard">
+              <h5>Leading Routes</h5>
+              ${routesEntries.length ? `<ul class="kv-list">${routesEntries.map(([k, v]) => `<li><span>${escapeHtml(k)}</span><span>${fmtNum(v)}</span></li>`).join("")}</ul>` : `<p>N/A (no incident)</p>`}
+            </div>
+            <div class="evidence-subcard">
+              <h5>Top Callers</h5>
+              ${clientsEntries.length ? `<ul class="kv-list">${clientsEntries.map(([k, v]) => `<li><span>${escapeHtml(k)}</span><span>${fmtNum(v)}</span></li>`).join("")}</ul>` : `<p>N/A (no incident)</p>`}
+            </div>
+            <div class="evidence-subcard">
+              <h5>Status Distribution &amp; Tags</h5>
+              ${statusEntries.length ? `<ul class="kv-list">${statusEntries.map(([k, v]) => `<li><span>HTTP ${escapeHtml(k)}</span><span>${fmtNum(v)}</span></li>`).join("")}</ul>` : `<p>All nominal 200 OK</p>`}
+              <div class="tag-row">${(ev.concentration_tags || []).map(t => `<span class="tag-chip">${escapeHtml(t)}</span>`).join("")}</div>
+            </div>
+          </div>
+        </div>
+      </details>
+    `);
+
+    // Panel 3: Input Integrity, Notices & Schema Metadata
+    panels.push(`
+      <details class="evidence-panel">
+        <summary>Input Integrity, Exactness Status &amp; Data Notices</summary>
+        <div class="evidence-content">
+          <ul class="kv-list" style="margin-bottom:0.75rem;">
+            <li><span>Schema Version &amp; Revision</span><span>${escapeHtml(sc.schema_version)} (rev ${sc.report_revision})</span></li>
+            <li><span>Source SHA-256</span><span>${escapeHtml((sc.source_sha256 || "").slice(0, 24))}...</span></li>
+            <li><span>Exactness Status</span><span>${escapeHtml(m.exactness_status)}</span></li>
+            <li><span>Second-Pass Evidence Replay</span><span>${escapeHtml(m.second_pass_status)}</span></li>
+          </ul>
+          ${(ev.data_notices || []).length ? `<div><strong>Notices:</strong><ul style="padding-left:1.2rem;margin-top:0.25rem;">${ev.data_notices.map(n => `<li>${escapeHtml(n)}</li>`).join("")}</ul></div>` : ""}
+        </div>
+      </details>
+    `);
+  } else if (sc.kind === "worldcup98") {
+    panels.push(`
+      <details class="evidence-panel" open>
+        <summary>Authentic WorldCup98 Trace Samples (Days 20, 46, 78)</summary>
+        <div class="evidence-content">
+          <div class="benchmark-table-wrapper">
+            <table class="benchmark-table">
+              <thead><tr><th>Sample</th><th>Date (Paris)</th><th>Records</th><th>Coverage</th><th>Baseline Rate</th><th>Reliability</th><th>False Alarms</th></tr></thead>
+              <tbody>
+                ${sc.samples.map(s => `
+                  <tr>
+                    <td><code>${escapeHtml(s.sample_id)}</code></td>
+                    <td>${escapeHtml(s.label)}</td>
+                    <td>${fmtNum(s.records)}</td>
+                    <td>${s.coverage_pct}%</td>
+                    <td>${s.baseline_rate_1s} req/s</td>
+                    <td class="stat-highlight">${escapeHtml(s.baseline_reliability)}</td>
+                    <td class="stat-highlight">${s.incidents_detected}</td>
+                  </tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:0.75rem;">Note: These 3 intervals represent authentic historical traffic with zero false alarms. Controlled perturbation injection tests are evaluated separately.</p>
+        </div>
+      </details>
+    `);
+  } else if (sc.kind === "ablations") {
+    const exps = (STATE.ablationsData && STATE.ablationsData.experiments) || [];
+    panels.push(`
+      <details class="evidence-panel" open>
+        <summary>Five Controlled Ablation Studies Overview</summary>
+        <div class="evidence-content">
+          <ul style="padding-left:1.2rem;">
+            ${exps.map(e => `<li><strong>${escapeHtml(e.experiment_id)} (${escapeHtml(e.component_name)}):</strong> ${escapeHtml(e.description)}</li>`).join("")}
+          </ul>
+        </div>
+      </details>
+    `);
+  }
+  return panels.join("");
+}
+
+function selectScenario(key) {
+  if (!STATE.scenariosData || !STATE.scenariosData.scenarios[key]) return;
+  STATE.activeScenarioKey = key;
+  const sc = STATE.scenariosData.scenarios[key];
+
+  // Update tabs
+  document.querySelectorAll("#scenario-tabs .scenario-tab").forEach(tab => {
+    const active = tab.dataset.scenario === key;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+  });
+
+  // Header & badge
+  document.getElementById("sc-title").textContent = sc.title;
+  document.getElementById("sc-subtitle").textContent = sc.subtitle;
+  const badge = document.getElementById("sc-badge");
+  badge.textContent = sc.badge;
+  badge.className = "badge " + (sc.badge_class || "badge-cyan");
+
+  // Chart & legend
+  const chartContainer = document.getElementById("sc-chart-container");
+  const legendEl = document.getElementById("sc-chart-legend");
+  const chartTitle = document.getElementById("sc-chart-title");
+
+  if (sc.kind === "trace") {
+    chartTitle.textContent = "Traffic Rate Timeline (req/s)";
+    legendEl.innerHTML = `
+      <span class="legend-item"><span class="legend-swatch" style="background:#38bdf8;"></span>Deduplicated Rate</span>
+      ${(sc.metrics.duplicates_removed || 0) > 0 ? `<span class="legend-item"><span class="legend-swatch" style="background:#fbbf24;"></span>Raw Input Rate</span>` : ""}
+      <span class="legend-item"><span class="legend-swatch" style="background:#34d399;"></span>Baseline Rate</span>
+      <span class="legend-item"><span class="legend-box" style="background:rgba(244,63,94,0.35);border:1px solid #fb7185;"></span>Detected Incident</span>
+    `;
+    chartContainer.innerHTML = renderTraceSvg(sc);
+  } else if (sc.kind === "worldcup98") {
+    chartTitle.textContent = "WorldCup98 Authentic 15-Min Sample Volumes";
+    legendEl.innerHTML = `<span class="legend-item"><span class="legend-box" style="background:rgba(56,189,248,0.3);border:1px solid #38bdf8;"></span>Exported Requests</span>`;
+    chartContainer.innerHTML = renderWorldCupSvg(sc);
+  } else {
+    chartTitle.textContent = "Additional False Positives Caused by Disabling Each Component";
+    legendEl.innerHTML = `<span class="legend-item"><span class="legend-box" style="background:rgba(251,113,133,0.3);border:1px solid #fb7185;"></span>Ablated False-Alarm Spike</span>`;
+    chartContainer.innerHTML = renderAblationSummarySvg();
+  }
+
+  // Numerical results grid
+  const m = sc.metrics || {};
+  let metricCards = [];
+  if (sc.kind === "trace") {
+    metricCards = [
+      { label: "Input Records", val: fmtNum(m.input_records) },
+      { label: "Retained Records", val: fmtNum(m.retained_records) },
+      { label: "Duplicates Removed", val: fmtNum(m.duplicates_removed) },
+      { label: "Coverage Ratio", val: `${m.coverage_pct}%` },
+      { label: "Baseline Reliability", val: m.baseline_reliability },
+      { label: "Baseline Rate", val: `${m.baseline_rate_1s} req/s` },
+      { label: "Incidents Detected", val: String(m.incident_count) },
+      { label: "False Alarms", val: String(m.false_alarms) },
+    ];
+  } else if (sc.kind === "worldcup98") {
+    metricCards = [
+      { label: "Samples Evaluated", val: String(m.samples_evaluated) },
+      { label: "Total Requests", val: fmtNum(m.total_records) },
+      { label: "Peak Window Volume", val: fmtNum(m.max_records_window) },
+      { label: "Peak Rate", val: `${m.max_rate_1s} req/s` },
+      { label: "False Alarms", val: String(m.false_alarms) },
+      { label: "Dataset Origin", val: "1998 World Cup" },
+    ];
+  } else {
+    metricCards = [
+      { label: "Ablation Studies", val: String(sc.experiments_count || 5) },
+      { label: "Schema", val: "pulsewatch.ablation/1" },
+      { label: "Seed Partition", val: "51001..51005" },
+      { label: "Status", val: "100% Reproducible" },
+    ];
+  }
+
+  document.getElementById("sc-metrics").innerHTML = metricCards.map(c => `
+    <div class="metric-box">
+      <div class="metric-label">${escapeHtml(c.label)}</div>
+      <div class="metric-value">${escapeHtml(c.val)}</div>
+    </div>
+  `).join("");
+
+  // Insight & Evidence
+  document.getElementById("sc-highlight").textContent = sc.highlight;
+  document.getElementById("sc-explanation").textContent = sc.explanation;
+  document.getElementById("sc-evidence-accordion").innerHTML = buildEvidenceAccordion(sc);
+
+  // Hash & Actions
+  document.getElementById("sc-hash").textContent = sc.analysis_hash || sc.key + " (aggregate artifact)";
+  const reportLink = document.getElementById("sc-report-link");
+  if (sc.report_path) {
+    reportLink.href = sc.report_path;
+    reportLink.hidden = false;
+  } else {
+    reportLink.hidden = true;
+  }
+
+  const dlLink = document.getElementById("sc-json-download");
+  dlLink.href = sc.json_path || "data/scenarios.json";
+  dlLink.setAttribute("download", (sc.json_path || "scenarios.json").split("/").pop());
+
+  // Close JSON drawer on scenario switch
+  document.getElementById("sc-json-drawer").hidden = true;
+}
+
+async function toggleRawJson() {
+  const drawer = document.getElementById("sc-json-drawer");
+  if (!drawer.hidden) {
+    drawer.hidden = true;
+    return;
+  }
+  const sc = STATE.scenariosData.scenarios[STATE.activeScenarioKey];
+  const path = sc.json_path || "data/scenarios.json";
+  document.getElementById("sc-json-filename").textContent = path;
+  const pre = document.getElementById("sc-json-content");
+  pre.textContent = "Loading " + path + "...";
+  drawer.hidden = false;
+
+  try {
+    const resp = await fetch(path);
+    const text = await resp.text();
+    pre.textContent = text.slice(0, 18000) + (text.length > 18000 ? "\n... (truncated preview; use Download JSON for full file)" : "");
+  } catch (err) {
+    pre.textContent = "Failed to load JSON artifact: " + err.message;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Benchmark v2 Explorer                                                      */
+/* -------------------------------------------------------------------------- */
+
+function renderBenchmarkSection() {
+  const bm = STATE.benchmarkData;
+  if (!bm) return;
+
+  const s = bm.overall_summary;
+  const kpis = [
+    { label: "Total Scenarios", val: `${bm.scenarios_count}`, sub: `${bm.categories_count} categories` },
+    { label: "Pooled F1 Score", val: fmtFloat(s.pooled_f1_score, 4), sub: `TP=${s.pooled_true_positives}, FP=${s.pooled_false_positives}, FN=${s.pooled_false_negatives}` },
+    { label: "Macro-Mean F1", val: fmtFloat(s.macro_mean_f1, 4), sub: "Positive & borderline classes" },
+    { label: "Pooled Precision", val: fmtFloat(s.pooled_precision, 4), sub: "Across all seeds" },
+    { label: "Pooled Recall", val: fmtFloat(s.pooled_recall, 4), sub: "Across all seeds" },
+  ];
+
+  document.getElementById("bm-kpis").innerHTML = kpis.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${escapeHtml(k.label)}</div>
+      <div class="kpi-val">${escapeHtml(k.val)}</div>
+      <div class="kpi-sub">${escapeHtml(k.sub)}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("bm-fingerprint").textContent =
+    `Scenario Fingerprint: ${bm.scenario_fingerprint} · Seeds: [${bm.seeds.join(", ")}]`;
+
+  // Category filter buttons
+  const filterBar = document.getElementById("bm-filters");
+  filterBar.innerHTML = `<button type="button" class="filter-btn active" data-cat="all">All (${bm.scenarios_count})</button>` +
+    bm.categories.map(c => `<button type="button" class="filter-btn" data-cat="${escapeHtml(c.category)}">${escapeHtml(c.category)} (${c.count})</button>`).join("");
+
+  filterBar.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      STATE.activeBenchmarkCategory = btn.dataset.cat;
+      filterBar.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b === btn));
+      renderBenchmarkTable();
     });
-    tab.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        selectScenario(tab.dataset.scenario);
-      }
-    });
+  });
+
+  renderBenchmarkTable();
+}
+
+function renderBenchmarkTable() {
+  const bm = STATE.benchmarkData;
+  const cat = STATE.activeBenchmarkCategory;
+  const rows = bm.scenarios.filter(s => cat === "all" || s.category === cat);
+
+  document.getElementById("bm-table-body").innerHTML = rows.map(r => {
+    const f1Class = r.f1_score === null ? "" : (r.f1_score >= 0.8 ? "stat-highlight" : (r.f1_score === 0 ? "stat-fail" : "stat-lag"));
+    return `
+      <tr>
+        <td><code>${escapeHtml(r.scenario_id)}</code></td>
+        <td>${escapeHtml(r.category)}</td>
+        <td>${r.tp}</td>
+        <td class="${!r.has_positive_class && r.fp > 0 ? "stat-fail" : ""}">${r.fp}</td>
+        <td>${r.fn}</td>
+        <td>${fmtFloat(r.precision, 4)}</td>
+        <td>${fmtFloat(r.recall, 4)}</td>
+        <td class="${f1Class}">${fmtFloat(r.f1_score, 4)}</td>
+        <td>${fmtFloat(r.mean_iou, 4)}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Ablation Explorer                                                          */
+/* -------------------------------------------------------------------------- */
+
+function renderAblationTabs() {
+  const exps = (STATE.ablationsData && STATE.ablationsData.experiments) || [];
+  const tabsEl = document.getElementById("ab-tabs");
+  tabsEl.innerHTML = exps.map((e, idx) => `
+    <button type="button" class="filter-btn ${idx === 0 ? "active" : ""}" data-ab-idx="${idx}" role="tab" aria-selected="${idx === 0}">
+      ${escapeHtml(e.experiment_id.split("_")[0])}: ${escapeHtml(e.component_name)}
+    </button>
+  `).join("");
+
+  tabsEl.querySelectorAll(".filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => selectAblation(Number(btn.dataset.abIdx)));
+  });
+
+  if (exps.length > 0) selectAblation(0);
+}
+
+function selectAblation(idx) {
+  const exps = STATE.ablationsData.experiments;
+  const exp = exps[idx];
+  if (!exp) return;
+  STATE.activeAblationIndex = idx;
+
+  document.querySelectorAll("#ab-tabs .filter-btn").forEach((b, i) => {
+    b.classList.toggle("active", i === idx);
+    b.setAttribute("aria-selected", i === idx ? "true" : "false");
+  });
+
+  document.getElementById("ab-title").textContent = `${exp.experiment_id}: ${exp.component_name}`;
+  document.getElementById("ab-desc").textContent = exp.description;
+  document.getElementById("ab-id-badge").textContent = exp.experiment_id.split("_")[0];
+
+  document.getElementById("ab-table-body").innerHTML = exp.scenarios.map(s => {
+    const deltaFp = s.delta_fp || 0;
+    const fpClass = deltaFp > 0 ? "stat-fail" : "stat-highlight";
+    return `
+      <tr>
+        <td><code>${escapeHtml(s.scenario_id)}</code></td>
+        <td class="stat-highlight">${fmtFloat(s.control_f1, 4)} (${s.control_tp}/${s.control_fp}/${s.control_fn})</td>
+        <td>${fmtFloat(s.control_mean_iou, 4)}</td>
+        <td class="${s.ablated_f1 === 0 && s.control_f1 > 0 ? "stat-fail" : ""}">${fmtFloat(s.ablated_f1, 4)} (${s.ablated_tp}/${s.ablated_fp}/${s.ablated_fn})</td>
+        <td>${fmtFloat(s.ablated_mean_iou, 4)}</td>
+        <td class="${fpClass}">${deltaFp >= 0 ? "+" : ""}${deltaFp} FP</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Clipboard & Initialization                                                 */
+/* -------------------------------------------------------------------------- */
+
+function copyCode(btn, codeId) {
+  const el = document.getElementById(codeId);
+  if (!el) return;
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = "Copied!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+      btn.textContent = orig;
+      btn.classList.remove("copied");
+    }, 1800);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const [scResp, bmResp, abResp] = await Promise.all([
+      fetch("data/scenarios.json"),
+      fetch("data/benchmark_v2.json"),
+      fetch("data/ablations.json"),
+    ]);
+    STATE.scenariosData = await scResp.json();
+    STATE.benchmarkData = await bmResp.json();
+    STATE.ablationsData = await abResp.json();
+
+    renderBenchmarkSection();
+    renderAblationTabs();
+    selectScenario("surge");
+  } catch (err) {
+    document.getElementById("sc-title").textContent = "Error loading site/data/*.json";
+    document.getElementById("sc-subtitle").textContent = err.message;
+  }
+
+  document.querySelectorAll("#scenario-tabs .scenario-tab").forEach(tab => {
+    tab.addEventListener("click", () => selectScenario(tab.dataset.scenario));
+  });
+
+  document.getElementById("sc-json-toggle").addEventListener("click", toggleRawJson);
+  document.getElementById("sc-json-close").addEventListener("click", () => {
+    document.getElementById("sc-json-drawer").hidden = true;
   });
 });

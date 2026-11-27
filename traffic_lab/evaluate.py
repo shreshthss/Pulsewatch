@@ -14,104 +14,73 @@ from pulsewatch.incident import Incident, IncidentMerger
 from pulsewatch.ingest import IngestAccounting, ingest_jsonl_stream
 from pulsewatch.temporal import TemporalEngine
 from traffic_lab.generator import GroundTruth
+from traffic_lab.metrics import (
+    compute_iou,
+    evaluate_scenario_detections,
+    ScenarioEvaluationResult,
+)
 
 
 @dataclass
 class MetricSummary:
-    precision: float
-    recall: float
-    f1_score: float
+    precision: Optional[float]
+    recall: Optional[float]
+    f1_score: Optional[float]
     true_positives: int
     false_positives: int
     false_negatives: int
     mean_detection_delay_sec: float
     mean_temporal_iou: float
+    outcome_label: str = "positive_evaluated"
+    false_incidents_per_day: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "precision": round(self.precision, 4),
-            "recall": round(self.recall, 4),
-            "f1_score": round(self.f1_score, 4),
+            "precision": round(self.precision, 4) if self.precision is not None else None,
+            "recall": round(self.recall, 4) if self.recall is not None else None,
+            "f1_score": round(self.f1_score, 4) if self.f1_score is not None else None,
             "true_positives": self.true_positives,
             "false_positives": self.false_positives,
             "false_negatives": self.false_negatives,
             "mean_detection_delay_sec": round(self.mean_detection_delay_sec, 2),
             "mean_temporal_iou": round(self.mean_temporal_iou, 4),
+            "outcome_label": self.outcome_label,
+            "false_incidents_per_day": round(self.false_incidents_per_day, 4),
         }
-
-
-def compute_iou(s1: int, e1: int, s2: int, e2: int) -> float:
-    """Compute temporal Intersection over Union."""
-    inter_s = max(s1, s2)
-    inter_e = min(e1, e2)
-    inter = max(0, inter_e - inter_s)
-    union_s = min(s1, s2)
-    union_e = max(e1, e2)
-    union = max(1, union_e - union_s)
-    return inter / float(union)
 
 
 def evaluate_detections(
     detected_incidents: List[Incident],
     ground_truth: GroundTruth
 ) -> MetricSummary:
-    gt_incidents = ground_truth.incidents
-    if not gt_incidents:
-        fp = len(detected_incidents)
-        return MetricSummary(
-            precision=1.0 if fp == 0 else 0.0,
-            recall=1.0,
-            f1_score=1.0 if fp == 0 else 0.0,
-            true_positives=0,
-            false_positives=fp,
-            false_negatives=0,
-            mean_detection_delay_sec=0.0,
-            mean_temporal_iou=0.0,
-        )
+    det_intervals = [
+        (inc.observed_facts.start_sec, inc.observed_facts.end_sec)
+        for inc in detected_incidents
+    ]
+    gt_intervals = [
+        (g.start_sec, g.end_sec)
+        for g in ground_truth.incidents
+    ]
 
-    matched_gt = set()
-    matched_det = set()
-    delays: List[float] = []
-    ious: List[float] = []
-
-    for d_idx, d_inc in enumerate(detected_incidents):
-        d_obs = d_inc.observed_facts
-        best_gt_idx = None
-        best_iou = 0.0
-
-        for g_idx, g_inc in enumerate(gt_incidents):
-            iou = compute_iou(d_obs.start_sec, d_obs.end_sec, g_inc.start_sec, g_inc.end_sec)
-            if iou > best_iou:
-                best_iou = iou
-                best_gt_idx = g_idx
-
-        if best_gt_idx is not None and best_iou > 0.05:
-            matched_gt.add(best_gt_idx)
-            matched_det.add(d_idx)
-            g_inc = gt_incidents[best_gt_idx]
-            delay = max(0, d_obs.start_sec - g_inc.start_sec)
-            delays.append(float(delay))
-            ious.append(best_iou)
-
-    tp = len(matched_gt)
-    fn = len(gt_incidents) - tp
-    fp = len(detected_incidents) - len(matched_det)
-
-    prec = tp / max(1, tp + fp)
-    rec = tp / max(1, tp + fn)
-    f1 = (2 * prec * rec) / max(1e-6, prec + rec) if (prec + rec) > 0 else 0.0
-    mean_delay = sum(delays) / max(1, len(delays)) if delays else 0.0
-    mean_iou = sum(ious) / max(1, len(ious)) if ious else 0.0
+    dur_sec = getattr(ground_truth, "total_span_sec", getattr(ground_truth, "duration_sec", 3600))
+    res = evaluate_scenario_detections(
+        detected_intervals=det_intervals,
+        ground_truth_intervals=gt_intervals,
+        scenario_name=ground_truth.scenario_name,
+        total_duration_sec=float(dur_sec),
+    )
 
     return MetricSummary(
-        precision=prec,
-        recall=rec,
-        f1_score=f1,
-        true_positives=tp,
-        false_positives=fp,
-        false_negatives=fn,
-        mean_detection_delay_sec=mean_delay,
-        mean_temporal_iou=mean_iou,
+        precision=res.precision,
+        recall=res.recall,
+        f1_score=res.f1_score,
+        true_positives=res.true_positives,
+        false_positives=res.false_positives,
+        false_negatives=res.false_negatives,
+        mean_detection_delay_sec=res.mean_detection_delay_sec,
+        mean_temporal_iou=res.mean_temporal_iou,
+        outcome_label=res.outcome_label,
+        false_incidents_per_day=res.false_incidents_per_day,
     )
 
 
