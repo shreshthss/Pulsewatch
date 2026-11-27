@@ -1,0 +1,3315 @@
+{
+  "schema": "pulsewatch.site.scenarios/1",
+  "generated_from": "demo/*_analysis.json + aggregate_summary.json + ablation_results.json",
+  "order": [
+    "normal",
+    "gap",
+    "surge",
+    "dedup",
+    "worldcup98",
+    "ablations",
+    "regime"
+  ],
+  "scenarios": {
+    "normal": {
+      "key": "normal",
+      "scene_num": 1,
+      "title": "Scene 1: Nominal Poisson Traffic",
+      "tab_label": "1. Normal Traffic",
+      "subtitle": "Steady normal baseline arrivals demonstrating zero false alarms on stationary Poisson traffic",
+      "badge": "0 False Alarms",
+      "badge_class": "badge-success",
+      "highlight": "Zero False Alarms on Stationary Poisson Traffic",
+      "explanation": "Standard threshold detectors often flag natural discrete Poisson fluctuations as anomalies. PulseWatch estimates adaptive baseline dispersion (phi = 1.00) and achieves zero false positives across 12 continuous minutes (2,183 requests).",
+      "kind": "trace",
+      "schema_version": "pulsewatch.report/1",
+      "report_revision": 2,
+      "analysis_hash": "f7c3a0262b7ea8eae8d2befaa09e3959dd419c947083f343e6cdc2eb57121d51",
+      "source_sha256": "606308e3a9e9795478b4742d844b570e525e54396eadd1ddc45e841293863ac7",
+      "metrics": {
+        "total_span_sec": 720,
+        "input_records": 2183,
+        "retained_records": 2183,
+        "duplicates_removed": 0,
+        "coverage_pct": 100.0,
+        "unknown_gaps_count": 0,
+        "baseline_reliability": "HIGH",
+        "baseline_rate_1s": 3.05,
+        "masked_pct": 0.0,
+        "incident_count": 0,
+        "false_alarms": 0,
+        "exactness_status": "fully_verified_exact",
+        "second_pass_status": "none"
+      },
+      "timeline": {
+        "bin_size_sec": 10,
+        "span_sec": 720,
+        "min_ts": 1795237200,
+        "max_ts": 1795237919,
+        "gap_intervals_rel": [],
+        "incident_intervals_rel": [],
+        "bins": [
+          {
+            "t_rel": 0,
+            "raw_rps": 2.2,
+            "dedup_rps": 2.2,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 10,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 20,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 30,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 40,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 50,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 60,
+            "raw_rps": 2.7,
+            "dedup_rps": 2.7,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 70,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 80,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 90,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 100,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 110,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 120,
+            "raw_rps": 2.8,
+            "dedup_rps": 2.8,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 130,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 140,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 150,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 160,
+            "raw_rps": 3.2,
+            "dedup_rps": 3.2,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 170,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 180,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 190,
+            "raw_rps": 2.7,
+            "dedup_rps": 2.7,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 200,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 210,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 220,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 230,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 240,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 250,
+            "raw_rps": 2.6,
+            "dedup_rps": 2.6,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 260,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 270,
+            "raw_rps": 2.7,
+            "dedup_rps": 2.7,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 280,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 290,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 300,
+            "raw_rps": 2.6,
+            "dedup_rps": 2.6,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 310,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 320,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 330,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 340,
+            "raw_rps": 3.2,
+            "dedup_rps": 3.2,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 350,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 360,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 370,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 380,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 390,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 400,
+            "raw_rps": 3.2,
+            "dedup_rps": 3.2,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 410,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 420,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 430,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 440,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 450,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 460,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 470,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 480,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 490,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 500,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 510,
+            "raw_rps": 2.6,
+            "dedup_rps": 2.6,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 520,
+            "raw_rps": 2.8,
+            "dedup_rps": 2.8,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 530,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 540,
+            "raw_rps": 2.8,
+            "dedup_rps": 2.8,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 550,
+            "raw_rps": 2.5,
+            "dedup_rps": 2.5,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 560,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 570,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 580,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 590,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 600,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 610,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 620,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 630,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 640,
+            "raw_rps": 3.2,
+            "dedup_rps": 3.2,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 650,
+            "raw_rps": 3.5,
+            "dedup_rps": 3.5,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 660,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 670,
+            "raw_rps": 3.1,
+            "dedup_rps": 3.1,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 680,
+            "raw_rps": 3.4,
+            "dedup_rps": 3.4,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 690,
+            "raw_rps": 3.0,
+            "dedup_rps": 3.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 700,
+            "raw_rps": 3.3,
+            "dedup_rps": 3.3,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 710,
+            "raw_rps": 3.2,
+            "dedup_rps": 3.2,
+            "is_gap": false,
+            "is_incident": false
+          }
+        ]
+      },
+      "ground_truth_intervals_rel": [],
+      "incidents": [],
+      "evidence": {
+        "leading_routes": {},
+        "top_clients": {},
+        "status_distribution": {},
+        "concentration_tags": [],
+        "investigation_leads": [],
+        "data_notices": [],
+        "known_limitations": [
+          "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+          "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+          "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+          "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+        ]
+      },
+      "report_path": "demo/1_normal_traffic_report.html",
+      "json_path": "demo/1_normal_traffic_analysis.json"
+    },
+    "gap": {
+      "key": "gap",
+      "scene_num": 2,
+      "title": "Scene 2: Network Outage & Coverage Gap",
+      "tab_label": "2. Coverage Gap",
+      "subtitle": "1,000s collector outage (>900s threshold) isolated as unknown gap with explicit abstention",
+      "badge": "Detector Abstained",
+      "badge_class": "badge-warning",
+      "highlight": "Defensible Abstention Prevents Telemetry Resume False Alarms",
+      "explanation": "When log shippers crash, naive moving-average detectors treat unobserved silence as zero traffic and fire false alerts when telemetry resumes. PulseWatch isolates the 1,001s gap, measures 19.3% coverage (below the 40% defensible threshold), and explicitly abstains.",
+      "kind": "trace",
+      "schema_version": "pulsewatch.report/1",
+      "report_revision": 2,
+      "analysis_hash": "ca466514c2119cd0d375987bc87b780d97e7e1630a15a90764648af8f6ead152",
+      "source_sha256": "02aa0b8e8ab0d7a1cbdb985d208a262599190b5760ae7a8f6003dad05fdbb9e6",
+      "metrics": {
+        "total_span_sec": 1241,
+        "input_records": 480,
+        "retained_records": 480,
+        "duplicates_removed": 0,
+        "coverage_pct": 19.3,
+        "unknown_gaps_count": 1,
+        "baseline_reliability": "ABSTAIN",
+        "baseline_rate_1s": 2.0,
+        "masked_pct": 0.0,
+        "incident_count": 0,
+        "false_alarms": 0,
+        "exactness_status": "fully_verified_exact",
+        "second_pass_status": "none"
+      },
+      "timeline": {
+        "bin_size_sec": 20,
+        "span_sec": 1241,
+        "min_ts": 1795237200,
+        "max_ts": 1795238440,
+        "gap_intervals_rel": [
+          [
+            120,
+            1120
+          ]
+        ],
+        "incident_intervals_rel": [],
+        "bins": [
+          {
+            "t_rel": 0,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 20,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 40,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 60,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 80,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 100,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 120,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 140,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 160,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 180,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 200,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 220,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 240,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 260,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 280,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 300,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 320,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 340,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 360,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 380,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 400,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 420,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 440,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 460,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 480,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 500,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 520,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 540,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 560,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 580,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 600,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 620,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 640,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 660,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 680,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 700,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 720,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 740,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 760,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 780,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 800,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 820,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 840,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 860,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 880,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 900,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 920,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 940,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 960,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 980,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1000,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1020,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1040,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1060,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1080,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1100,
+            "raw_rps": 0.0,
+            "dedup_rps": 0.0,
+            "is_gap": true,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1120,
+            "raw_rps": 1.9,
+            "dedup_rps": 1.9,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1140,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1160,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1180,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1200,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1220,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 1240,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          }
+        ]
+      },
+      "ground_truth_intervals_rel": [],
+      "incidents": [],
+      "evidence": {
+        "leading_routes": {},
+        "top_clients": {},
+        "status_distribution": {},
+        "concentration_tags": [],
+        "investigation_leads": [],
+        "data_notices": [
+          "Detector abstained from decision: Coverage (19.3%) or observation duration (240s) below minimum defensible threshold."
+        ],
+        "known_limitations": [
+          "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+          "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+          "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+          "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+        ]
+      },
+      "report_path": "demo/4_coverage_gap_report.html",
+      "json_path": "demo/4_coverage_gap_analysis.json"
+    },
+    "surge": {
+      "key": "surge",
+      "scene_num": 3,
+      "title": "Scene 3: Genuine 90s API Surge",
+      "tab_label": "3. Genuine Surge",
+      "subtitle": "Multi-client surge on /api/v1/items/search localized across 10s, 60s, and 300s scales",
+      "badge": "1 Incident Flagged",
+      "badge_class": "badge-danger",
+      "highlight": "Multi-Scale Surge Localization & Second-Pass Contributor Attribution",
+      "explanation": "A genuine 90-second surge (25 req/s peak vs 2.00 req/s baseline, Z = 125.98) fired across 10s, 60s, and 300s scales. Boundary trimming isolates the exact 90s active excess (+2,070 requests), while second-pass replay extracts the concentrated route (/api/v1/items/search) and broad caller distribution.",
+      "kind": "trace",
+      "schema_version": "pulsewatch.report/1",
+      "report_revision": 2,
+      "analysis_hash": "92e5a847332f5d1ab79c62d9111d28812271ba5cd92861a7523f3a8fb98fcc67",
+      "source_sha256": "de94a614c2d1476cb714e5848f179608f89ea06c027d8adb44bcb648d699dd67",
+      "metrics": {
+        "total_span_sec": 360,
+        "input_records": 2790,
+        "retained_records": 2790,
+        "duplicates_removed": 0,
+        "coverage_pct": 100.0,
+        "unknown_gaps_count": 0,
+        "baseline_reliability": "LOW",
+        "baseline_rate_1s": 2.0,
+        "masked_pct": 0.0,
+        "incident_count": 1,
+        "false_alarms": 0,
+        "exactness_status": "fully_verified_exact",
+        "second_pass_status": "ok"
+      },
+      "timeline": {
+        "bin_size_sec": 10,
+        "span_sec": 360,
+        "min_ts": 1795237200,
+        "max_ts": 1795237559,
+        "gap_intervals_rel": [],
+        "incident_intervals_rel": [
+          [
+            180,
+            270
+          ]
+        ],
+        "bins": [
+          {
+            "t_rel": 0,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 10,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 20,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 30,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 40,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 50,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 60,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 70,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 80,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 90,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 100,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 110,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 120,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 130,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 140,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 150,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 160,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 170,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 180,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 190,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 200,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 210,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 220,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 230,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 240,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 250,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 260,
+            "raw_rps": 25.0,
+            "dedup_rps": 25.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 270,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 280,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 290,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 300,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 310,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 320,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 330,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 340,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 350,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          }
+        ]
+      },
+      "ground_truth_intervals_rel": [
+        [
+          180,
+          270
+        ]
+      ],
+      "incidents": [
+        {
+          "incident_id": "INC-001",
+          "observed_facts": {
+            "start_sec": 1795237380,
+            "end_sec": 1795237470,
+            "start_iso": "2026-11-21T05:03:00+00:00",
+            "end_iso": "2026-11-21T05:04:30+00:00",
+            "duration_sec": 90,
+            "peak_sec": 1795237380,
+            "peak_1s_rate": 25,
+            "total_observed_requests": 2250,
+            "estimated_excess_requests": 2070,
+            "top_routes": {
+              "/api/v1/items/search": 2250
+            },
+            "status_distribution": {
+              "2xx": 2250,
+              "4xx": 0,
+              "5xx": 0,
+              "other": 0
+            },
+            "merged_windows_count": 63
+          },
+          "statistical_findings": {
+            "scales_fired": [
+              10,
+              60,
+              300
+            ],
+            "max_z_score": 125.976,
+            "max_elevation_ratio": 12.5,
+            "min_log_p_value": -2413.1686,
+            "baseline_expected_requests": 180.0,
+            "tail_probability_note": "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. Reported upper-tail probabilities are bounded empirical tail assessments.",
+            "observed_over_expected": 12.5,
+            "min_p_value": 0.0,
+            "all_tails_exact": true,
+            "max_omitted_mass_bound": 0.0,
+            "detection_windows": [
+              {
+                "start_sec": 1795237380,
+                "end_sec": 1795237440,
+                "scale_sec": 60,
+                "observed_count": 1500,
+                "baseline_count": 120.0,
+                "excess_count": 1380,
+                "z_score": 125.976,
+                "elevation_ratio": 12.5,
+                "log_p_value": -2413.1686,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237392,
+                "end_sec": 1795237452,
+                "scale_sec": 60,
+                "observed_count": 1500,
+                "baseline_count": 120.0,
+                "excess_count": 1380,
+                "z_score": 125.976,
+                "elevation_ratio": 12.5,
+                "log_p_value": -2413.1686,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237404,
+                "end_sec": 1795237464,
+                "scale_sec": 60,
+                "observed_count": 1500,
+                "baseline_count": 120.0,
+                "excess_count": 1380,
+                "z_score": 125.976,
+                "elevation_ratio": 12.5,
+                "log_p_value": -2413.1686,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237416,
+                "end_sec": 1795237476,
+                "scale_sec": 60,
+                "observed_count": 1362,
+                "baseline_count": 120.0,
+                "excess_count": 1242,
+                "z_score": 113.379,
+                "elevation_ratio": 11.35,
+                "log_p_value": -2071.1219,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237368,
+                "end_sec": 1795237428,
+                "scale_sec": 60,
+                "observed_count": 1224,
+                "baseline_count": 120.0,
+                "excess_count": 1104,
+                "z_score": 100.781,
+                "elevation_ratio": 10.2,
+                "log_p_value": -1743.0765,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237428,
+                "end_sec": 1795237488,
+                "scale_sec": 60,
+                "observed_count": 1086,
+                "baseline_count": 120.0,
+                "excess_count": 966,
+                "z_score": 88.183,
+                "elevation_ratio": 9.05,
+                "log_p_value": -1430.6167,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237200,
+                "end_sec": 1795237500,
+                "scale_sec": 300,
+                "observed_count": 2670,
+                "baseline_count": 600.0,
+                "excess_count": 2070,
+                "z_score": 84.507,
+                "elevation_ratio": 4.45,
+                "log_p_value": -1920.9178,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237260,
+                "end_sec": 1795237560,
+                "scale_sec": 300,
+                "observed_count": 2670,
+                "baseline_count": 600.0,
+                "excess_count": 2070,
+                "z_score": 84.507,
+                "elevation_ratio": 4.45,
+                "log_p_value": -1920.9178,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237356,
+                "end_sec": 1795237416,
+                "scale_sec": 60,
+                "observed_count": 948,
+                "baseline_count": 120.0,
+                "excess_count": 828,
+                "z_score": 75.586,
+                "elevation_ratio": 7.9,
+                "log_p_value": -1135.7321,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237440,
+                "end_sec": 1795237500,
+                "scale_sec": 60,
+                "observed_count": 810,
+                "baseline_count": 120.0,
+                "excess_count": 690,
+                "z_score": 62.988,
+                "elevation_ratio": 6.75,
+                "log_p_value": -860.997,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237380,
+                "end_sec": 1795237390,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237382,
+                "end_sec": 1795237392,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237384,
+                "end_sec": 1795237394,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237386,
+                "end_sec": 1795237396,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237388,
+                "end_sec": 1795237398,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237390,
+                "end_sec": 1795237400,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237392,
+                "end_sec": 1795237402,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237394,
+                "end_sec": 1795237404,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237396,
+                "end_sec": 1795237406,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237398,
+                "end_sec": 1795237408,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237400,
+                "end_sec": 1795237410,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237402,
+                "end_sec": 1795237412,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237404,
+                "end_sec": 1795237414,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237406,
+                "end_sec": 1795237416,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237408,
+                "end_sec": 1795237418,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237410,
+                "end_sec": 1795237420,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237412,
+                "end_sec": 1795237422,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237414,
+                "end_sec": 1795237424,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237416,
+                "end_sec": 1795237426,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237418,
+                "end_sec": 1795237428,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237420,
+                "end_sec": 1795237430,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237422,
+                "end_sec": 1795237432,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237424,
+                "end_sec": 1795237434,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237426,
+                "end_sec": 1795237436,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237428,
+                "end_sec": 1795237438,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237430,
+                "end_sec": 1795237440,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237432,
+                "end_sec": 1795237442,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237434,
+                "end_sec": 1795237444,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237436,
+                "end_sec": 1795237446,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237438,
+                "end_sec": 1795237448,
+                "scale_sec": 10,
+                "observed_count": 250,
+                "baseline_count": 20.0,
+                "excess_count": 230,
+                "z_score": 51.43,
+                "elevation_ratio": 12.5,
+                "log_p_value": -405.0355,
+                "p_value": 0.0,
+                "tail_exact": true,
+                "omitted_mass_bound": 0.0
+              }
+            ]
+          },
+          "descriptive_pattern": {
+            "shape": "sustained_surge",
+            "rationale": "Sustained elevated volume lasting 90s across multi-scale windows."
+          },
+          "investigation_leads": [
+            {
+              "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+              "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+            },
+            {
+              "trigger": "Route '/api/v1/items/search' received 2250/2250 (100.0%) requests",
+              "suggested_action": "Investigate endpoint '/api/v1/items/search' capacity, database query efficiency, and upstream dependency health."
+            }
+          ],
+          "unknown_causes": "Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.",
+          "contributor_evidence": {
+            "top_clients": {
+              "client-010": 134,
+              "client-015": 133,
+              "client-018": 125,
+              "client-005": 124,
+              "client-003": 122
+            },
+            "top_routes": {
+              "/api/v1/items/search": 2250
+            },
+            "status_distribution": {
+              "2xx": 2250
+            },
+            "concentration_tags": [
+              "broad_based",
+              "route_concentrated"
+            ],
+            "share_basis": "estimated_excess"
+          }
+        }
+      ],
+      "evidence": {
+        "leading_routes": {
+          "/api/v1/items/search": 2250
+        },
+        "top_clients": {
+          "client-010": 134,
+          "client-015": 133,
+          "client-018": 125,
+          "client-005": 124,
+          "client-003": 122
+        },
+        "status_distribution": {
+          "2xx": 2250
+        },
+        "concentration_tags": [
+          "broad_based",
+          "route_concentrated"
+        ],
+        "investigation_leads": [
+          {
+            "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+            "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+          },
+          {
+            "trigger": "Route '/api/v1/items/search' received 2250/2250 (100.0%) requests",
+            "suggested_action": "Investigate endpoint '/api/v1/items/search' capacity, database query efficiency, and upstream dependency health."
+          }
+        ],
+        "data_notices": [
+          "Baseline notice: High baseline contamination: 50.0% of time masked during refitting."
+        ],
+        "known_limitations": [
+          "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+          "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+          "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+          "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+        ]
+      },
+      "report_path": "demo/3_genuine_surge_report.html",
+      "json_path": "demo/3_genuine_surge_analysis.json"
+    },
+    "dedup": {
+      "key": "dedup",
+      "scene_num": 4,
+      "title": "Scene 4: Duplicate Replay Attack / Storm",
+      "tab_label": "4. Replay Storm",
+      "subtitle": "235 exact duplicate proxy log replays filtered by 4-level BLAKE2b identity deduplication",
+      "badge": "235 Duplicates Removed",
+      "badge_class": "badge-cyan",
+      "highlight": "Single-Pass Identity Deduplication Suppresses Phantom Spike",
+      "explanation": "Proxy retry storms replay identical request identities, creating a phantom +49% volume spike (715 raw lines vs 480 unique). PulseWatch's 4-level BLAKE2b hierarchy removes all 235 exact duplicates before temporal aggregation, yielding 0 false alarms.",
+      "kind": "trace",
+      "schema_version": "pulsewatch.report/1",
+      "report_revision": 2,
+      "analysis_hash": "07b2f91e7ebd9a321a3c6bd529261e38b343d65dc60959c452dcec9a34a30d8e",
+      "source_sha256": "2727d2f55522e7ee02d55ad40de170c119e3f63da7c11c2fb4e531aa34574ed5",
+      "metrics": {
+        "total_span_sec": 240,
+        "input_records": 715,
+        "retained_records": 480,
+        "duplicates_removed": 235,
+        "coverage_pct": 100.0,
+        "unknown_gaps_count": 0,
+        "baseline_reliability": "MEDIUM",
+        "baseline_rate_1s": 2.0,
+        "masked_pct": 0.0,
+        "incident_count": 0,
+        "false_alarms": 0,
+        "exactness_status": "fully_verified_exact",
+        "second_pass_status": "none"
+      },
+      "timeline": {
+        "bin_size_sec": 10,
+        "span_sec": 240,
+        "min_ts": 1795237200,
+        "max_ts": 1795237439,
+        "gap_intervals_rel": [],
+        "incident_intervals_rel": [],
+        "bins": [
+          {
+            "t_rel": 0,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 10,
+            "raw_rps": 2.5,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 20,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 30,
+            "raw_rps": 3.4,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 40,
+            "raw_rps": 3.3,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 50,
+            "raw_rps": 3.1,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 60,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 70,
+            "raw_rps": 3.2,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 80,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 90,
+            "raw_rps": 2.8,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 100,
+            "raw_rps": 2.5,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 110,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 120,
+            "raw_rps": 3.2,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 130,
+            "raw_rps": 2.7,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 140,
+            "raw_rps": 3.2,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 150,
+            "raw_rps": 2.6,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 160,
+            "raw_rps": 2.7,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 170,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 180,
+            "raw_rps": 2.9,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 190,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 200,
+            "raw_rps": 3.1,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 210,
+            "raw_rps": 3.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 220,
+            "raw_rps": 3.2,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 230,
+            "raw_rps": 3.2,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          }
+        ]
+      },
+      "ground_truth_intervals_rel": [],
+      "incidents": [],
+      "evidence": {
+        "leading_routes": {},
+        "top_clients": {},
+        "status_distribution": {},
+        "concentration_tags": [],
+        "investigation_leads": [],
+        "data_notices": [],
+        "known_limitations": [
+          "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+          "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+          "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+          "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+        ]
+      },
+      "report_path": "demo/2_duplicate_replay_report.html",
+      "json_path": "demo/2_duplicate_replay_analysis.json"
+    },
+    "regime": {
+      "key": "regime",
+      "scene_num": 7,
+      "title": "Bonus Scene: Ambiguous Regime Level Shift",
+      "tab_label": "Bonus: Regime Shift",
+      "subtitle": "Permanent rate elevation (2 -> 16 req/s) flagged as level_shift_candidate with asymmetry warning",
+      "badge": "Level Shift Candidate",
+      "badge_class": "badge-amber",
+      "highlight": "Regime Asymmetry Check Distinguishes Scaling Steps from Transient Bursts",
+      "explanation": "When traffic permanently steps up from 2 to 16 req/s, PulseWatch detects significant first-half vs second-half asymmetry (ratio 0.15), classifies the incident as level_shift_candidate, downgrades baseline reliability to LOW, and guides operators to confirm whether an intentional scaling event occurred.",
+      "kind": "trace",
+      "schema_version": "pulsewatch.report/1",
+      "report_revision": 2,
+      "analysis_hash": "7d3e81e3fecd11b446cc8386c461a6b07dbaf78340e7743c9107e2ba1d3b8206",
+      "source_sha256": "53272985d0e3069feeb52446a6426e903d3b1584f9f8d8fc3517baab99c285e9",
+      "metrics": {
+        "total_span_sec": 300,
+        "input_records": 2280,
+        "retained_records": 2280,
+        "duplicates_removed": 0,
+        "coverage_pct": 100.0,
+        "unknown_gaps_count": 0,
+        "baseline_reliability": "LOW",
+        "baseline_rate_1s": 2.0,
+        "masked_pct": 0.0,
+        "incident_count": 1,
+        "false_alarms": 0,
+        "exactness_status": "fully_verified_exact",
+        "second_pass_status": "ok"
+      },
+      "timeline": {
+        "bin_size_sec": 10,
+        "span_sec": 300,
+        "min_ts": 1795237200,
+        "max_ts": 1795237499,
+        "gap_intervals_rel": [],
+        "incident_intervals_rel": [
+          [
+            180,
+            300
+          ]
+        ],
+        "bins": [
+          {
+            "t_rel": 0,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 10,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 20,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 30,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 40,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 50,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 60,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 70,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 80,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 90,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 100,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 110,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 120,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 130,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 140,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 150,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 160,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 170,
+            "raw_rps": 2.0,
+            "dedup_rps": 2.0,
+            "is_gap": false,
+            "is_incident": false
+          },
+          {
+            "t_rel": 180,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 190,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 200,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 210,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 220,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 230,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 240,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 250,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 260,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 270,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 280,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          },
+          {
+            "t_rel": 290,
+            "raw_rps": 16.0,
+            "dedup_rps": 16.0,
+            "is_gap": false,
+            "is_incident": true
+          }
+        ]
+      },
+      "ground_truth_intervals_rel": [
+        [
+          180,
+          300
+        ]
+      ],
+      "incidents": [
+        {
+          "incident_id": "INC-001",
+          "observed_facts": {
+            "start_sec": 1795237380,
+            "end_sec": 1795237500,
+            "start_iso": "2026-11-21T05:03:00+00:00",
+            "end_iso": "2026-11-21T05:05:00+00:00",
+            "duration_sec": 120,
+            "peak_sec": 1795237380,
+            "peak_1s_rate": 16,
+            "total_observed_requests": 1920,
+            "estimated_excess_requests": 1680,
+            "top_routes": {
+              "/api/v1/checkout": 402,
+              "/api/v1/auth/login": 394,
+              "/api/v1/items": 384,
+              "/api/v1/items/search": 382,
+              "/api/v1/user/profile": 358
+            },
+            "status_distribution": {
+              "2xx": 1920,
+              "4xx": 0,
+              "5xx": 0,
+              "other": 0
+            },
+            "merged_windows_count": 62
+          },
+          "statistical_findings": {
+            "scales_fired": [
+              10,
+              60
+            ],
+            "max_z_score": 3.912,
+            "max_elevation_ratio": 8.0,
+            "min_log_p_value": -4.3725,
+            "baseline_expected_requests": 240.0,
+            "tail_probability_note": "PW-Scan probability evaluation under Poisson/Negative-Binomial dispersion model. Reported upper-tail probabilities are bounded empirical tail assessments.",
+            "observed_over_expected": 8.0,
+            "min_p_value": 0.012619,
+            "all_tails_exact": false,
+            "max_omitted_mass_bound": 0.0,
+            "detection_windows": [
+              {
+                "start_sec": 1795237380,
+                "end_sec": 1795237390,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237382,
+                "end_sec": 1795237392,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237384,
+                "end_sec": 1795237394,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237386,
+                "end_sec": 1795237396,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237388,
+                "end_sec": 1795237398,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237390,
+                "end_sec": 1795237400,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237392,
+                "end_sec": 1795237402,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237394,
+                "end_sec": 1795237404,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237396,
+                "end_sec": 1795237406,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237398,
+                "end_sec": 1795237408,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237400,
+                "end_sec": 1795237410,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237402,
+                "end_sec": 1795237412,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237404,
+                "end_sec": 1795237414,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237406,
+                "end_sec": 1795237416,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237408,
+                "end_sec": 1795237418,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237410,
+                "end_sec": 1795237420,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237412,
+                "end_sec": 1795237422,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237414,
+                "end_sec": 1795237424,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237416,
+                "end_sec": 1795237426,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237418,
+                "end_sec": 1795237428,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237420,
+                "end_sec": 1795237430,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237422,
+                "end_sec": 1795237432,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237424,
+                "end_sec": 1795237434,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237426,
+                "end_sec": 1795237436,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237428,
+                "end_sec": 1795237438,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237430,
+                "end_sec": 1795237440,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237432,
+                "end_sec": 1795237442,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237434,
+                "end_sec": 1795237444,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237436,
+                "end_sec": 1795237446,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237438,
+                "end_sec": 1795237448,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237440,
+                "end_sec": 1795237450,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237442,
+                "end_sec": 1795237452,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237444,
+                "end_sec": 1795237454,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237446,
+                "end_sec": 1795237456,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237448,
+                "end_sec": 1795237458,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237450,
+                "end_sec": 1795237460,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237452,
+                "end_sec": 1795237462,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237454,
+                "end_sec": 1795237464,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237456,
+                "end_sec": 1795237466,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              },
+              {
+                "start_sec": 1795237458,
+                "end_sec": 1795237468,
+                "scale_sec": 10,
+                "observed_count": 160,
+                "baseline_count": 20.0,
+                "excess_count": 140,
+                "z_score": 3.912,
+                "elevation_ratio": 8.0,
+                "log_p_value": -4.3725,
+                "p_value": 0.01261919,
+                "tail_exact": false,
+                "omitted_mass_bound": 0.0
+              }
+            ]
+          },
+          "descriptive_pattern": {
+            "shape": "level_shift_candidate",
+            "rationale": "Elevated rate persists to segment boundary without returning to prior baseline."
+          },
+          "investigation_leads": [
+            {
+              "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+              "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+            },
+            {
+              "trigger": "Traffic elevation persisted to segment boundary without recovery to prior baseline",
+              "suggested_action": "Confirm whether an intentional service scaling step occurred or collect extended steady-state observations."
+            }
+          ],
+          "unknown_causes": "Offline synthetic monitoring cannot infer user intent, architectural root cause, or threat attribution from traffic counts alone.",
+          "contributor_evidence": {
+            "top_clients": {
+              "client-010": 114,
+              "client-015": 107,
+              "client-018": 106,
+              "client-005": 105,
+              "client-011": 103
+            },
+            "top_routes": {
+              "/api/v1/checkout": 402,
+              "/api/v1/auth/login": 394,
+              "/api/v1/items": 384,
+              "/api/v1/items/search": 382,
+              "/api/v1/user/profile": 358
+            },
+            "status_distribution": {
+              "2xx": 1920
+            },
+            "concentration_tags": [
+              "broad_based"
+            ],
+            "share_basis": "estimated_excess"
+          }
+        }
+      ],
+      "evidence": {
+        "leading_routes": {
+          "/api/v1/checkout": 402,
+          "/api/v1/auth/login": 394,
+          "/api/v1/items": 384,
+          "/api/v1/items/search": 382,
+          "/api/v1/user/profile": 358
+        },
+        "top_clients": {
+          "client-010": 114,
+          "client-015": 107,
+          "client-018": 106,
+          "client-005": 105,
+          "client-011": 103
+        },
+        "status_distribution": {
+          "2xx": 1920
+        },
+        "concentration_tags": [
+          "broad_based"
+        ],
+        "investigation_leads": [
+          {
+            "trigger": "Dispersed load across 20 distinct clients without a single dominating caller",
+            "suggested_action": "Check distributed load-test orchestration, multi-client test harness, or shared environment deployment."
+          },
+          {
+            "trigger": "Traffic elevation persisted to segment boundary without recovery to prior baseline",
+            "suggested_action": "Confirm whether an intentional service scaling step occurred or collect extended steady-state observations."
+          }
+        ],
+        "data_notices": [
+          "Baseline notice: Significant regime asymmetry detected (first/second half ratio: 0.15)."
+        ],
+        "known_limitations": [
+          "Offline synthetic monitoring cannot infer external causes, intent, or system failures.",
+          "Deduplication is bounded in memory; high volumes may trigger LRU eviction.",
+          "Windows overlapping unknown gaps are treated as unobserved rather than assumed zero.",
+          "Tail probability calculations are empirical approximations under Poisson/Negative-Binomial dispersion models."
+        ]
+      },
+      "report_path": "demo/5_ambiguous_regime_report.html",
+      "json_path": "demo/5_ambiguous_regime_analysis.json"
+    },
+    "worldcup98": {
+      "key": "worldcup98",
+      "scene_num": 5,
+      "title": "Scene 5: FIFA World Cup 1998 Historical Trace Validation",
+      "tab_label": "5. WorldCup98",
+      "subtitle": "Authentic 1998 HTTP server traces scaling up to 210,287 requests per 15-minute window",
+      "badge": "0 False Alarms",
+      "badge_class": "badge-success",
+      "highlight": "Scale-Invariant Stability Across Real Historical HTTP Workloads",
+      "explanation": "Evaluated on three authentic 15-minute slices from the 1998 FIFA World Cup dataset (Day 20: 19.25 req/s, Day 46: 237.58 req/s, Day 78 Final: 144.02 req/s). PulseWatch maintained zero false alarms across all authentic background windows. Separate semi-synthetic perturbation experiments inject controlled bursts onto these traces with manifest-tracked ground truth.",
+      "kind": "worldcup98",
+      "samples": [
+        {
+          "sample_id": "day20",
+          "label": "Day 20 (15 May 1998)",
+          "utc_interval": "1998-05-14 22:00:01 to 22:15:01 UTC",
+          "records": 17209,
+          "coverage_pct": 100.0,
+          "baseline_rate_1s": 0.0,
+          "baseline_reliability": "HIGH",
+          "incidents_detected": 0,
+          "input_sha256": "ff8abb71a593b9ff4af1feb06a6b6549dd222f10565b23cf3987968f903900da"
+        },
+        {
+          "sample_id": "day46",
+          "label": "Day 46 (10 June 1998)",
+          "utc_interval": "1998-06-09 22:00:01 to 22:15:01 UTC",
+          "records": 210287,
+          "coverage_pct": 100.0,
+          "baseline_rate_1s": 0.0,
+          "baseline_reliability": "HIGH",
+          "incidents_detected": 0,
+          "input_sha256": "97c76316758a88c52165d60b64d289f87eef8c73afabfdaa17c35776da7e0ddc"
+        },
+        {
+          "sample_id": "day78",
+          "label": "Day 78 (12 July 1998)",
+          "utc_interval": "1998-07-11 22:00:01 to 22:15:01 UTC",
+          "records": 130733,
+          "coverage_pct": 100.0,
+          "baseline_rate_1s": 0.0,
+          "baseline_reliability": "HIGH",
+          "incidents_detected": 0,
+          "input_sha256": "e81b04cd7e9237609853a1fb2060050e735f9cd2e03ba2b00c84f2f2ab768f4f"
+        }
+      ],
+      "metrics": {
+        "samples_evaluated": 3,
+        "max_records_window": 210287,
+        "max_rate_1s": 0.0,
+        "total_records": 358229,
+        "incident_count": 0,
+        "false_alarms": 0
+      },
+      "json_path": "data/scenarios.json"
+    },
+    "ablations": {
+      "key": "ablations",
+      "scene_num": 6,
+      "title": "Scene 6: Empirical Architectural Ablations",
+      "tab_label": "6. Ablations",
+      "subtitle": "Five controlled ablation experiments quantifying each subsystem's causal contribution",
+      "badge": "5 Studies Verified",
+      "badge_class": "badge-cyan",
+      "highlight": "Empirical Proof of Every Pipeline Stage",
+      "explanation": "Disabling individual subsystems produces measurable regressions: omitting dispersion scaling inflates false alarms on overdispersed traffic (19.2 -> 136.8 FP/day); disabling sticky masking allows surges to contaminate the baseline; single-scale scanning degrades localization IoU.",
+      "kind": "ablations",
+      "experiments_count": 5,
+      "json_path": "data/ablations.json"
+    }
+  }
+}
